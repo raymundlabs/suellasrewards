@@ -3,8 +3,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/gestures.dart';
+import 'package:suellas/customer/home.dart';
 
-import 'package:suellas/customer/customer_home.dart'; // Import the customer home screen
+// import 'package:suellas/customer/customer_home.dart'; // Import the customer home screen
 import 'package:suellas/branch/branch_home_screen.dart'; // Import the branch home screen
 
 class AuthScreen extends StatefulWidget {

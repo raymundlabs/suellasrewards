@@ -6,11 +6,12 @@ import 'package:suellas/utils.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:suellas/customer/qr_screen.dart';
 import 'package:suellas/customer/profile.dart';
+import 'package:suellas/customer/qr_screen.dart';
+import 'package:suellas/customer/profile.dart';
 import 'package:suellas/customer/location.dart';
 import 'package:suellas/customer/inbox.dart';
 import 'package:suellas/customer/home.dart';
-
-class QRScreen extends StatelessWidget {
+class ProfileScreen extends StatelessWidget {
   @override
 Widget build(BuildContext context) {
     double baseWidth = 414;
@@ -193,7 +194,6 @@ Widget build(BuildContext context) {
 
   
 
-
   Widget _buildBottomNavigationBar(double fem, double ffem, BuildContext context) {
     return Container(
       width: 333 * fem,
@@ -221,8 +221,8 @@ Widget build(BuildContext context) {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-              GestureDetector(
-         onTap: () {
+                GestureDetector(
+               onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => CustomerHomeScreen()), // Navigate to inbox screen
@@ -239,12 +239,13 @@ Widget build(BuildContext context) {
               ),
      
           GestureDetector(
-            onTap: () {
+               onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => InboxScreen()), // Navigate to inbox screen
+                MaterialPageRoute(builder: (context) => InboxScreen()), // Navigate to location screen
               );
             },
+     
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
@@ -255,12 +256,13 @@ Widget build(BuildContext context) {
             ),
           ),
                GestureDetector(
-             onTap: () {
-                // Implement the behavior to reset or return to the current screen
-                // For example, you can scroll to the top of the current screen
-                // or refresh the content.
-                // _scrollToTopOrRefresh(); // Call a method to scroll to the top or refresh the content
-              },
+
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => QRScreen()), // Navigate to QR screen
+              );
+            },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
@@ -271,12 +273,14 @@ Widget build(BuildContext context) {
             ),
           ),
           GestureDetector(
+
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LocationScreen()), // Navigate to location screen
+                MaterialPageRoute(builder: (context) => LocationScreen()), // Navigate to QR screen
               );
             },
+    
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
@@ -288,11 +292,11 @@ Widget build(BuildContext context) {
           ),
           GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ProfileScreen()), // Navigate to profile screen
-              );
-            },
+                // Implement the behavior to reset or return to the current screen
+                // For example, you can scroll to the top of the current screen
+                // or refresh the content.
+                // _scrollToTopOrRefresh(); // Call a method to scroll to the top or refresh the content
+              },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
@@ -307,8 +311,3 @@ Widget build(BuildContext context) {
     );
   }
 }
-
-
-
-
-

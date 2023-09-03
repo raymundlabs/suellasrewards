@@ -6,11 +6,13 @@ import 'package:suellas/utils.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:suellas/customer/qr_screen.dart';
 import 'package:suellas/customer/profile.dart';
+
+import 'package:suellas/customer/qr_screen.dart';
+import 'package:suellas/customer/profile.dart';
 import 'package:suellas/customer/location.dart';
 import 'package:suellas/customer/inbox.dart';
 import 'package:suellas/customer/home.dart';
-
-class QRScreen extends StatelessWidget {
+class LocationScreen extends StatelessWidget {
   @override
 Widget build(BuildContext context) {
     double baseWidth = 414;
@@ -195,34 +197,38 @@ Widget build(BuildContext context) {
 
 
   Widget _buildBottomNavigationBar(double fem, double ffem, BuildContext context) {
-    return Container(
-      width: 333 * fem,
-      height: 50 * fem,
-      padding: EdgeInsets.fromLTRB(20, 8, 20, 8),
-      margin: EdgeInsets.fromLTRB(44 * fem, 20.14 * fem, 44 * fem, 20.14 * fem),
-      decoration: BoxDecoration(
-        color: Color(0xFFF0F0F3),
-        borderRadius: BorderRadius.circular(50),
-        boxShadow: [
-          BoxShadow(
-            color: Color(0xFFFFFFFF),
-            blurRadius: 20,
-            offset: Offset(5, 5),
-            spreadRadius: 0,
-          ),
-          BoxShadow(
-            color: Color(0xFFFFFFFF),
-            blurRadius: 20,
-            offset: Offset(-5, -5),
-            spreadRadius: 0,
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-              GestureDetector(
-         onTap: () {
+  
+  return Container(
+    width: 333 * fem,
+    height: 50 * fem,
+    padding: EdgeInsets.fromLTRB(20, 8, 20, 8),
+    margin: EdgeInsets.fromLTRB(44 * fem, 20.14 * fem, 44 * fem, 20.14  * fem),
+    decoration: BoxDecoration(
+       color: Color(0xFFF0F0F3),
+      borderRadius: BorderRadius.circular(50),
+      boxShadow: [
+        BoxShadow(
+          color: Color(0xFFFFFFFF),
+          blurRadius: 20,
+          offset: Offset(5, 5),
+          spreadRadius: 0,
+        ),
+        BoxShadow(
+          color: Color(0xFFFFFFFF),
+          blurRadius: 20,
+          offset: Offset(-5, -5),
+          spreadRadius: 0,
+        ),
+      ],
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+   children: [
+
+  
+        
+                 GestureDetector(
+               onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => CustomerHomeScreen()), // Navigate to inbox screen
@@ -239,12 +245,13 @@ Widget build(BuildContext context) {
               ),
      
           GestureDetector(
-            onTap: () {
+               onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => InboxScreen()), // Navigate to inbox screen
+                MaterialPageRoute(builder: (context) => InboxScreen()), // Navigate to location screen
               );
             },
+     
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
@@ -255,12 +262,13 @@ Widget build(BuildContext context) {
             ),
           ),
                GestureDetector(
-             onTap: () {
-                // Implement the behavior to reset or return to the current screen
-                // For example, you can scroll to the top of the current screen
-                // or refresh the content.
-                // _scrollToTopOrRefresh(); // Call a method to scroll to the top or refresh the content
-              },
+
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => QRScreen()), // Navigate to QR screen
+              );
+            },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
@@ -271,12 +279,14 @@ Widget build(BuildContext context) {
             ),
           ),
           GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => LocationScreen()), // Navigate to location screen
-              );
-            },
+
+                 onTap: () {
+                // Implement the behavior to reset or return to the current screen
+                // For example, you can scroll to the top of the current screen
+                // or refresh the content.
+                // _scrollToTopOrRefresh(); // Call a method to scroll to the top or refresh the content
+              },
+    
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
@@ -302,13 +312,15 @@ Widget build(BuildContext context) {
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
+      ],
+    ),
+  );
 }
 
 
 
 
+
+
+}
 

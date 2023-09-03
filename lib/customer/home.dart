@@ -1,25 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
-import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:suellas/utils.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:flutter/gestures.dart';
+import 'dart:ui';
+import 'package:suellas/customer/rewards_screen.dart';
 import 'package:suellas/customer/qr_screen.dart';
 import 'package:suellas/customer/profile.dart';
 import 'package:suellas/customer/location.dart';
 import 'package:suellas/customer/inbox.dart';
-import 'package:suellas/customer/home.dart';
-
-class QRScreen extends StatelessWidget {
+class CustomerHomeScreen extends StatelessWidget {
+  const CustomerHomeScreen({Key? key}) : super(key: key);
   @override
-Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     double baseWidth = 414;
     double fem = MediaQuery.of(context).size.width / baseWidth;
     double ffem = fem * 0.97;
     final String qrData = "ABC123";
     
     return Scaffold(
-      
         backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Container(
@@ -220,14 +219,14 @@ Widget build(BuildContext context) {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-              GestureDetector(
-         onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CustomerHomeScreen()), // Navigate to inbox screen
-              );
-            },
+            children: [
+               GestureDetector(
+              onTap: () {
+                // Implement the behavior to reset or return to the current screen
+                // For example, you can scroll to the top of the current screen
+                // or refresh the content.
+                // _scrollToTopOrRefresh(); // Call a method to scroll to the top or refresh the content
+              },
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 1.0),
                 child: Image.asset(
@@ -255,12 +254,12 @@ Widget build(BuildContext context) {
             ),
           ),
                GestureDetector(
-             onTap: () {
-                // Implement the behavior to reset or return to the current screen
-                // For example, you can scroll to the top of the current screen
-                // or refresh the content.
-                // _scrollToTopOrRefresh(); // Call a method to scroll to the top or refresh the content
-              },
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => QRScreen()), // Navigate to QR screen
+              );
+            },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
@@ -307,8 +306,4 @@ Widget build(BuildContext context) {
     );
   }
 }
-
-
-
-
 
