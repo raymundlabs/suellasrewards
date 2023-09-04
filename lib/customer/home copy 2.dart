@@ -1,28 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
-import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:suellas/utils.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:suellas/customer/qr_screen.dart';
-import 'package:suellas/customer/profile.dart';
+import 'package:flutter/gestures.dart';
+import 'dart:ui';
 import 'package:suellas/customer/qr_screen.dart';
 import 'package:suellas/customer/profile.dart';
 import 'package:suellas/customer/location.dart';
-import 'package:suellas/customer/home.dart';
+import 'package:suellas/customer/inbox.dart';
 
-
-class InboxScreen extends StatelessWidget {
+class CustomerHomeScreen extends StatelessWidget {
+  const CustomerHomeScreen({Key? key}) : super(key: key);
   @override
-Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     double baseWidth = 414;
     double fem = MediaQuery.of(context).size.width / baseWidth;
     double ffem = fem * 0.97;
     final String qrData = "ABC123";
     
     return Scaffold(
-      
-        backgroundColor: Colors.white,
+      // appBar: CustomAppBar(fem: fem, ffem: ffem),
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Container(
           width: double.infinity,
@@ -197,43 +195,39 @@ Widget build(BuildContext context) {
 
 
   Widget _buildBottomNavigationBar(double fem, double ffem, BuildContext context) {
-  
-  return Container(
-    width: 333 * fem,
-    height: 50 * fem,
-    padding: EdgeInsets.fromLTRB(20, 8, 20, 8),
-    margin: EdgeInsets.fromLTRB(44 * fem, 20.14 * fem, 44 * fem, 20.14  * fem),
-    decoration: BoxDecoration(
-       color: Color(0xFFF0F0F3),
-      borderRadius: BorderRadius.circular(50),
-      boxShadow: [
-        BoxShadow(
-          color: Color(0xFFFFFFFF),
-          blurRadius: 20,
-          offset: Offset(5, 5),
-          spreadRadius: 0,
-        ),
-        BoxShadow(
-          color: Color(0xFFFFFFFF),
-          blurRadius: 20,
-          offset: Offset(-5, -5),
-          spreadRadius: 0,
-        ),
-      ],
-    ),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-   children: [
-
-  
-        
-              GestureDetector(
-               onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CustomerHomeScreen()), // Navigate to inbox screen
-              );
-            },
+    return Container(
+      width: 333 * fem,
+      height: 50 * fem,
+      padding: EdgeInsets.fromLTRB(20, 8, 20, 8),
+      margin: EdgeInsets.fromLTRB(44 * fem, 20.14 * fem, 44 * fem, 20.14 * fem),
+      decoration: BoxDecoration(
+        color: Color(0xFFF0F0F3),
+        borderRadius: BorderRadius.circular(50),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0xFFFFFFFF),
+            blurRadius: 20,
+            offset: Offset(5, 5),
+            spreadRadius: 0,
+          ),
+          BoxShadow(
+            color: Color(0xFFFFFFFF),
+            blurRadius: 20,
+            offset: Offset(-5, -5),
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+               GestureDetector(
+              onTap: () {
+                // Implement the behavior to reset or return to the current screen
+                // For example, you can scroll to the top of the current screen
+                // or refresh the content.
+                // _scrollToTopOrRefresh(); // Call a method to scroll to the top or refresh the content
+              },
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 1.0),
                 child: Image.asset(
@@ -245,13 +239,12 @@ Widget build(BuildContext context) {
               ),
      
           GestureDetector(
-              onTap: () {
-                // Implement the behavior to reset or return to the current screen
-                // For example, you can scroll to the top of the current screen
-                // or refresh the content.
-                // _scrollToTopOrRefresh(); // Call a method to scroll to the top or refresh the content
-              },
-     
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => InboxScreen()), // Navigate to inbox screen
+              );
+            },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
@@ -309,15 +302,72 @@ Widget build(BuildContext context) {
               ),
             ),
           ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 }
 
 
 
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final double fem;
+  final double ffem;
 
+  const CustomAppBar({
+    required this.fem,
+    required this.ffem,
+  });
 
+  @override
+  Size get preferredSize => Size.fromHeight(100 * fem);
 
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      titleSpacing: 0,
+      title: Container(
+        margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 1.86 * fem, 42 * fem),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 115 * fem, 0 * fem),
+              width: 30 * fem,
+              height: 30 * fem,
+              child: Image.asset(
+                'assets/design/images/btn-back.png',
+                width: 30 * fem,
+                height: 30 * fem,
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.fromLTRB(0 * fem, 4 * fem, 112 * fem, 0 * fem),
+              child: Text(
+                'Scan QR',
+                style: TextStyle(
+                  fontSize: 16 * ffem,
+                  fontWeight: FontWeight.w600,
+                  height: 1.2125 * ffem / fem,
+                  color: Color(0xff000000),
+                ),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 0 * fem, 4 * fem),
+              width: 20 * fem,
+              height: 20 * fem,
+              child: Image.asset(
+                'assets/design/images/iconly-curved-outline-edit-square.png',
+                width: 20 * fem,
+                height: 20 * fem,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
-

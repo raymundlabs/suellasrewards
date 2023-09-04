@@ -3,11 +3,11 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:suellas/screens/auth.dart'; // Import the AuthScreen
-import 'package:suellas/customer/customer_home.dart'; // Import the customer home screen
+import 'package:suellas/customer/home.dart'; // Import the customer home screen
 
 void main() {
   runApp(const MaterialApp(
-    home: AuthScreen(),
+      home: CustomerHomeScreen(),
   ));
 }
 
