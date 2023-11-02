@@ -14,7 +14,6 @@ import 'package:suellas/customer/inbox.dart';
 import 'package:suellas/customer/home.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:suellas/customer/editprofile.dart';
 
 import 'package:flutter/material.dart';
 
@@ -27,11 +26,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String _userEmail = ''; // Default value is an empty string
   String _firstName = '';
   String _lastName = '';
-  String _birthday = '';
-  String _phoneNumber = '';
-  String _streetName = '';
-  String _barangayName = '';
-  String _cityName = '';
 
   bool isSmsNotificationEnabled = false; // Default value is false
   bool isEmailNotificationEnabled = false; // Default value is false
@@ -39,33 +33,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    _getUserEmail().then((_) {
-      _getUserData().then((data) {
-        setState(() {
-          _firstName = data['first_name'] ?? '';
-          _lastName = data['last_name'] ?? '';
-          _birthday = data['birthday'] ?? '';
-          _phoneNumber = data['mobile_number'] ?? '';
-          _streetName = data['address'] ?? '';
-          _barangayName = data['barangay'] ?? '';
-          _cityName = data['city'] ?? '';
-          isSmsNotificationEnabled = data['isSmsNotificationEnabled'] ?? false;
-          isEmailNotificationEnabled =
-              data['isEmailNotificationEnabled'] ?? false;
-        });
+@override
+void initState() {
+  super.initState();
+
+  _getUserEmail().then((_) {
+    _getUserData().then((data) {
+
+      setState(() {
+        _firstName = data['first_name'] ?? '';
+        _lastName = data['last_name'] ?? '';
+        isSmsNotificationEnabled = data['isSmsNotificationEnabled'] ?? false;
+        isEmailNotificationEnabled = data['isEmailNotificationEnabled'] ?? false;
       });
+
     });
-  }
+  });
+}
 
   Future<void> _getUserEmail() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _userEmail = prefs.getString('userEmail') ?? '';
+
     });
   }
+
+ 
+
+
 
   Future<http.Response> _updateNotificationSettings() async {
     final headers = {
@@ -85,33 +81,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return response;
   }
 
-  Future<Map<String, dynamic>> _getUserData() async {
-    final headers = {
-      'Content-Type': 'application/json',
-      'X-CSRF-Token': 'd7c436fff9e0910158379791ad0aeba8',
-    };
-    final apiUrl = '/admin/auth/getUserData';
-    final email = _userEmail;
-    final response = await http.post(
-      Uri.parse('https://app.suellastheshoelaundry.com' + apiUrl),
-      body: {
-        'email': email, // r@g.com 1234567
-      },
-    );
+Future<Map<String, dynamic>> _getUserData() async {
+  final headers = {
+    'Content-Type': 'application/json',
+    'X-CSRF-Token': 'd7c436fff9e0910158379791ad0aeba8',
+  };
+  final apiUrl = '/admin/auth/getUserData';
+  final email = _userEmail; 
+  final response = await http.post(
+    Uri.parse('https://app.suellastheshoelaundry.com' + apiUrl),
+    body: {
+      'email': email, // r@g.com 1234567
+    },
+  );
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> userData = json.decode(response.body);
-      userData['isSmsNotificationEnabled'] =
-          userData['isSmsNotificationEnabled'] == 'true';
-      userData['isEmailNotificationEnabled'] =
-          userData['isEmailNotificationEnabled'] == 'true';
+  if (response.statusCode == 200) {
+    final Map<String, dynamic> userData = json.decode(response.body);
+      userData['isSmsNotificationEnabled'] = userData['isSmsNotificationEnabled'] == 'true';
+      userData['isEmailNotificationEnabled'] = userData['isEmailNotificationEnabled'] == 'true';
       print("User data retrieved1: $userData"); // Add this debugging statement
 
-      return userData;
-    } else {
-      throw Exception('Failed to load user data');
-    }
+    return userData;
+  } else {
+    throw Exception('Failed to load user data');
   }
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +116,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     double ffem = fem * 0.97;
 
     return Scaffold(
-      appBar: AppBar(
+
+       appBar: AppBar(
         title: Text('Change Password'),
       ),
       backgroundColor: Colors.white,
@@ -131,8 +128,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             width: double.infinity,
             height: 896 * fem,
             child: Container(
-              padding: EdgeInsets.fromLTRB(
-                  29 * fem, 39.77 * fem, 29 * fem, 27 * fem),
+              padding: EdgeInsets.fromLTRB(29 * fem, 39.77 * fem, 29 * fem, 27 * fem),
               width: double.infinity,
               height: double.infinity,
               decoration: BoxDecoration(
@@ -159,10 +155,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: Center(
                             child: Container(
                               margin: EdgeInsets.fromLTRB(
-                                0 * fem,
-                                4 * fem,
-                                0 * fem,
-                                0 * fem,
+                                0 * fem, 4 * fem, 0 * fem, 0 * fem,
                               ),
                               child: Text(
                                 'Account',
@@ -178,28 +171,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Container(
                           width: 30 * fem,
                           height: 30 * fem,
-                          child: GestureDetector(
-                            onTap: () {
-                              // Navigate to the edit screen when tapped
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      EditProfileScreen(), // Replace EditProfileScreen with your edit screen widget
-                                ),
-                              );
-                            },
-                            child: Image.asset(
-                              'assets/design/images/iconly-curved-outline-edit-square.png',
-                              width: 30 * fem,
-                              height: 30 * fem,
-                            ),
+                          child: Image.asset(
+                            'assets/design/images/iconly-curved-outline-edit-square.png',
+                            width: 30 * fem,
+                            height: 30 * fem,
                           ),
                         ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 10.0),
+
                   Container(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -217,10 +199,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             },
                             child: Container(
                               margin: EdgeInsets.fromLTRB(
-                                10.14 * fem,
-                                0 * fem,
-                                0 * fem,
-                                16 * fem,
+                                10.14 * fem, 0 * fem, 0 * fem, 16 * fem,
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -262,10 +241,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             },
                             child: Container(
                               margin: EdgeInsets.fromLTRB(
-                                10.14 * fem,
-                                0 * fem,
-                                0 * fem,
-                                16 * fem,
+                                10.14 * fem, 0 * fem, 0 * fem, 16 * fem,
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -328,13 +304,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
-                                  margin: EdgeInsets.only(
-                                      left: 0 * fem, top: 5 * fem),
+                                  margin: EdgeInsets.only(left: 0 * fem, top: 5 * fem),
                                   width: 500 * fem,
                                   height: 27 * fem,
                                   child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       Container(
                                         width: 100 * fem,
@@ -349,8 +323,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       ),
                                       Expanded(
                                         child: Container(
-                                          padding: EdgeInsets.only(
-                                              left: 30.63 * fem),
+                                          padding: EdgeInsets.only(left: 30.63 * fem),
                                           child: Align(
                                             alignment: Alignment.topRight,
                                             child: Text(
@@ -368,13 +341,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ),
                                 Container(
-                                  margin: EdgeInsets.only(
-                                      left: 0 * fem, top: 5 * fem),
+                                  margin: EdgeInsets.only(left: 0 * fem, top: 5 * fem),
                                   width: 500 * fem,
                                   height: 27 * fem,
                                   child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       Container(
                                         width: 100 * fem,
@@ -389,8 +360,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       ),
                                       Expanded(
                                         child: Container(
-                                          padding: EdgeInsets.only(
-                                              left: 30.63 * fem),
+                                          padding: EdgeInsets.only(left: 30.63 * fem),
                                           child: Align(
                                             alignment: Alignment.topRight,
                                             child: Text(
@@ -408,13 +378,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ),
                                 Container(
-                                  margin: EdgeInsets.only(
-                                      left: 0 * fem, top: 5 * fem),
+                                  margin: EdgeInsets.only(left: 0 * fem, top: 5 * fem),
                                   width: 500 * fem,
                                   height: 27 * fem,
                                   child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       Container(
                                         width: 100 * fem,
@@ -429,8 +397,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       ),
                                       Expanded(
                                         child: Container(
-                                          padding: EdgeInsets.only(
-                                              left: 30.63 * fem),
+                                          padding: EdgeInsets.only(left: 30.63 * fem),
                                           child: Align(
                                             alignment: Alignment.topRight,
                                             child: Text(
@@ -447,212 +414,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ],
                                   ),
                                 ),
-                                Container(
-                                  margin: EdgeInsets.only(
-                                      left: 0 * fem, top: 5 * fem),
-                                  width: 500 * fem,
-                                  height: 27 * fem,
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        width: 100 * fem,
-                                        child: Text(
-                                          'Birthday',
-                                          style: TextStyle(
-                                            fontSize: 13 * ffem,
-                                            fontWeight: FontWeight.w500,
-                                            color: Color(0x66000000),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Container(
-                                          padding: EdgeInsets.only(
-                                              left: 30.63 * fem),
-                                          child: Align(
-                                            alignment: Alignment.topRight,
-                                            child: Text(
-                                              _birthday,
-                                              style: TextStyle(
-                                                fontSize: 13 * ffem,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color(0x66000000),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  margin: EdgeInsets.only(
-                                      left: 0 * fem, top: 5 * fem),
-                                  width: 500 * fem,
-                                  height: 27 * fem,
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        width: 100 * fem,
-                                        child: Text(
-                                          'Phone Number',
-                                          style: TextStyle(
-                                            fontSize: 13 * ffem,
-                                            fontWeight: FontWeight.w500,
-                                            color: Color(0x66000000),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Container(
-                                          padding: EdgeInsets.only(
-                                              left: 30.63 * fem),
-                                          child: Align(
-                                            alignment: Alignment.topRight,
-                                            child: Text(
-                                              _phoneNumber,
-                                              style: TextStyle(
-                                                fontSize: 13 * ffem,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color(0x66000000),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                 Container(
-                                  margin: EdgeInsets.only(
-                                      left: 0 * fem, top: 5 * fem),
-                                  width: 500 * fem,
-                                  height: 27 * fem,
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        width: 100 * fem,
-                                        child: Text(
-                                          'Street Name',
-                                          style: TextStyle(
-                                            fontSize: 13 * ffem,
-                                            fontWeight: FontWeight.w500,
-                                            color: Color(0x66000000),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Container(
-                                          padding: EdgeInsets.only(
-                                              left: 30.63 * fem),
-                                          child: Align(
-                                            alignment: Alignment.topRight,
-                                            child: Text(
-                                              _streetName,
-                                              style: TextStyle(
-                                                fontSize: 13 * ffem,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color(0x66000000),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  margin: EdgeInsets.only(
-                                      left: 0 * fem, top: 5 * fem),
-                                  width: 500 * fem,
-                                  height: 27 * fem,
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        width: 100 * fem,
-                                        child: Text(
-                                          'Barangay',
-                                          style: TextStyle(
-                                            fontSize: 13 * ffem,
-                                            fontWeight: FontWeight.w500,
-                                            color: Color(0x66000000),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Container(
-                                          padding: EdgeInsets.only(
-                                              left: 30.63 * fem),
-                                          child: Align(
-                                            alignment: Alignment.topRight,
-                                            child: Text(
-                                              _barangayName,
-                                              style: TextStyle(
-                                                fontSize: 13 * ffem,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color(0x66000000),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  margin: EdgeInsets.only(
-                                      left: 0 * fem, top: 5 * fem),
-                                  width: 500 * fem,
-                                  height: 27 * fem,
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        width: 100 * fem,
-                                        child: Text(
-                                          'City',
-                                          style: TextStyle(
-                                            fontSize: 13 * ffem,
-                                            fontWeight: FontWeight.w500,
-                                            color: Color(0x66000000),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Container(
-                                          padding: EdgeInsets.only(
-                                              left: 30.63 * fem),
-                                          child: Align(
-                                            alignment: Alignment.topRight,
-                                            child: Text(
-                                              _cityName,
-                                              style: TextStyle(
-                                                fontSize: 13 * ffem,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color(0x66000000),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
                               ],
                             ),
                           ),
                         ),
-
-
                         Divider(),
                         Container(
                           margin: EdgeInsets.only(left: 0 * fem, top: 10 * fem),
@@ -674,18 +439,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ),
                                 Container(
-                                  margin: EdgeInsets.only(
-                                      left: 0 * fem, top: 20 * fem),
+                                  margin: EdgeInsets.only(left: 0 * fem, top: 20 * fem),
                                   width: 500 * fem,
                                   height: 27 * fem,
                                   child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       Expanded(
                                         child: Container(
-                                          margin: EdgeInsets.fromLTRB(0 * fem,
-                                              0 * fem, 10 * fem, 1 * fem),
+                                          margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 10 * fem, 1 * fem),
                                           child: Text(
                                             'SMS Notification',
                                             style: TextStyle(
@@ -697,17 +459,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         ),
                                       ),
                                       Container(
-                                        padding: EdgeInsets.fromLTRB(
-                                            10.63 * fem,
-                                            6.51 * fem,
-                                            11.37 * fem,
-                                            5.49 * fem),
+                                        padding: EdgeInsets.fromLTRB(10.63 * fem, 6.51 * fem, 11.37 * fem, 5.49 * fem),
                                         width: 50 * fem,
                                         height: 25 * fem,
                                         decoration: BoxDecoration(
                                           color: Color(0xffc7f9cc),
-                                          borderRadius:
-                                              BorderRadius.circular(30 * fem),
+                                          borderRadius: BorderRadius.circular(30 * fem),
                                         ),
                                         child: Align(
                                           alignment: Alignment.centerRight,
@@ -715,8 +472,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             value: isSmsNotificationEnabled,
                                             onChanged: (bool value) {
                                               setState(() {
-                                                isSmsNotificationEnabled =
-                                                    value;
+                                                isSmsNotificationEnabled = value;
                                                 _updateNotificationSettings();
                                               });
                                             },
@@ -727,18 +483,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                 ),
                                 Container(
-                                  margin: EdgeInsets.only(
-                                      left: 0 * fem, top: 5 * fem),
+                                  margin: EdgeInsets.only(left: 0 * fem, top: 5 * fem),
                                   width: 500 * fem,
                                   height: 27 * fem,
                                   child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       Expanded(
                                         child: Container(
-                                          margin: EdgeInsets.fromLTRB(0 * fem,
-                                              0 * fem, 10 * fem, 1 * fem),
+                                          margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 10 * fem, 1 * fem),
                                           child: Text(
                                             'Email Notification',
                                             style: TextStyle(
@@ -750,17 +503,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         ),
                                       ),
                                       Container(
-                                        padding: EdgeInsets.fromLTRB(
-                                            10.63 * fem,
-                                            6.51 * fem,
-                                            11.37 * fem,
-                                            5.49 * fem),
+                                        padding: EdgeInsets.fromLTRB(10.63 * fem, 6.51 * fem, 11.37 * fem, 5.49 * fem),
                                         width: 50 * fem,
                                         height: 25 * fem,
                                         decoration: BoxDecoration(
                                           color: Color(0xffc7f9cc),
-                                          borderRadius:
-                                              BorderRadius.circular(30 * fem),
+                                          borderRadius: BorderRadius.circular(30 * fem),
                                         ),
                                         child: Align(
                                           alignment: Alignment.centerRight,
@@ -768,8 +516,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             value: isEmailNotificationEnabled,
                                             onChanged: (bool value) {
                                               setState(() {
-                                                isEmailNotificationEnabled =
-                                                    value;
+                                                isEmailNotificationEnabled = value;
 
                                                 _updateNotificationSettings();
                                               });
@@ -793,132 +540,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ),
-        bottomNavigationBar: _buildBottomNavigationBar(fem, ffem, context),
-    );
-  }
-
-
-
-Widget _buildBottomNavigationBar(double fem, double ffem, BuildContext context) {
-    return Container(
-      width: 333 * fem,
-      height: 50 * fem,
-      padding: EdgeInsets.fromLTRB(20, 8, 20, 8),
-      margin: EdgeInsets.fromLTRB(44 * fem, 20.14 * fem, 44 * fem, 20.14 * fem),
-      decoration: BoxDecoration(
-        color: Color(0xFFF0F0F3),
-        borderRadius: BorderRadius.circular(50),
-        boxShadow: [
-          BoxShadow(
-            color: Color(0xFFFFFFFF),
-            blurRadius: 20,
-            offset: Offset(5, 5),
-            spreadRadius: 0,
-          ),
-          BoxShadow(
-            color: Color(0xFFFFFFFF),
-            blurRadius: 20,
-            offset: Offset(-5, -5),
-            spreadRadius: 0,
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-                GestureDetector(
-               onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CustomerHomeScreen()), // Navigate to inbox screen
-              );
-            },
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 1.0),
-                child: Image.asset(
-                  'assets/icons/images/iconly-regular-outline-ticket-star.png',
-              width: 18,
-                height: 18,
-                ),
-              ),
-              ),
-     
-          GestureDetector(
-               onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => InboxScreen()), // Navigate to location screen
-              );
-            },
-     
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 1.0),
-              child: Image.asset(
-                'assets/icons/images/iconly-regular-outline-message-8Pb.png',
-                width: 18,
-                height: 18,
-              ),
-            ),
-          ),
-               GestureDetector(
-
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => QRScreen()), // Navigate to QR screen
-              );
-            },
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 1.0),
-              child: Image.asset(
-                'assets/icons/images/iconly-regular-outline-scan-q2q.png',
-                width: 28,
-                height: 28,
-              ),
-            ),
-          ),
-          GestureDetector(
-
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => LocationScreen()), // Navigate to QR screen
-              );
-            },
-    
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 1.0),
-              child: Image.asset(
-                'assets/icons/images/iconly-regular-outline-location.png',
-                width: 18,
-                height: 18,
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-                // Implement the behavior to reset or return to the current screen
-                // For example, you can scroll to the top of the current screen
-                // or refresh the content.
-                // _scrollToTopOrRefresh(); // Call a method to scroll to the top or refresh the content
-              },
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 1.0),
-              child: Image.asset(
-                'assets/icons/images/iconly-regular-light-profile.png',
-                width: 18,
-                height: 18,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
-
-
-
-
-
-

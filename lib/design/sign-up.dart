@@ -292,7 +292,7 @@ class Scene extends StatelessWidget {
                             // confirmpasswordJVf (133:508)
                             margin: EdgeInsets.fromLTRB(0*fem, 0*fem, 190*fem, 0*fem),
                             child: Text(
-                              'Confirm Password',
+                              'Confirm Passwor1d',
                               textAlign: TextAlign.center,
                               style: SafeGoogleFont (
                                 'Inter',

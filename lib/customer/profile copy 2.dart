@@ -8,15 +8,9 @@ import 'package:suellas/customer/qr_screen.dart';
 import 'package:suellas/customer/profile.dart';
 import 'package:suellas/customer/qr_screen.dart';
 import 'package:suellas/customer/security.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:suellas/customer/location.dart';
 import 'package:suellas/customer/inbox.dart';
 import 'package:suellas/customer/home.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:suellas/customer/editprofile.dart';
-
-import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -24,113 +18,26 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String _userEmail = ''; // Default value is an empty string
-  String _firstName = '';
-  String _lastName = '';
-  String _birthday = '';
-  String _phoneNumber = '';
-  String _streetName = '';
-  String _barangayName = '';
-  String _cityName = '';
-
-  bool isSmsNotificationEnabled = false; // Default value is false
-  bool isEmailNotificationEnabled = false; // Default value is false
-  bool isEditingName = false;
-  TextEditingController firstNameController = TextEditingController();
-  TextEditingController lastNameController = TextEditingController();
-
+  bool isSwitched = false; // Initial value of the toggle switch
   @override
-  void initState() {
-    super.initState();
-    _getUserEmail().then((_) {
-      _getUserData().then((data) {
-        setState(() {
-          _firstName = data['first_name'] ?? '';
-          _lastName = data['last_name'] ?? '';
-          _birthday = data['birthday'] ?? '';
-          _phoneNumber = data['mobile_number'] ?? '';
-          _streetName = data['address'] ?? '';
-          _barangayName = data['barangay'] ?? '';
-          _cityName = data['city'] ?? '';
-          isSmsNotificationEnabled = data['isSmsNotificationEnabled'] ?? false;
-          isEmailNotificationEnabled =
-              data['isEmailNotificationEnabled'] ?? false;
-        });
-      });
-    });
-  }
-
-  Future<void> _getUserEmail() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _userEmail = prefs.getString('userEmail') ?? '';
-    });
-  }
-
-  Future<http.Response> _updateNotificationSettings() async {
-    final headers = {
-      'Content-Type': 'application/json',
-      'X-CSRF-Token': 'd7c436fff9e0910158379791ad0aeba8',
-    };
-    final apiUrl = '/admin/auth/notify';
-
-    final response = await http.post(
-      Uri.parse('https://app.suellastheshoelaundry.com' + apiUrl),
-      body: {
-        'email': _userEmail, // Use the stored email
-        'isSmsNotificationEnabled': isSmsNotificationEnabled.toString(),
-        'isEmailNotificationEnabled': isEmailNotificationEnabled.toString(),
-      },
-    );
-    return response;
-  }
-
-  Future<Map<String, dynamic>> _getUserData() async {
-    final headers = {
-      'Content-Type': 'application/json',
-      'X-CSRF-Token': 'd7c436fff9e0910158379791ad0aeba8',
-    };
-    final apiUrl = '/admin/auth/getUserData';
-    final email = _userEmail;
-    final response = await http.post(
-      Uri.parse('https://app.suellastheshoelaundry.com' + apiUrl),
-      body: {
-        'email': email, // r@g.com 1234567
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> userData = json.decode(response.body);
-      userData['isSmsNotificationEnabled'] =
-          userData['isSmsNotificationEnabled'] == 'true';
-      userData['isEmailNotificationEnabled'] =
-          userData['isEmailNotificationEnabled'] == 'true';
-      print("User data retrieved1: $userData"); // Add this debugging statement
-
-      return userData;
-    } else {
-      throw Exception('Failed to load user data');
-    }
-  }
-
-  @override
+  
   Widget build(BuildContext context) {
     double baseWidth = 414;
     double fem = MediaQuery.of(context).size.width / baseWidth;
     double ffem = fem * 0.97;
+    final String qrData = "ABC123";
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Change Password'),
-      ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Container(
           width: double.infinity,
           child: Container(
+            // scanqrcustomer5Ym (4:30439)
             width: double.infinity,
             height: 896 * fem,
             child: Container(
+              // rewardsRcd (4:30440)
               padding: EdgeInsets.fromLTRB(
                   29 * fem, 39.77 * fem, 29 * fem, 27 * fem),
               width: double.infinity,
@@ -147,6 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
+                          // btnbackfGd (202:999)
                           width: 30 * fem,
                           height: 30 * fem,
                           child: Image.asset(
@@ -158,17 +66,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Expanded(
                           child: Center(
                             child: Container(
+                              // scanqrfxD (4:30479)
                               margin: EdgeInsets.fromLTRB(
-                                0 * fem,
-                                4 * fem,
-                                0 * fem,
-                                0 * fem,
-                              ),
+                                  0 * fem, 4 * fem, 0 * fem, 0 * fem),
                               child: Text(
                                 'Account',
-                                style: TextStyle(
+                                style: SafeGoogleFont(
+                                  'Inter',
                                   fontSize: 18 * ffem,
                                   fontWeight: FontWeight.w600,
+                                  height: 1.2125 * ffem / fem,
                                   color: Color(0xff000000),
                                 ),
                               ),
@@ -176,30 +83,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                         Container(
+                          // iconlyboldfilterG1X (202:997)
                           width: 30 * fem,
                           height: 30 * fem,
-                          child: GestureDetector(
-                            onTap: () {
-                              // Navigate to the edit screen when tapped
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      EditProfileScreen(), // Replace EditProfileScreen with your edit screen widget
-                                ),
-                              );
-                            },
-                            child: Image.asset(
-                              'assets/design/images/iconly-curved-outline-edit-square.png',
-                              width: 30 * fem,
-                              height: 30 * fem,
-                            ),
+                          child: Image.asset(
+                            'assets/design/images/iconly-curved-outline-edit-square.png',
+                            width: 30 * fem,
+                            height: 30 * fem,
                           ),
                         ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 10.0),
+         
                   Container(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -209,19 +106,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             onTap: () {
                               // Navigate to the Profile page when "Profile" is clicked
                               Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ProfileScreen(),
-                                ),
-                              );
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ProfileScreen()));
                             },
                             child: Container(
                               margin: EdgeInsets.fromLTRB(
-                                10.14 * fem,
-                                0 * fem,
-                                0 * fem,
-                                16 * fem,
-                              ),
+                                  10.14 * fem, 0 * fem, 0 * fem, 16 * fem),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
@@ -231,9 +122,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       height: 20 * fem,
                                       child: Text(
                                         'Profile',
-                                        style: TextStyle(
+                                        style: SafeGoogleFont(
+                                          'Inter',
                                           fontSize: 14 * ffem,
                                           fontWeight: FontWeight.w600,
+                                          height: 1.4285714286 * ffem / fem,
+                                          letterSpacing: 0.5 * fem,
                                           color: Color(0xff000000),
                                         ),
                                       ),
@@ -254,19 +148,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             onTap: () {
                               // Navigate to the Security page when "Security" is clicked
                               Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ChangePasswordScreen(),
-                                ),
-                              );
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ChangePasswordScreen()));
                             },
                             child: Container(
                               margin: EdgeInsets.fromLTRB(
-                                10.14 * fem,
-                                0 * fem,
-                                0 * fem,
-                                16 * fem,
-                              ),
+                                  10.14 * fem, 0 * fem, 0 * fem, 16 * fem),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
@@ -276,9 +164,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       height: 20 * fem,
                                       child: Text(
                                         'Security',
-                                        style: TextStyle(
+                                        style: SafeGoogleFont(
+                                          'Inter',
                                           fontSize: 14 * ffem,
                                           fontWeight: FontWeight.w600,
+                                          height: 1.4285714286 * ffem / fem,
+                                          letterSpacing: 0.5 * fem,
                                           color: Color(0xff000000),
                                         ),
                                       ),
@@ -311,9 +202,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: Text(
                                 'Personal Details',
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
+                                style: SafeGoogleFont(
+                                  'Inter',
                                   fontSize: 15 * ffem,
                                   fontWeight: FontWeight.w700,
+                                  height: 1.3333333333 * ffem / fem,
                                   color: Color(0xff57cc99),
                                 ),
                               ),
@@ -337,12 +230,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       Container(
-                                        width: 100 * fem,
+                                        width: 100 *
+                                            fem, // Adjust the width as needed
                                         child: Text(
                                           'Email',
-                                          style: TextStyle(
+                                          style: SafeGoogleFont(
+                                            'Inter',
                                             fontSize: 13 * ffem,
                                             fontWeight: FontWeight.w500,
+                                            height: 1.5384615385 * ffem / fem,
                                             color: Color(0x66000000),
                                           ),
                                         ),
@@ -354,10 +250,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           child: Align(
                                             alignment: Alignment.topRight,
                                             child: Text(
-                                              _userEmail,
-                                              style: TextStyle(
+                                              'raymund.nilo@gmail.com',
+                                              style: SafeGoogleFont(
+                                                'Inter',
                                                 fontSize: 13 * ffem,
                                                 fontWeight: FontWeight.w500,
+                                                height:
+                                                    1.5384615385 * ffem / fem,
                                                 color: Color(0x66000000),
                                               ),
                                             ),
@@ -377,12 +276,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       Container(
-                                        width: 100 * fem,
+                                        width: 100 *
+                                            fem, // Adjust the width as needed
                                         child: Text(
                                           'First Name',
-                                          style: TextStyle(
+                                          style: SafeGoogleFont(
+                                            'Inter',
                                             fontSize: 13 * ffem,
                                             fontWeight: FontWeight.w500,
+                                            height: 1.5384615385 * ffem / fem,
                                             color: Color(0x66000000),
                                           ),
                                         ),
@@ -394,10 +296,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           child: Align(
                                             alignment: Alignment.topRight,
                                             child: Text(
-                                              _firstName,
-                                              style: TextStyle(
+                                              'Raymund',
+                                              style: SafeGoogleFont(
+                                                'Inter',
                                                 fontSize: 13 * ffem,
                                                 fontWeight: FontWeight.w500,
+                                                height:
+                                                    1.5384615385 * ffem / fem,
                                                 color: Color(0x66000000),
                                               ),
                                             ),
@@ -417,12 +322,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       Container(
-                                        width: 100 * fem,
+                                        width: 100 *
+                                            fem, // Adjust the width as needed
                                         child: Text(
                                           'Last Name',
-                                          style: TextStyle(
+                                          style: SafeGoogleFont(
+                                            'Inter',
                                             fontSize: 13 * ffem,
                                             fontWeight: FontWeight.w500,
+                                            height: 1.5384615385 * ffem / fem,
                                             color: Color(0x66000000),
                                           ),
                                         ),
@@ -434,10 +342,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           child: Align(
                                             alignment: Alignment.topRight,
                                             child: Text(
-                                              _lastName,
-                                              style: TextStyle(
+                                              'Nilo',
+                                              style: SafeGoogleFont(
+                                                'Inter',
                                                 fontSize: 13 * ffem,
                                                 fontWeight: FontWeight.w500,
+                                                height:
+                                                    1.5384615385 * ffem / fem,
                                                 color: Color(0x66000000),
                                               ),
                                             ),
@@ -457,12 +368,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       Container(
-                                        width: 100 * fem,
+                                        width: 100 *
+                                            fem, // Adjust the width as needed
                                         child: Text(
                                           'Birthday',
-                                          style: TextStyle(
+                                          style: SafeGoogleFont(
+                                            'Inter',
                                             fontSize: 13 * ffem,
                                             fontWeight: FontWeight.w500,
+                                            height: 1.5384615385 * ffem / fem,
                                             color: Color(0x66000000),
                                           ),
                                         ),
@@ -474,10 +388,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           child: Align(
                                             alignment: Alignment.topRight,
                                             child: Text(
-                                              _birthday,
-                                              style: TextStyle(
+                                              'February 7, 1989',
+                                              style: SafeGoogleFont(
+                                                'Inter',
                                                 fontSize: 13 * ffem,
                                                 fontWeight: FontWeight.w500,
+                                                height:
+                                                    1.5384615385 * ffem / fem,
                                                 color: Color(0x66000000),
                                               ),
                                             ),
@@ -497,12 +414,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       Container(
-                                        width: 100 * fem,
+                                        width: 100 *
+                                            fem, // Adjust the width as needed
                                         child: Text(
-                                          'Phone Number',
-                                          style: TextStyle(
+                                          'Phone',
+                                          style: SafeGoogleFont(
+                                            'Inter',
                                             fontSize: 13 * ffem,
                                             fontWeight: FontWeight.w500,
+                                            height: 1.5384615385 * ffem / fem,
                                             color: Color(0x66000000),
                                           ),
                                         ),
@@ -514,10 +434,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           child: Align(
                                             alignment: Alignment.topRight,
                                             child: Text(
-                                              _phoneNumber,
-                                              style: TextStyle(
+                                              '091656424519',
+                                              style: SafeGoogleFont(
+                                                'Inter',
                                                 fontSize: 13 * ffem,
                                                 fontWeight: FontWeight.w500,
+                                                height:
+                                                    1.5384615385 * ffem / fem,
                                                 color: Color(0x66000000),
                                               ),
                                             ),
@@ -527,7 +450,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ],
                                   ),
                                 ),
-                                 Container(
+                                Container(
                                   margin: EdgeInsets.only(
                                       left: 0 * fem, top: 5 * fem),
                                   width: 500 * fem,
@@ -537,12 +460,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       Container(
-                                        width: 100 * fem,
+                                        width: 100 *
+                                            fem, // Adjust the width as needed
                                         child: Text(
                                           'Street Name',
-                                          style: TextStyle(
+                                          style: SafeGoogleFont(
+                                            'Inter',
                                             fontSize: 13 * ffem,
                                             fontWeight: FontWeight.w500,
+                                            height: 1.5384615385 * ffem / fem,
                                             color: Color(0x66000000),
                                           ),
                                         ),
@@ -554,10 +480,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           child: Align(
                                             alignment: Alignment.topRight,
                                             child: Text(
-                                              _streetName,
-                                              style: TextStyle(
+                                              'Rm 310 Laperal Building',
+                                              style: SafeGoogleFont(
+                                                'Inter',
                                                 fontSize: 13 * ffem,
                                                 fontWeight: FontWeight.w500,
+                                                height:
+                                                    1.5384615385 * ffem / fem,
                                                 color: Color(0x66000000),
                                               ),
                                             ),
@@ -577,12 +506,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       Container(
-                                        width: 100 * fem,
+                                        width: 100 *
+                                            fem, // Adjust the width as needed
                                         child: Text(
                                           'Barangay',
-                                          style: TextStyle(
+                                          style: SafeGoogleFont(
+                                            'Inter',
                                             fontSize: 13 * ffem,
                                             fontWeight: FontWeight.w500,
+                                            height: 1.5384615385 * ffem / fem,
                                             color: Color(0x66000000),
                                           ),
                                         ),
@@ -594,10 +526,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           child: Align(
                                             alignment: Alignment.topRight,
                                             child: Text(
-                                              _barangayName,
-                                              style: TextStyle(
+                                              'Session Road',
+                                              style: SafeGoogleFont(
+                                                'Inter',
                                                 fontSize: 13 * ffem,
                                                 fontWeight: FontWeight.w500,
+                                                height:
+                                                    1.5384615385 * ffem / fem,
                                                 color: Color(0x66000000),
                                               ),
                                             ),
@@ -609,7 +544,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                                 Container(
                                   margin: EdgeInsets.only(
-                                      left: 0 * fem, top: 5 * fem),
+                                      left: 0 * fem,
+                                      top: 5 * fem,
+                                      bottom: 10 * fem),
                                   width: 500 * fem,
                                   height: 27 * fem,
                                   child: Row(
@@ -617,12 +554,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       Container(
-                                        width: 100 * fem,
+                                        width: 100 *
+                                            fem, // Adjust the width as needed
                                         child: Text(
-                                          'City',
-                                          style: TextStyle(
+                                          'City/Province',
+                                          style: SafeGoogleFont(
+                                            'Inter',
                                             fontSize: 13 * ffem,
                                             fontWeight: FontWeight.w500,
+                                            height: 1.5384615385 * ffem / fem,
                                             color: Color(0x66000000),
                                           ),
                                         ),
@@ -634,10 +574,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           child: Align(
                                             alignment: Alignment.topRight,
                                             child: Text(
-                                              _cityName,
-                                              style: TextStyle(
+                                              'Baguio City, Benguet',
+                                              style: SafeGoogleFont(
+                                                'Inter',
                                                 fontSize: 13 * ffem,
                                                 fontWeight: FontWeight.w500,
+                                                height:
+                                                    1.5384615385 * ffem / fem,
                                                 color: Color(0x66000000),
                                               ),
                                             ),
@@ -651,9 +594,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                         ),
-
-
-                        Divider(),
+                        Divider(), // Add a Divider widget
                         Container(
                           margin: EdgeInsets.only(left: 0 * fem, top: 10 * fem),
                           child: Align(
@@ -666,9 +607,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   height: 20 * fem,
                                   child: Text(
                                     'Notification',
-                                    style: TextStyle(
+                                    style: SafeGoogleFont(
+                                      'Inter',
                                       fontSize: 15 * ffem,
                                       fontWeight: FontWeight.w700,
+                                      height: 1.3333333333 * ffem / fem,
                                       color: Color(0xff57cc99),
                                     ),
                                   ),
@@ -683,14 +626,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       Expanded(
+                                        // Wrap the Container with the label with an Expanded widget
                                         child: Container(
                                           margin: EdgeInsets.fromLTRB(0 * fem,
                                               0 * fem, 10 * fem, 1 * fem),
                                           child: Text(
                                             'SMS Notification',
-                                            style: TextStyle(
+                                            style: SafeGoogleFont(
+                                              'Inter',
                                               fontSize: 13 * ffem,
                                               fontWeight: FontWeight.w500,
+                                              height: 1.5384615385 * ffem / fem,
                                               color: Color(0x66000000),
                                             ),
                                           ),
@@ -712,12 +658,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         child: Align(
                                           alignment: Alignment.centerRight,
                                           child: Switch(
-                                            value: isSmsNotificationEnabled,
+                                            value: isSwitched,
                                             onChanged: (bool value) {
                                               setState(() {
-                                                isSmsNotificationEnabled =
-                                                    value;
-                                                _updateNotificationSettings();
+                                                isSwitched = value;
                                               });
                                             },
                                           ),
@@ -736,14 +680,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       Expanded(
+                                        // Wrap the Container with the label with an Expanded widget
                                         child: Container(
                                           margin: EdgeInsets.fromLTRB(0 * fem,
                                               0 * fem, 10 * fem, 1 * fem),
                                           child: Text(
-                                            'Email Notification',
-                                            style: TextStyle(
+                                            'SMS Notification',
+                                            style: SafeGoogleFont(
+                                              'Inter',
                                               fontSize: 13 * ffem,
                                               fontWeight: FontWeight.w500,
+                                              height: 1.5384615385 * ffem / fem,
                                               color: Color(0x66000000),
                                             ),
                                           ),
@@ -765,13 +712,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         child: Align(
                                           alignment: Alignment.centerRight,
                                           child: Switch(
-                                            value: isEmailNotificationEnabled,
+                                            value: isSwitched,
                                             onChanged: (bool value) {
                                               setState(() {
-                                                isEmailNotificationEnabled =
-                                                    value;
-
-                                                _updateNotificationSettings();
+                                                isSwitched = value;
                                               });
                                             },
                                           ),
@@ -779,7 +723,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       ),
                                     ],
                                   ),
-                                ),
+                                )
                               ],
                             ),
                           ),
@@ -793,13 +737,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ),
-        bottomNavigationBar: _buildBottomNavigationBar(fem, ffem, context),
+      bottomNavigationBar: _buildBottomNavigationBar(fem, ffem, context),
     );
   }
 
-
-
-Widget _buildBottomNavigationBar(double fem, double ffem, BuildContext context) {
+  Widget _buildBottomNavigationBar(
+      double fem, double ffem, BuildContext context) {
     return Container(
       width: 333 * fem,
       height: 50 * fem,
@@ -826,31 +769,33 @@ Widget _buildBottomNavigationBar(double fem, double ffem, BuildContext context) 
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-                GestureDetector(
-               onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CustomerHomeScreen()), // Navigate to inbox screen
-              );
-            },
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 1.0),
-                child: Image.asset(
-                  'assets/icons/images/iconly-regular-outline-ticket-star.png',
-              width: 18,
-                height: 18,
-                ),
-              ),
-              ),
-     
           GestureDetector(
-               onTap: () {
+            onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => InboxScreen()), // Navigate to location screen
+                MaterialPageRoute(
+                    builder: (context) =>
+                        CustomerHomeScreen()), // Navigate to inbox screen
               );
             },
-     
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 1.0),
+              child: Image.asset(
+                'assets/icons/images/iconly-regular-outline-ticket-star.png',
+                width: 18,
+                height: 18,
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        InboxScreen()), // Navigate to location screen
+              );
+            },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
@@ -860,12 +805,12 @@ Widget _buildBottomNavigationBar(double fem, double ffem, BuildContext context) 
               ),
             ),
           ),
-               GestureDetector(
-
+          GestureDetector(
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => QRScreen()), // Navigate to QR screen
+                MaterialPageRoute(
+                    builder: (context) => QRScreen()), // Navigate to QR screen
               );
             },
             child: Padding(
@@ -878,14 +823,14 @@ Widget _buildBottomNavigationBar(double fem, double ffem, BuildContext context) 
             ),
           ),
           GestureDetector(
-
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LocationScreen()), // Navigate to QR screen
+                MaterialPageRoute(
+                    builder: (context) =>
+                        LocationScreen()), // Navigate to QR screen
               );
             },
-    
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
@@ -897,11 +842,11 @@ Widget _buildBottomNavigationBar(double fem, double ffem, BuildContext context) 
           ),
           GestureDetector(
             onTap: () {
-                // Implement the behavior to reset or return to the current screen
-                // For example, you can scroll to the top of the current screen
-                // or refresh the content.
-                // _scrollToTopOrRefresh(); // Call a method to scroll to the top or refresh the content
-              },
+              // Implement the behavior to reset or return to the current screen
+              // For example, you can scroll to the top of the current screen
+              // or refresh the content.
+              // _scrollToTopOrRefresh(); // Call a method to scroll to the top or refresh the content
+            },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
@@ -916,9 +861,3 @@ Widget _buildBottomNavigationBar(double fem, double ffem, BuildContext context) 
     );
   }
 }
-
-
-
-
-
-

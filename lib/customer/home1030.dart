@@ -8,10 +8,10 @@ import 'package:suellas/customer/qr_screen.dart';
 import 'package:suellas/customer/profile.dart';
 import 'package:suellas/customer/location.dart';
 import 'package:suellas/customer/inbox.dart';
-import 'package:suellas/customer/inboxread.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
 
 class CustomerHomeScreen extends StatefulWidget {
   const CustomerHomeScreen({Key? key}) : super(key: key);
@@ -21,116 +21,40 @@ class CustomerHomeScreen extends StatefulWidget {
 }
 
 class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
-  String? rewardPoints; // Change this to nullable
-  String? _firstName;
-  String? _lastName;
-  String _userEmail = ''; // Default value is an empty string
-  List<Map<String, dynamic>> promotions = []; // List to store promotions
-
-  bool isDrawerOpen = false;
-  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-
-  // Function to toggle the drawer
-  void toggleDrawer() {
-    setState(() {
-      isDrawerOpen = !isDrawerOpen;
-    });
-  }
+String? rewardPoints;// Change this to nullable
 
   @override
   void initState() {
     super.initState();
     // Call the API request method to get reward points and set the state
-      _getUserEmail().then((_) {
-       _getUserData().then((data) {
-
-
-        setState(() {
-          _firstName = data['first_name'] ?? '';
-          _lastName = data['last_name'] ?? '';
-          rewardPoints = data['reward_points'] ?? '';
-       });
-
-     
-
-
-
-      });
-         _getPromotions().then((_) {
-      // Once promotions are fetched, the widget tree will be rebuilt
-    });
-    });  
-  
+    getRewardPoints('7');
   }
 
+  Future<void> getRewardPoints(String userId) async {
+    final apiUrl = 'https://app.suellastheshoelaundry.com/admin/auth/getRewardPoints/7';
 
-  Future<void> _getUserEmail() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _userEmail = prefs.getString('userEmail') ?? '';
-    });
-  }
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
 
-  Future<Map<String, dynamic>> _getUserData() async {
-    final headers = {
-      'Content-Type': 'application/json',
-      'X-CSRF-Token': 'd7c436fff9e0910158379791ad0aeba8',
-    };
-    final apiUrl = '/admin/auth/getUserData';
-    final email = _userEmail;
-    final response = await http.post(
-      Uri.parse('https://app.suellastheshoelaundry.com' + apiUrl),
-      body: {
-        'email': email, // r@g.com 1234567
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> userData = json.decode(response.body);
-      return userData;
-    } else {
-      throw Exception('Failed to load user data');
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+           print(responseData);
+               rewardPoints = responseData['reward_points'];
+        // if (responseData['status'] == 'success') {
+        //   setState(() {
+        //     rewardPoints = responseData['reward_points'];
+        //     print('Reward points for user $userId: $rewardPoints');
+        //   });
+        // } else {
+        //   print('Failed to retrieve reward points: ${responseData['message']}');
+        // }
+      } else {
+        print('Failed to retrieve reward points. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error retrieving reward points: $e');
     }
   }
-
-Future<void> _getPromotions() async {
-  final headers = {
-    'Content-Type': 'application/json',
-    'X-CSRF-Token': 'd7c436fff9e0910158379791ad0aeba8',
-  };
-  final apiUrl = '/admin/auth/getPromotions';
-  final email = _userEmail;
-  final response = await http.post(
-    Uri.parse('https://app.suellastheshoelaundry.com' + apiUrl),
-    body: {
-      'email': email,
-    },
-  );
-
-  if (response.statusCode == 200) {
-    final dynamic responseBody = json.decode(response.body);
-
-    if (responseBody is List) {
-      final List<Map<String, dynamic>> userPromotions = responseBody.cast<Map<String, dynamic>>();
-    
-      // Debugging: Print the fetched promotions to the console
-      print('Fetched Promotions: $userPromotions');
-    
-      // Update the state with the fetched promotions data
-      setState(() {
-        promotions = userPromotions;
-      });
-    } else {
-      throw Exception('Invalid response format');
-    }
-  } else {
-    throw Exception('Failed to load user data');
-  }
-}
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +64,6 @@ Future<void> _getPromotions() async {
     final String qrData = "ABC123";
 
     return Scaffold(
-      key: scaffoldKey,
       // appBar: CustomAppBar(fem: fem, ffem: ffem),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -188,26 +111,16 @@ Future<void> _getPromotions() async {
                               ),
                             ),
                           ),
-                          IconButton(
-                            icon: Image.asset(
+                          Container(
+                            // iconlyboldfilterG1X (202:997)
+                            width: 20 * fem,
+                            height: 17.78 * fem,
+                            child: Image.asset(
                               'assets/design/images/iconly-bold-filter.png',
                               width: 20 * fem,
                               height: 17.78 * fem,
                             ),
-                            onPressed: () {
-                              scaffoldKey.currentState?.openEndDrawer();
-                            },
                           ),
-                          // Container(
-                          //   // iconlyboldfilterG1X (202:997)
-                          //   width: 20 * fem,
-                          //   height: 17.78 * fem,
-                          //   child: Image.asset(
-                          //     'assets/design/images/iconly-bold-filter.png',
-                          //     width: 20 * fem,
-                          //     height: 17.78 * fem,
-                          //   ),
-                          // ),
                         ],
                       ),
                     ),
@@ -229,8 +142,8 @@ Future<void> _getPromotions() async {
                         ),
                       ),
                     ),
-                    RewardsPointsWidget(
-                        fem: fem, ffem: ffem, rewardPoints: rewardPoints),
+              RewardsPointsWidget(fem: fem, ffem: ffem, rewardPoints:rewardPoints),
+
                   ],
                 ),
               ),
@@ -263,7 +176,7 @@ Future<void> _getPromotions() async {
                         ),
                       ),
                     ),
-                   Group48095458(fem: fem, ffem: ffem, promotions: promotions),
+                    Group48095458(fem: fem, ffem: ffem),
                   ],
                 ),
               ),
@@ -271,69 +184,6 @@ Future<void> _getPromotions() async {
           ),
         ),
       ),
-      endDrawer: FractionallySizedBox(
-        widthFactor: 0.6, // Set the width to 60% of the screen's width
-        child: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              // Your right-side drawer items
-              ListTile(
-                leading: Icon(Icons.settings), // Customize with your icon
-               title: Text('$_firstName $_lastName'),
-                onTap: () {
-                  // Handle settings action
-                },
-              ),
-
-              ListTile(
-                title: Text('Member Profile'), // Customize with your text
-                onTap: () {
-                  // Handle settings action
-                },
-              ),
-              ListTile(
-                title: Text('Account Security'), // Customize with your text
-                onTap: () {
-                  // Handle settings action
-                },
-              ),
-              ListTile(
-                title: Text('Services'), // Customize with your text
-                onTap: () {
-                  // Handle settings action
-                },
-              ),
-              ListTile(
-                title: Text('Terms & Conditions'), // Customize with your text
-                onTap: () {
-                  // Handle settings action
-                },
-              ),
-              ListTile(
-                title: Text('Privacy Policy'), // Customize with your text
-                onTap: () {
-                  // Handle settings action
-                },
-              ),
-              ListTile(
-                title: Text('Contact Us'), // Customize with your text
-                onTap: () {
-                  // Handle settings action
-                },
-              ),
-              ListTile(
-                title: Text('Log Out'), // Customize with your text
-                onTap: () {
-                  // Handle settings action
-                },
-              ),
-              // Add more right-side drawer items as needed
-            ],
-          ),
-        ),
-      ),
-
       bottomNavigationBar: _buildBottomNavigationBar(fem, ffem, context),
     );
   }
@@ -554,15 +404,11 @@ class RewardsPointsWidget extends StatelessWidget {
   const RewardsPointsWidget({
     required this.fem,
     required this.ffem,
-    required this.rewardPoints,
+    required this.rewardPoints, 
   });
 
   @override
   Widget build(BuildContext context) {
-    if (rewardPoints == null) {
-      // Display a loading indicator or placeholder when rewardPoints is not available yet.
-      return CircularProgressIndicator(); // You can use any other widget as a placeholder.
-    } else {
     return Container(
       margin: EdgeInsets.fromLTRB(53 * fem, 0 * fem, 34.86 * fem, 0 * fem),
       width: double.infinity,
@@ -701,31 +547,30 @@ class RewardsPointsWidget extends StatelessWidget {
             // group48095456bWy (4:16635)
             left: 26.5 * fem,
             top: 51.7749023438 * fem,
-            child: Container(
-              width: 150 * fem,
-              height: 21 * fem,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    margin:
-                        EdgeInsets.fromLTRB(0 * fem, 0 * fem, 0 * fem, 1 * fem),
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text(
-                        '$rewardPoints',
-                        textAlign: TextAlign.center,
-                        style: SafeGoogleFont(
-                          'Inter',
-                          fontSize: 11 * ffem,
-                          fontWeight: FontWeight.w700,
-                          height: 0.7692307692 * ffem / fem,
-                          letterSpacing: 1 * fem,
-                          color: Color(0xff000000),
-                        ),
-                      ),
-                    ),
-                  ),
+              child: Container(
+                width: 150 * fem,
+                height: 21 * fem,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+        margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 0 * fem, 1 * fem),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            '$rewardPoints',
+            textAlign: TextAlign.center,
+            style: SafeGoogleFont(
+              'Inter',
+              fontSize: 11 * ffem,
+              fontWeight: FontWeight.w700,
+              height: 0.7692307692 * ffem / fem,
+              letterSpacing: 1 * fem,
+              color: Color(0xff000000),
+            ),
+          ),
+        ),
+      ),
                   Container(
                     // Bzy (202:990)
                     margin:
@@ -766,34 +611,31 @@ class RewardsPointsWidget extends StatelessWidget {
         ],
       ),
     );
-    }
   }
 }
-
 
 class Group48095458 extends StatelessWidget {
   final double fem;
   final double ffem;
-  final List<Map<String, dynamic>> promotions; // Add the promotions parameter
 
   const Group48095458({
     required this.fem,
     required this.ffem,
-    required this.promotions,
   });
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: promotions.map((promotion) {
-        return Container(
+      children: [
+        Container(
           width: 320 * fem,
           height: 82 * fem,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                margin: EdgeInsets.fromLTRB(5 * fem, 5.67 * fem, 10.99 * fem, 0 * fem),
+                margin: EdgeInsets.fromLTRB(
+                    5 * fem, 5.67 * fem, 10.99 * fem, 0 * fem),
                 width: 42.01 * fem,
                 height: 50.34 * fem,
                 child: Image.asset(
@@ -810,7 +652,7 @@ class Group48095458 extends StatelessWidget {
                   SizedBox(
                     width: 261 * fem,
                     child: Text(
-                      promotion['title'] ?? '', // Use the title from the promotion
+                      '10% Off on your 2nd Pair of Deep Clean',
                       style: TextStyle(
                         color: Colors.black.withOpacity(0.99),
                         fontSize: 14 * ffem,
@@ -823,7 +665,7 @@ class Group48095458 extends StatelessWidget {
                   SizedBox(
                     width: 261 * fem,
                     child: Text(
-                      promotion['description'] ?? '', // Use the description from the promotion
+                      'Plus collect double stars on deep clean service',
                       style: TextStyle(
                         color: Colors.black.withOpacity(0.5699999928474426),
                         fontSize: 12 * ffem,
@@ -835,7 +677,7 @@ class Group48095458 extends StatelessWidget {
                   ),
                   SizedBox(height: 4 * fem), // Adjust the spacing
                   Text(
-                    'Valid: ${promotion['startDate']} - ${promotion['endDate']}', // Use the promotion dates
+                    'Valid: September 1 - 15, 2023',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 10 * ffem,
@@ -848,8 +690,9 @@ class Group48095458 extends StatelessWidget {
               ),
             ],
           ),
-        );
-      }).toList(),
+        ),
+        SizedBox(height: 16 * fem), // Adjust the spacing
+      ],
     );
   }
 }

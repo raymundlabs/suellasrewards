@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:suellas/branch/branch_qr_scanner.dart'; // Import the barcode scanner screen
+import 'package:suellas/branch/scan.dart'; // Import the barcode scanner screen
 
 class QRScreen extends StatelessWidget {
   final String qrData = "ABC123";

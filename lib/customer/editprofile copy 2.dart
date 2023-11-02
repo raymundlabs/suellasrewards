@@ -14,16 +14,15 @@ import 'package:suellas/customer/inbox.dart';
 import 'package:suellas/customer/home.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:suellas/customer/editprofile.dart';
 
 import 'package:flutter/material.dart';
 
-class ProfileScreen extends StatefulWidget {
+class EditProfileScreen extends StatefulWidget {
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  _EditProfileScreenState createState() => _EditProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _EditProfileScreenState extends State<EditProfileScreen> {
   String _userEmail = ''; // Default value is an empty string
   String _firstName = '';
   String _lastName = '';
@@ -38,20 +37,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool isEditingName = false;
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
-
+  TextEditingController birthdayController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  TextEditingController streetController = TextEditingController();
+  TextEditingController barangayController = TextEditingController();
+  TextEditingController cityController = TextEditingController();
+ final _formKey = GlobalKey<FormState>();
   @override
   void initState() {
     super.initState();
+
     _getUserEmail().then((_) {
       _getUserData().then((data) {
         setState(() {
           _firstName = data['first_name'] ?? '';
           _lastName = data['last_name'] ?? '';
-          _birthday = data['birthday'] ?? '';
           _phoneNumber = data['mobile_number'] ?? '';
           _streetName = data['address'] ?? '';
           _barangayName = data['barangay'] ?? '';
           _cityName = data['city'] ?? '';
+          _birthday = data['birthday'] ?? '';
+
           isSmsNotificationEnabled = data['isSmsNotificationEnabled'] ?? false;
           isEmailNotificationEnabled =
               data['isEmailNotificationEnabled'] ?? false;
@@ -85,6 +91,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return response;
   }
 
+  Future<void> _updateUserData() async {
+    final headers = {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': 'd7c436fff9e0910158379791ad0aeba8',
+    };
+    final apiUrl = '/admin/auth/updateuserv2';
+
+    final response = await http.post(
+      Uri.parse('https://app.suellastheshoelaundry.com' + apiUrl),
+      body: {
+        'email': _userEmail,
+        'first_name': _firstName,
+        'last_name': _lastName,
+        'birthday': _birthday,
+        'mobile_number': _phoneNumber,
+        'address': _streetName,
+        'barangay': _barangayName,
+        'city': _cityName,
+        // Include other updated fields as needed
+      },
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      // Server successfully processed the update, you can update local data if needed
+    } else {
+      // Handle errors if the update request fails
+      print('Failed to update user data');
+    }
+  }
+
   Future<Map<String, dynamic>> _getUserData() async {
     final headers = {
       'Content-Type': 'application/json',
@@ -112,6 +149,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       throw Exception('Failed to load user data');
     }
   }
+    void _submitForm() {
+    if (_formKey.currentState.validate()) {
+      _updateUserData().then((_) {
+        // Handle successful data update (e.g., show a success message or navigate back)
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -327,6 +372,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                
                                 Container(
                                   margin: EdgeInsets.only(
                                       left: 0 * fem, top: 5 * fem),
@@ -367,6 +413,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ],
                                   ),
                                 ),
+
+                                
                                 Container(
                                   margin: EdgeInsets.only(
                                       left: 0 * fem, top: 5 * fem),
@@ -393,13 +441,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               left: 30.63 * fem),
                                           child: Align(
                                             alignment: Alignment.topRight,
-                                            child: Text(
-                                              _firstName,
-                                              style: TextStyle(
-                                                fontSize: 13 * ffem,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color(0x66000000),
+                                            child: TextFormField(
+                                              controller: firstNameController,
+                                              decoration: InputDecoration(
+                                                hintText:
+                                                    _firstName, // Set the initial value as hintText
                                               ),
+                                              focusNode: FocusNode(),
+                                              onTap: () {
+                                                // Replace hintText with an empty string when the field is focused
+                                                setState(() {
+                                                  firstNameController.text =
+                                                      _firstName;
+                                                });
+                                              },
+                                              onFieldSubmitted: (value) {
+                                                // Update _firstName when the field is submitted
+                                                setState(() {
+                                                  _firstName = value;
+                                                });
+                                              },
                                             ),
                                           ),
                                         ),
@@ -433,13 +494,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               left: 30.63 * fem),
                                           child: Align(
                                             alignment: Alignment.topRight,
-                                            child: Text(
-                                              _lastName,
-                                              style: TextStyle(
-                                                fontSize: 13 * ffem,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color(0x66000000),
+                                            child: TextFormField(
+                                              controller: lastNameController,
+                                              decoration: InputDecoration(
+                                                hintText:
+                                                    _lastName, // Set the initial value as hintText
                                               ),
+                                              focusNode: FocusNode(),
+                                              onTap: () {
+                                                // Replace hintText with an empty string when the field is focused
+                                                setState(() {
+                                                  lastNameController.text =
+                                                      _lastName;
+                                                });
+                                              },
+                                              onFieldSubmitted: (value) {
+                                                // Update _firstName when the field is submitted
+                                                setState(() {
+                                                  _lastName = value;
+                                                });
+                                              },
                                             ),
                                           ),
                                         ),
@@ -473,13 +547,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               left: 30.63 * fem),
                                           child: Align(
                                             alignment: Alignment.topRight,
-                                            child: Text(
-                                              _birthday,
-                                              style: TextStyle(
-                                                fontSize: 13 * ffem,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color(0x66000000),
+                                            child: TextFormField(
+                                              controller: birthdayController,
+                                              decoration: InputDecoration(
+                                                hintText:
+                                                    _birthday, // Set the initial value as hintText
                                               ),
+                                              focusNode: FocusNode(),
+                                              onTap: () {
+                                                // Replace hintText with an empty string when the field is focused
+                                                setState(() {
+                                                  birthdayController.text =
+                                                      _birthday;
+                                                });
+                                              },
+                                              onFieldSubmitted: (value) {
+                                                // Update _firstName when the field is submitted
+                                                setState(() {
+                                                  _birthday = value;
+                                                });
+                                              },
                                             ),
                                           ),
                                         ),
@@ -513,13 +600,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               left: 30.63 * fem),
                                           child: Align(
                                             alignment: Alignment.topRight,
-                                            child: Text(
-                                              _phoneNumber,
-                                              style: TextStyle(
-                                                fontSize: 13 * ffem,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color(0x66000000),
+                                            child: TextFormField(
+                                              controller: phoneController,
+                                              decoration: InputDecoration(
+                                                hintText:
+                                                    _phoneNumber, // Set the initial value as hintText
                                               ),
+                                              focusNode: FocusNode(),
+                                              onTap: () {
+                                                // Replace hintText with an empty string when the field is focused
+                                                setState(() {
+                                                  phoneController.text =
+                                                      _phoneNumber;
+                                                });
+                                              },
+                                              onFieldSubmitted: (value) {
+                                                // Update _firstName when the field is submitted
+                                                setState(() {
+                                                  _phoneNumber = value;
+                                                });
+                                              },
                                             ),
                                           ),
                                         ),
@@ -527,7 +627,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ],
                                   ),
                                 ),
-                                 Container(
+                                Container(
                                   margin: EdgeInsets.only(
                                       left: 0 * fem, top: 5 * fem),
                                   width: 500 * fem,
@@ -553,13 +653,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               left: 30.63 * fem),
                                           child: Align(
                                             alignment: Alignment.topRight,
-                                            child: Text(
-                                              _streetName,
-                                              style: TextStyle(
-                                                fontSize: 13 * ffem,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color(0x66000000),
+                                            child: TextFormField(
+                                              controller: streetController,
+                                              decoration: InputDecoration(
+                                                hintText:
+                                                    _streetName, // Set the initial value as hintText
                                               ),
+                                              focusNode: FocusNode(),
+                                              onTap: () {
+                                                // Replace hintText with an empty string when the field is focused
+                                                setState(() {
+                                                  streetController.text =
+                                                      _streetName;
+                                                });
+                                              },
+                                              onFieldSubmitted: (value) {
+                                                // Update _firstName when the field is submitted
+                                                setState(() {
+                                                  _streetName = value;
+                                                });
+                                              },
                                             ),
                                           ),
                                         ),
@@ -579,7 +692,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       Container(
                                         width: 100 * fem,
                                         child: Text(
-                                          'Barangay',
+                                          'Barangay Name',
                                           style: TextStyle(
                                             fontSize: 13 * ffem,
                                             fontWeight: FontWeight.w500,
@@ -593,13 +706,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               left: 30.63 * fem),
                                           child: Align(
                                             alignment: Alignment.topRight,
-                                            child: Text(
-                                              _barangayName,
-                                              style: TextStyle(
-                                                fontSize: 13 * ffem,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color(0x66000000),
+                                            child: TextFormField(
+                                              controller: barangayController,
+                                              decoration: InputDecoration(
+                                                hintText:
+                                                    _barangayName, // Set the initial value as hintText
                                               ),
+                                              focusNode: FocusNode(),
+                                              onTap: () {
+                                                // Replace hintText with an empty string when the field is focused
+                                                setState(() {
+                                                  barangayController.text =
+                                                      _barangayName;
+                                                });
+                                              },
+                                              onFieldSubmitted: (value) {
+                                                // Update _firstName when the field is submitted
+                                                setState(() {
+                                                  _barangayName = value;
+                                                });
+                                              },
                                             ),
                                           ),
                                         ),
@@ -619,7 +745,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       Container(
                                         width: 100 * fem,
                                         child: Text(
-                                          'City',
+                                          'City Name',
                                           style: TextStyle(
                                             fontSize: 13 * ffem,
                                             fontWeight: FontWeight.w500,
@@ -633,13 +759,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               left: 30.63 * fem),
                                           child: Align(
                                             alignment: Alignment.topRight,
-                                            child: Text(
-                                              _cityName,
-                                              style: TextStyle(
-                                                fontSize: 13 * ffem,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color(0x66000000),
+                                            child: TextFormField(
+                                              controller: cityController,
+                                              decoration: InputDecoration(
+                                                hintText:
+                                                    _cityName, // Set the initial value as hintText
                                               ),
+                                              focusNode: FocusNode(),
+                                              onTap: () {
+                                                // Replace hintText with an empty string when the field is focused
+                                                setState(() {
+                                                  cityController.text =
+                                                      _cityName;
+                                                });
+                                              },
+                                              onFieldSubmitted: (value) {
+                                                // Update _firstName when the field is submitted
+                                                setState(() {
+                                                  _cityName = value;
+                                                });
+                                              },
                                             ),
                                           ),
                                         ),
@@ -647,138 +786,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ],
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        ),
-
-
-                        Divider(),
-                        Container(
-                          margin: EdgeInsets.only(left: 0 * fem, top: 10 * fem),
-                          child: Align(
-                            alignment: Alignment.topLeft,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  width: 86 * fem,
-                                  height: 20 * fem,
-                                  child: Text(
-                                    'Notification',
-                                    style: TextStyle(
-                                      fontSize: 15 * ffem,
-                                      fontWeight: FontWeight.w700,
-                                      color: Color(0xff57cc99),
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  margin: EdgeInsets.only(
-                                      left: 0 * fem, top: 20 * fem),
-                                  width: 500 * fem,
-                                  height: 27 * fem,
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: Container(
-                                          margin: EdgeInsets.fromLTRB(0 * fem,
-                                              0 * fem, 10 * fem, 1 * fem),
-                                          child: Text(
-                                            'SMS Notification',
-                                            style: TextStyle(
-                                              fontSize: 13 * ffem,
-                                              fontWeight: FontWeight.w500,
-                                              color: Color(0x66000000),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        padding: EdgeInsets.fromLTRB(
-                                            10.63 * fem,
-                                            6.51 * fem,
-                                            11.37 * fem,
-                                            5.49 * fem),
-                                        width: 50 * fem,
-                                        height: 25 * fem,
-                                        decoration: BoxDecoration(
-                                          color: Color(0xffc7f9cc),
-                                          borderRadius:
-                                              BorderRadius.circular(30 * fem),
-                                        ),
-                                        child: Align(
-                                          alignment: Alignment.centerRight,
-                                          child: Switch(
-                                            value: isSmsNotificationEnabled,
-                                            onChanged: (bool value) {
-                                              setState(() {
-                                                isSmsNotificationEnabled =
-                                                    value;
-                                                _updateNotificationSettings();
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  margin: EdgeInsets.only(
-                                      left: 0 * fem, top: 5 * fem),
-                                  width: 500 * fem,
-                                  height: 27 * fem,
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: Container(
-                                          margin: EdgeInsets.fromLTRB(0 * fem,
-                                              0 * fem, 10 * fem, 1 * fem),
-                                          child: Text(
-                                            'Email Notification',
-                                            style: TextStyle(
-                                              fontSize: 13 * ffem,
-                                              fontWeight: FontWeight.w500,
-                                              color: Color(0x66000000),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        padding: EdgeInsets.fromLTRB(
-                                            10.63 * fem,
-                                            6.51 * fem,
-                                            11.37 * fem,
-                                            5.49 * fem),
-                                        width: 50 * fem,
-                                        height: 25 * fem,
-                                        decoration: BoxDecoration(
-                                          color: Color(0xffc7f9cc),
-                                          borderRadius:
-                                              BorderRadius.circular(30 * fem),
-                                        ),
-                                        child: Align(
-                                          alignment: Alignment.centerRight,
-                                          child: Switch(
-                                            value: isEmailNotificationEnabled,
-                                            onChanged: (bool value) {
-                                              setState(() {
-                                                isEmailNotificationEnabled =
-                                                    value;
-
-                                                _updateNotificationSettings();
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                ElevatedButton(
+                                  onPressed: _submitForm,
+                                  child: Text('Save Changes'),
                                 ),
                               ],
                             ),
@@ -793,132 +803,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ),
-        bottomNavigationBar: _buildBottomNavigationBar(fem, ffem, context),
-    );
-  }
-
-
-
-Widget _buildBottomNavigationBar(double fem, double ffem, BuildContext context) {
-    return Container(
-      width: 333 * fem,
-      height: 50 * fem,
-      padding: EdgeInsets.fromLTRB(20, 8, 20, 8),
-      margin: EdgeInsets.fromLTRB(44 * fem, 20.14 * fem, 44 * fem, 20.14 * fem),
-      decoration: BoxDecoration(
-        color: Color(0xFFF0F0F3),
-        borderRadius: BorderRadius.circular(50),
-        boxShadow: [
-          BoxShadow(
-            color: Color(0xFFFFFFFF),
-            blurRadius: 20,
-            offset: Offset(5, 5),
-            spreadRadius: 0,
-          ),
-          BoxShadow(
-            color: Color(0xFFFFFFFF),
-            blurRadius: 20,
-            offset: Offset(-5, -5),
-            spreadRadius: 0,
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-                GestureDetector(
-               onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CustomerHomeScreen()), // Navigate to inbox screen
-              );
-            },
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 1.0),
-                child: Image.asset(
-                  'assets/icons/images/iconly-regular-outline-ticket-star.png',
-              width: 18,
-                height: 18,
-                ),
-              ),
-              ),
-     
-          GestureDetector(
-               onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => InboxScreen()), // Navigate to location screen
-              );
-            },
-     
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 1.0),
-              child: Image.asset(
-                'assets/icons/images/iconly-regular-outline-message-8Pb.png',
-                width: 18,
-                height: 18,
-              ),
-            ),
-          ),
-               GestureDetector(
-
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => QRScreen()), // Navigate to QR screen
-              );
-            },
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 1.0),
-              child: Image.asset(
-                'assets/icons/images/iconly-regular-outline-scan-q2q.png',
-                width: 28,
-                height: 28,
-              ),
-            ),
-          ),
-          GestureDetector(
-
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => LocationScreen()), // Navigate to QR screen
-              );
-            },
-    
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 1.0),
-              child: Image.asset(
-                'assets/icons/images/iconly-regular-outline-location.png',
-                width: 18,
-                height: 18,
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-                // Implement the behavior to reset or return to the current screen
-                // For example, you can scroll to the top of the current screen
-                // or refresh the content.
-                // _scrollToTopOrRefresh(); // Call a method to scroll to the top or refresh the content
-              },
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 1.0),
-              child: Image.asset(
-                'assets/icons/images/iconly-regular-light-profile.png',
-                width: 18,
-                height: 18,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
-
-
-
-
-
-

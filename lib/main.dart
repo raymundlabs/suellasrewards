@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
+// import 'package:suellas/customer/main_screen.dart';
+// import 'dart:convert';
 
 import 'package:suellas/screens/auth.dart'; // Import the AuthScreen
-import 'package:suellas/customer/home.dart'; // Import the customer home screen
+// import 'package:suellas/customer/home.dart'; // Import the customer home screen
+import 'package:suellas/design/start.dart';
+
 
 void main() {
   runApp(const MaterialApp(
-      home: CustomerHomeScreen(),
+    home: MyApp(),
   ));
 }
 
@@ -17,7 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: CustomerHomeScreen(),
+      home: StartScreen(),
     );
   }
 }

@@ -10,8 +10,6 @@ import 'package:suellas/customer/location.dart';
 import 'package:suellas/customer/inbox.dart';
 import 'package:suellas/customer/home.dart';
 
-
-
 class QRScreen extends StatelessWidget {
   @override
 Widget build(BuildContext context) {
@@ -117,7 +115,6 @@ Widget build(BuildContext context) {
                       ),
                     ),
                   ),
-                  
                   Container(
                     // scanthisqrcodewhenyouavailofan (4:30530)
                     margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 5.86 * fem, 33 * fem),

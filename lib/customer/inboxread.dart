@@ -9,24 +9,23 @@ import 'package:suellas/customer/profile.dart';
 import 'package:suellas/customer/qr_screen.dart';
 import 'package:suellas/customer/profile.dart';
 import 'package:suellas/customer/location.dart';
-import 'package:suellas/customer/inboxread.dart';
+import 'package:suellas/customer/inbox.dart';
 import 'package:suellas/customer/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class InboxScreen extends StatefulWidget {
-  const InboxScreen({Key? key}) : super(key: key);
+class InboxReadScreen extends StatefulWidget {
+  const InboxReadScreen({Key? key}) : super(key: key);
 
   @override
-  _InboxScreenState createState() => _InboxScreenState();
+  _InboxReadScreenState createState() => _InboxReadScreenState();
 }
 
-class _InboxScreenState extends State<InboxScreen> {
+class _InboxReadScreenState extends State<InboxReadScreen> {
   String _userEmail = ''; // Default value is an empty string
   List<Map<String, dynamic>> messages = []; // List to store promotions
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  bool isCurrentPage = true; // Set this value based on your logic
 
   @override
   void initState() {
@@ -68,7 +67,7 @@ class _InboxScreenState extends State<InboxScreen> {
     final email = _userEmail;
     final response = await http.post(
       Uri.parse('https://app.suellastheshoelaundry.com' + apiUrl),
-      body: {'email': email, 'isRead': 'No'},
+      body: {'email': email, 'isRead': 'Yes'},
     );
 
     if (response.statusCode == 200) {
@@ -169,99 +168,94 @@ class _InboxScreenState extends State<InboxScreen> {
                     ),
                   ),
                   const SizedBox(height: 10.0),
-                  Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => InboxScreen()),
-                              );
-                            },
-                            child: Container(
-                              margin: EdgeInsets.fromLTRB(
-                                  10.14 * fem, 0 * fem, 0 * fem, 16 * fem),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Align(
-                                    child: SizedBox(
-                                      width: 40 * fem,
-                                      height: 20 * fem,
-                                      child: Text(
-                                        'New', // Change "New" to "Inbox"
-                                        style: SafeGoogleFont(
-                                          'Inter',
-                                          fontSize: 14 * ffem,
-                                          fontWeight: FontWeight.w600,
-                                          height: 1.4285714286 * ffem / fem,
-                                          letterSpacing: 0.5 * fem,
-                                          color: Color(0xff000000),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                  width: double.infinity,
-                                  height: 1,
-                                        color: Color(0xff000000),
-                     
-                                ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => InboxReadScreen()),
-                              );
-                            },
-                            child: Container(
-                              margin: EdgeInsets.fromLTRB(
-                                  10.14 * fem, 0 * fem, 0 * fem, 16 * fem),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Align(
-                                    child: SizedBox(
-                                      width: 40 * fem,
-                                      height: 20 * fem,
-                                      child: Text(
-                                        'Read',
-                                        style: SafeGoogleFont(
-                                          'Inter',
-                                          fontSize: 14 * ffem,
-                                          fontWeight: FontWeight.w600,
-                                          height: 1.4285714286 * ffem / fem,
-                                          letterSpacing: 0.5 * fem,
-                                          color: Color(0xff000000),
-                                          
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    width: double.infinity,
-                                    height: 1,
-                                              color:Color.fromRGBO(17, 0, 0, 0.20) ,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+            Container(
+  child: Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      Expanded(
+        child: GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => InboxScreen()),
+            );
+          },
+          child: Container(
+            margin: EdgeInsets.fromLTRB(10.14 * fem, 0 * fem, 0 * fem, 16 * fem),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Align(
+                  child: SizedBox(
+                    width: 40 * fem,
+                    height: 20 * fem,
+                    child: Text(
+                      'New', // Change "New" to "Inbox"
+                      style: SafeGoogleFont(
+                        'Inter',
+                        fontSize: 14 * ffem,
+                        fontWeight: FontWeight.w600,
+                        height: 1.4285714286 * ffem / fem,
+                        letterSpacing: 0.5 * fem,
+                        color: Color(0xff000000),
+                      ),
                     ),
                   ),
+                ),
+                Container(
+                  width: double.infinity,
+                  height: 1,
+                color:Color.fromRGBO(17, 0, 0, 0.20) ,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      Expanded(
+        child: GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => InboxReadScreen()),
+            );
+          },
+          child: Container(
+            margin: EdgeInsets.fromLTRB(10.14 * fem, 0 * fem, 0 * fem, 16 * fem),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Align(
+                  child: SizedBox(
+                    width: 40 * fem,
+                    height: 20 * fem,
+                    child: Text(
+                      'Read',
+                      style: SafeGoogleFont(
+                        'Inter',
+                        fontSize: 14 * ffem,
+                        fontWeight: FontWeight.w600,
+                        height: 1.4285714286 * ffem / fem,
+                        letterSpacing: 0.5 * fem,
+                        color: Color(0xff000000),
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  width: double.infinity,
+                  height: 1,
+                  color: Color(0xff000000),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+),
+
                   Messages(
                     fem: fem,
                     ffem: ffem,
@@ -489,6 +483,7 @@ class _MessagesState extends State<Messages> {
     widget.updateMessageList();
   }
 
+
   Future<void> deleteMessage(int index) async {
     if (index >= 0 && index < widget.messages.length) {
       final message = widget.messages[index];
@@ -511,13 +506,14 @@ class _MessagesState extends State<Messages> {
         if (response.statusCode == 200) {
           // Message status updated successfully
           // You can handle the response as needed
-          widget.updateMessageList();
+           widget.updateMessageList();
         } else {
           // Handle API request error
         }
       }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

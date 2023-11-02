@@ -4,9 +4,10 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/gestures.dart';
 import 'package:suellas/customer/home_old.dart';
-
+import 'package:suellas/branch/scan.dart';
 // import 'package:suellas/customer/customer_home.dart'; // Import the customer home screen
-import 'package:suellas/branch/branch_home_screen.dart'; // Import the branch home screen
+// import 'package:suellas/branch/branch_home_screen.dart'; // Import the branch home screen
+import 'package:suellas/utils.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({Key? key}) : super(key: key);
@@ -61,7 +62,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
     _form.currentState!.save();
 
-  try {
+    try {
       setState(() {
         _isAuthenticating = true;
       });
@@ -75,7 +76,7 @@ class _AuthScreenState extends State<AuthScreen> {
         await prefs.setString('userEmail', _enteredEmail);
 
         await prefs.setString('userDetails', responseBody);
-        
+
         print(responseBody);
 
         if (responseBody.contains('Registration successful')) {
@@ -88,11 +89,12 @@ class _AuthScreenState extends State<AuthScreen> {
           );
 
           // Delay navigation to the sign-in page
-       Future.delayed(Duration(seconds: 3), () {
+          Future.delayed(Duration(seconds: 3), () {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => AuthScreen(), // Replace with your sign-in page
+                builder: (context) =>
+                    AuthScreen(), // Replace with your sign-in page
               ),
             );
           });
@@ -101,7 +103,7 @@ class _AuthScreenState extends State<AuthScreen> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => BranchHomeScreen(),
+                builder: (context) => ScanScreen(),
                 settings: RouteSettings(
                   arguments: responseBody,
                 ),
@@ -133,7 +135,6 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
-
   Future<http.Response> _sendAuthRequest() async {
     final headers = {
       'Content-Type': 'application/json',
@@ -160,6 +161,10 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double baseWidth = 414;
+    double fem = MediaQuery.of(context).size.width / baseWidth;
+    double ffem = fem * 0.97;
+    final String qrData = "ABC123";
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -183,244 +188,314 @@ class _AuthScreenState extends State<AuthScreen> {
         toolbarHeight: 100,
       ),
       body: Container(
-        color: Colors.grey[200],
-        child: Center(
-          child: SingleChildScrollView(
-            child: Card(
-              margin: const EdgeInsets.all(20),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Form(
-                  key: _form,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(top: 20),
-                        width: 150,
-                        height: 150,
-                        child: Image(
-                          image: AssetImage('assets/images/logo.png'),
-                        ),
-                      ),
-                      Divider(
-                        color: Colors.black,
-                        thickness: 1,
-                        height: 16,
-                      ),
-                      if (!_isLogin)
-                        Column(
-                          children: [
-                            TextFormField(
-                              decoration: InputDecoration(labelText: 'First Name'),
-                              validator: (value) {
-                                if (value == null || value.isEmpty || value.trim().length < 2) {
-                                  return 'Please enter at least 2 characters.';
-                                }
-                                return null;
-                              },
-                              onSaved: (value) {
-                                _enteredFirstName = value!;
-                              },
-                            ),
-                            TextFormField(
-                              decoration: InputDecoration(labelText: 'Last Name'),
-                              validator: (value) {
-                                if (value == null || value.isEmpty || value.trim().length < 2) {
-                                  return 'Please enter at least 2 characters.';
-                                }
-                                return null;
-                              },
-                              onSaved: (value) {
-                                _enteredLastName = value!;
-                              },
-                            ),
-                            TextFormField(
-                              decoration: InputDecoration(labelText: 'Mobile Number'),
-                              keyboardType: TextInputType.phone,
-                              validator: (value) {
-                                if (value == null || value.isEmpty || value.trim().length < 7) {
-                                  return 'Please enter a valid mobile number.';
-                                }
-                                return null;
-                              },
-                              onSaved: (value) {
-                                _enteredMobileNumber = value!;
-                              },
-                            ),
-                            TextFormField(
-                              decoration: InputDecoration(labelText: 'Address'),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your address.';
-                                }
-                                return null;
-                              },
-                              onSaved: (value) {
-                                _enteredAddress = value!;
-                              },
-                            ),
-                            TextFormField(
-                              decoration: InputDecoration(labelText: 'City'),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your city.';
-                                }
-                                return null;
-                              },
-                              onSaved: (value) {
-                                _enteredCity = value!;
-                              },
-                            ),
-                            TextFormField(
-                              decoration: InputDecoration(labelText: 'Province'),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your province.';
-                                }
-                                return null;
-                              },
-                              onSaved: (value) {
-                                _enteredProvince = value!;
-                              },
-                            ),
-                          ],
-                        ),
-                      TextFormField(
-                        decoration: InputDecoration(labelText: 'Email Address'),
-                        keyboardType: TextInputType.emailAddress,
-                        autocorrect: false,
-                        textCapitalization: TextCapitalization.none,
-                        validator: (value) {
-                          if (value == null ||
-                              value.trim().isEmpty ||
-                              !value.contains('@')) {
-                            return 'Please enter a valid email address.';
-                          }
-                          return null;
-                        },
-                        onSaved: (value) {
-                          _enteredEmail = value!;
-                        },
-                      ),
-                      TextFormField(
-                        decoration: InputDecoration(labelText: 'Password'),
-                        obscureText: true,
-                        validator: (value) {
-                          if (value == null || value.trim().length < 6) {
-                            return 'Password must be at least 6 characters long.';
-                          }
-                          return null;
-                        },
-                        onSaved: (value) {
-                          _enteredPassword = value!;
-                        },
-                      ),
-                      if (!_isLogin)
-                   Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    Row(
-                children: [
-                  Checkbox(
-                    value: _acceptedTerms,
-                    onChanged: (value) {
-                      setState(() {
-                        _acceptedTerms = value!;
-                      });
-                    },
-                  ),
-                  Text('I accept the terms and conditions.'),
-                ],
-              ),
-                    RichText(
-                      text: TextSpan(
+        color: Colors.white,
+        child: SingleChildScrollView(
+          child: Card(
+            margin: const EdgeInsets.all(20),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Form(
+                key: _form,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (!_isLogin)
+                      Column(
                         children: [
-                          TextSpan(
-                            text: 'By joining, I agree to the terms and conditions, including ',
-                            style: TextStyle(
-                              color: Colors.grey,
+                          TextFormField(
+                            decoration: InputDecoration(
+                              hintText:
+                                  'Email Address', // Placeholder text inside the TextFormField
+                              hintStyle: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 16 * ffem,
+                                fontWeight: FontWeight.w500,
+                                height: 1.2125 * ffem / fem,
+                                color: Color(0xff898a7a),
+                              ),
                             ),
+                            keyboardType: TextInputType.emailAddress,
+                            autocorrect: false,
+                            textCapitalization: TextCapitalization.none,
+                            validator: (value) {
+                              if (value == null ||
+                                  value.trim().isEmpty ||
+                                  !value.contains('@')) {
+                                return 'Please enter a valid email address.';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              _enteredEmail = value!;
+                            },
                           ),
-                          TextSpan(
-                            text: 'Suellas reward points Terms',
-                            style: TextStyle(
-                              color: Colors.blue,
-                              decoration: TextDecoration.underline,
-                            ),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                // Handle the tap event, e.g., open the relevant link
-                              },
+                          TextFormField(
+                            decoration:
+                                InputDecoration(labelText: 'First Name'),
+                            validator: (value) {
+                              if (value == null ||
+                                  value.isEmpty ||
+                                  value.trim().length < 2) {
+                                return 'Please enter at least 2 characters.';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              _enteredFirstName = value!;
+                            },
                           ),
-                          TextSpan(
-                            text: ', ',
-                            style: TextStyle(
-                              color: Colors.grey,
-                            ),
+                          TextFormField(
+                            decoration: InputDecoration(labelText: 'Last Name'),
+                            validator: (value) {
+                              if (value == null ||
+                                  value.isEmpty ||
+                                  value.trim().length < 2) {
+                                return 'Please enter at least 2 characters.';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              _enteredLastName = value!;
+                            },
                           ),
-                          TextSpan(
-                            text: 'Mobile application terms',
-                            style: TextStyle(
-                              color: Colors.blue,
-                              decoration: TextDecoration.underline,
-                            ),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                // Handle the tap event
-                              },
+                          TextFormField(
+                            decoration:
+                                InputDecoration(labelText: 'Mobile Number'),
+                            keyboardType: TextInputType.phone,
+                            validator: (value) {
+                              if (value == null ||
+                                  value.isEmpty ||
+                                  value.trim().length < 7) {
+                                return 'Please enter a valid mobile number.';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              _enteredMobileNumber = value!;
+                            },
                           ),
-                          TextSpan(
-                            text: ' and ',
-                            style: TextStyle(
-                              color: Colors.grey,
-                            ),
+                          TextFormField(
+                            decoration: InputDecoration(labelText: 'Address'),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your address.';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              _enteredAddress = value!;
+                            },
                           ),
-                          TextSpan(
-                            text: 'privacy policy',
-                            style: TextStyle(
-                              color: Colors.blue,
-                              decoration: TextDecoration.underline,
-                            ),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                // Handle the tap event
-                              },
+                          TextFormField(
+                            decoration: InputDecoration(labelText: 'City'),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your city.';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              _enteredCity = value!;
+                            },
                           ),
-                          TextSpan(
-                            text: '. Please read the terms and conditions before accepting.',
-                            style: TextStyle(
-                              color: Colors.grey,
-                            ),
+                          TextFormField(
+                            decoration: InputDecoration(labelText: 'Province'),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your province.';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              _enteredProvince = value!;
+                            },
                           ),
                         ],
                       ),
+                    Container(
+                      margin: EdgeInsets.fromLTRB(0 * fem, 10 * fem, 0, 0),
+                      child: Text(
+                        'Good Morning,',
+                        textAlign: TextAlign.left,
+                        style: SafeGoogleFont(
+                          'Inter',
+                          fontSize: 16 * ffem,
+                          fontWeight: FontWeight.w500,
+                          height: 1.2125 * ffem / fem,
+                          color: Color(0xff898a7a),
+                        ),
+                      ),
                     ),
-                    Text('Terms of use privacy policy.'),
-                  ],
-                ),
-
-                      SizedBox(height: 12),
-                      if (_isAuthenticating)
-                        CircularProgressIndicator(),
-                      if (!_isAuthenticating)
-                        ElevatedButton(
-                          onPressed: _submit,
-                          child: Text(_isLogin ? 'Login' : 'Signup'),
+                    Container(
+                      margin: EdgeInsets.fromLTRB(0 * fem, 10 * fem, 0, 0),
+                      child: Text(
+                        'Welcome Back!',
+                        textAlign: TextAlign.left,
+                        style: SafeGoogleFont(
+                          'Inter',
+                          fontSize: 21 * ffem,
+                          fontWeight: FontWeight.w900,
+                          height: 1.2125 * ffem / fem,
+                          color: Color(0xff040b14),
                         ),
-                      if (!_isAuthenticating)
-                        TextButton(
-                          onPressed: () {
-                            setState(() {
-                              _isLogin = !_isLogin;
-                            });
-                          },
-                          child: Text(
-                            _isLogin ? 'Create an account' : 'Already have an account',
+                      ),
+                    ),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        hintText:
+                            'Email Address', // Placeholder text inside the TextFormField
+                        hintStyle: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 16 * ffem,
+                          fontWeight: FontWeight.w500,
+                          height: 1.2125 * ffem / fem,
+                          color: Color(0xff898a7a),
+                        ),
+                      ),
+                      keyboardType: TextInputType.emailAddress,
+                      autocorrect: false,
+                      textCapitalization: TextCapitalization.none,
+                      validator: (value) {
+                        if (value == null ||
+                            value.trim().isEmpty ||
+                            !value.contains('@')) {
+                          return 'Please enter a valid email address.';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _enteredEmail = value!;
+                      },
+                    ),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        hintText:
+                            'Password', // Placeholder text inside the TextFormField
+                        hintStyle: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 16 * ffem,
+                          fontWeight: FontWeight.w500,
+                          height: 1.2125 * ffem / fem,
+                          color: Color(0xff898a7a),
+                        ),
+                      ),
+                      obscureText: true,
+                      validator: (value) {
+                        if (value == null || value.trim().length < 6) {
+                          return 'Password must be at least 6 characters long.';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _enteredPassword = value!;
+                      },
+                    ),
+                    if (!_isLogin)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Checkbox(
+                                value: _acceptedTerms,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _acceptedTerms = value!;
+                                  });
+                                },
+                              ),
+                              Text('I accept the terms and conditions.'),
+                            ],
                           ),
+                          RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text:
+                                      'By joining, I agree to the terms and conditions, including ',
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: 'Suellas reward points Terms',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      // Handle the tap event, e.g., open the relevant link
+                                    },
+                                ),
+                                TextSpan(
+                                  text: ', ',
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: 'Mobile application terms',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      // Handle the tap event
+                                    },
+                                ),
+                                TextSpan(
+                                  text: ' and ',
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: 'privacy policy',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      // Handle the tap event
+                                    },
+                                ),
+                                TextSpan(
+                                  text:
+                                      '. Please read the terms and conditions before accepting.',
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Text('Terms of use privacy policy.'),
+                        ],
+                      ),
+                    SizedBox(height: 12),
+                    if (_isAuthenticating) CircularProgressIndicator(),
+                    if (!_isAuthenticating)
+                      ElevatedButton(
+                        onPressed: _submit,
+                        child: Text(_isLogin ? 'Login' : 'Signup'),
+                      ),
+                    if (!_isAuthenticating)
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _isLogin = !_isLogin;
+                          });
+                        },
+                        child: Text(
+                          _isLogin
+                              ? 'Create an account'
+                              : 'Already have an account',
                         ),
-                    ],
-                  ),
+                      ),
+                  ],
                 ),
               ),
             ),

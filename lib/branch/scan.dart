@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+
+import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
@@ -10,19 +13,20 @@ import 'package:suellas/customer/qr_screen.dart';
 import 'package:suellas/customer/profile.dart';
 import 'package:suellas/customer/location.dart';
 import 'package:suellas/customer/inboxread.dart';
+import 'package:suellas/customer/inbox.dart';
 import 'package:suellas/customer/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class InboxScreen extends StatefulWidget {
-  const InboxScreen({Key? key}) : super(key: key);
+class ScanScreen extends StatefulWidget {
+  const ScanScreen({Key? key}) : super(key: key);
 
   @override
-  _InboxScreenState createState() => _InboxScreenState();
+  _ScanScreenState createState() => _ScanScreenState();
 }
 
-class _InboxScreenState extends State<InboxScreen> {
+class _ScanScreenState extends State<ScanScreen> {
   String _userEmail = ''; // Default value is an empty string
   List<Map<String, dynamic>> messages = []; // List to store promotions
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
