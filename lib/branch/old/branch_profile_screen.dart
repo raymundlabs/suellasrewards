@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:suellas/customer/privacy_policy_screen.dart';
-import 'package:suellas/customer/terms_and_conditions_screen.dart';
+import 'package:suellas/customer/archived/privacy_policy_screen.dart';
+import 'package:suellas/customer/archived/terms_and_conditions_screen.dart';
 
 class BranchProfileScreen extends StatefulWidget {
   const BranchProfileScreen({super.key});

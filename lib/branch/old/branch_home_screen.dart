@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:suellas/branch/branch_profile_screen.dart';
 import 'package:suellas/branch/scan.dart';
 import 'package:suellas/branch/branch_transactions.dart';
-import 'package:suellas/customer/profile_screen.dart';
+import 'package:suellas/customer/archived/profile_screen.dart';
 
 void main() => runApp(const MyApp());
 

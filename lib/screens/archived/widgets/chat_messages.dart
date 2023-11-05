@@ -1,4 +1,4 @@
-import 'package:suellas/widgets/message_bubble.dart';
+import 'package:suellas/screens/archived/widgets/message_bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

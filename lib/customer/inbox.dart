@@ -14,6 +14,7 @@ import 'package:suellas/customer/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:suellas/customer/editprofile.dart';
 
 class InboxScreen extends StatefulWidget {
   const InboxScreen({Key? key}) : super(key: key);
@@ -156,13 +157,24 @@ class _InboxScreenState extends State<InboxScreen> {
                           ),
                         ),
                         Container(
-                          // iconlyboldfilterG1X (202:997)
                           width: 30 * fem,
                           height: 30 * fem,
-                          child: Image.asset(
-                            'assets/design/images/iconly-curved-outline-edit-square.png',
-                            width: 30 * fem,
-                            height: 30 * fem,
+                          child: GestureDetector(
+                            onTap: () {
+                              // Navigate to the edit screen when tapped
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      EditProfileScreen(), // Replace EditProfileScreen with your edit screen widget
+                                ),
+                              );
+                            },
+                            child: Image.asset(
+                              'assets/design/images/iconly-curved-outline-edit-square.png',
+                              width: 30 * fem,
+                              height: 30 * fem,
+                            ),
                           ),
                         ),
                       ],
@@ -332,7 +344,7 @@ class _InboxScreenState extends State<InboxScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        InboxScreen()), // Navigate to location screen
+                        InboxScreen()), // Navigate to inbox screen
               );
             },
             child: Padding(
@@ -367,7 +379,7 @@ class _InboxScreenState extends State<InboxScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        LocationScreen()), // Navigate to QR screen
+                        LocationScreen()), // Navigate to location screen
               );
             },
             child: Padding(
@@ -381,10 +393,12 @@ class _InboxScreenState extends State<InboxScreen> {
           ),
           GestureDetector(
             onTap: () {
-              // Implement the behavior to reset or return to the current screen
-              // For example, you can scroll to the top of the current screen
-              // or refresh the content.
-              // _scrollToTopOrRefresh(); // Call a method to scroll to the top or refresh the content
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        ProfileScreen()), // Navigate to profile screen
+              );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),

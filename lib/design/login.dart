@@ -7,9 +7,12 @@ import 'package:flutter/gestures.dart';
 import 'package:suellas/utils.dart';
 import 'package:suellas/design/blank.dart';
 import 'package:suellas/design/register.dart';
+import 'package:suellas/branch/scan.dart';
 import 'package:suellas/design/forgot.dart';
 import 'package:suellas/design/done.dart';
 import 'package:suellas/customer/home.dart';
+// import 'package:google_sign_in/google_sign_in.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 
 //import 'package:suellas/customer/customer_home.dart'; // Import the customer home screen
 // import 'package:suellas/branch/branch_home_screen.dart'; // Import the branch home screen
@@ -39,6 +42,7 @@ class _AuthScreenState extends State<AuthScreen> {
   var _enteredProvince = '';
   var _acceptedTerms = false;
   var _isObscure = true;
+  bool _rememberMe = false;
 
   void _submit() async {
     final isValid = _form.currentState!.validate();
@@ -83,6 +87,11 @@ class _AuthScreenState extends State<AuthScreen> {
 
         await prefs.setString('userDetails', responseBody);
 
+        if (_rememberMe == true) {
+          await prefs.setString('userPassword', _enteredPassword);
+        } else {
+          await prefs.remove('userPassword');
+        }
         print(responseBody);
 
         if (responseBody.contains('Registration successful')) {
@@ -109,7 +118,7 @@ class _AuthScreenState extends State<AuthScreen> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => BlankPage(),
+                builder: (context) => ScanScreen(),
                 settings: RouteSettings(
                   arguments: responseBody,
                 ),
@@ -140,6 +149,37 @@ class _AuthScreenState extends State<AuthScreen> {
       });
     }
   }
+
+//   Future<User?> signInWithGoogle() async {
+//   try {
+//     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+//     if (googleUser == null) {
+//       // User canceled the Google Sign-In process.
+//       return null;
+//     }
+
+//     final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+//     final AuthCredential credential = GoogleAuthProvider.credential(
+//       accessToken: googleAuth.accessToken,
+//       idToken: googleAuth.idToken,
+//     );
+
+//     final UserCredential authResult = await FirebaseAuth.instance.signInWithCredential(credential);
+//     final User? user = authResult.user;
+
+//     if (user != null) {
+//       // The user is signed in.
+//       return user;
+//     } else {
+//       // Sign-in failed, handle the error.
+//       return null;
+//     }
+//   } catch (error) {
+//     // Handle errors, e.g., display an error message.
+//     print('Error signing in with Google: $error');
+//     return null;
+//   }
+// }
 
   Future<http.Response> _sendAuthRequest() async {
     final headers = {
@@ -302,48 +342,71 @@ class _AuthScreenState extends State<AuthScreen> {
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Container(
-                                margin: EdgeInsets.fromLTRB(
-                                    0 * fem, 0 * fem, 12 * fem, 0 * fem),
-                                width: 20 * fem,
-                                height: 20 * fem,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10 * fem),
-                                  border: Border.all(color: Color(0xe557cc99)),
-                                ),
-                              ),
-                              Container(
-                                margin: EdgeInsets.fromLTRB(
-                                    0 * fem, 0 * fem, 63.5 * fem, 0 * fem),
-                                child: Text(
-                                  'Keep me logged in',
-                                  textAlign: TextAlign.center,
-                                  style: SafeGoogleFont(
-                                    'Inter',
-                                    fontSize: 14 * ffem,
-                                    fontWeight: FontWeight.w500,
-                                    height: 1.4285714286 * ffem / fem,
-                                    color: Color(0xff000000),
+                              Row(
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        _rememberMe = !_rememberMe;
+                                      });
+                                    },
+                                    child: Container(
+                                      width: 24.0,
+                                      height: 24.0,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: Colors.grey,
+                                          width: 2.0,
+                                        ),
+                                      ),
+                                      child: _rememberMe
+                                          ? Center(
+                                              child: Icon(
+                                                Icons.check,
+                                                size:
+                                                    11.0, // Adjust the size to match the circle
+                                                color: Colors.green,
+                                              ),
+                                            )
+                                          : Container(),
+                                    ),
                                   ),
-                                ),
+                                  SizedBox(
+                                    width: 8.0,
+                                  ),
+                                  Text(
+                                    'Remember Me',
+                                    style: SafeGoogleFont(
+                                      'Inter',
+                                      fontSize: 14 * ffem,
+                                      fontWeight: FontWeight.w500,
+                                      height: 1.4285714286 * ffem / fem,
+                                      color: Color(0xff57cc99),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              GestureDetector(
-                                onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ForgotScreen()),
-                                );
-                              },
-                                child: Text(
-                                  'Forgot Password?',
-                                  textAlign: TextAlign.center,
-                                  style: SafeGoogleFont(
-                                    'Inter',
-                                    fontSize: 14 * ffem,
-                                    fontWeight: FontWeight.w500,
-                                    height: 1.4285714286 * ffem / fem,
-                                    color: Color(0xff57cc99),
+                              Spacer(), // Add a spacer to push the following text to the right
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ForgotScreen(),
+                                      ),
+                                    );
+                                  },
+                                  child: Text(
+                                    'Forgot Password?',
+                                    textAlign: TextAlign.right,
+                                    style: TextStyle(
+                                      fontSize: 14 * ffem,
+                                      fontWeight: FontWeight.w500,
+                                      color: Color(0xff57cc99),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -602,7 +665,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => Done()),
+                                      builder: (context) => RegisterScreen()),
                                 );
                               },
                               child: Text(

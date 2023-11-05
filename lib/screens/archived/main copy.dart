@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-import 'package:suellas/screens/splash.dart';
-import 'package:suellas/screens/chat.dart';
+import 'package:suellas/screens/archived/splash.dart';
+import 'package:suellas/screens/archived/chat.dart';
 import 'firebase_options.dart';
-import 'package:suellas/screens/auth.dart';
+import 'package:suellas/screens/archived/auth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

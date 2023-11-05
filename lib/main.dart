@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-// import 'package:suellas/customer/main_screen.dart';
-// import 'dart:convert';
-
-import 'package:suellas/screens/auth.dart'; // Import the AuthScreen
-// import 'package:suellas/customer/home.dart'; // Import the customer home screen
+import 'package:http/http.dart' as http;// Import the AuthScreen
 import 'package:suellas/design/start.dart';
+// import 'package:firebase_core/firebase_core.dart';
 
-
-void main() {
+void main() async {
+  // WidgetsFlutterBinding.ensureInitialized();
+  // await Firebase.initializeApp();
   runApp(const MaterialApp(
     home: MyApp(),
   ));

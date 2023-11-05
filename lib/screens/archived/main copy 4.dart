@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:suellas/customer/customer_home.dart'; // Import the customer home screen
-import 'package:suellas/customer/profile_screen.dart'; // Make sure to import your ProfileScreen
+import 'package:suellas/customer/archived/profile_screen.dart'; // Make sure to import your ProfileScreen
 
 void main() => runApp(const MaterialApp(home: AuthScreen()));
 

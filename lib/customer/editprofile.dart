@@ -233,9 +233,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     double ffem = fem * 0.97;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Change Password'),
-      ),
+      // appBar: AppBar(
+      //   title: Text('Change Password'),
+      // ),
       backgroundColor: Colors.white,
       body: Form(
         key: _formKey,
@@ -966,7 +966,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        InboxScreen()), // Navigate to location screen
+                        InboxScreen()), // Navigate to inbox screen
               );
             },
             child: Padding(
@@ -1001,7 +1001,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        LocationScreen()), // Navigate to QR screen
+                        LocationScreen()), // Navigate to location screen
               );
             },
             child: Padding(
@@ -1015,10 +1015,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
           GestureDetector(
             onTap: () {
-              // Implement the behavior to reset or return to the current screen
-              // For example, you can scroll to the top of the current screen
-              // or refresh the content.
-              // _scrollToTopOrRefresh(); // Call a method to scroll to the top or refresh the content
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        ProfileScreen()), // Navigate to profile screen
+              );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),

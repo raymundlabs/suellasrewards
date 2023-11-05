@@ -12,40 +12,65 @@ import 'package:suellas/customer/inbox.dart';
 import 'package:suellas/customer/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:suellas/branch/pay.dart';
+import 'package:suellas/branch/scan.dart';
+import 'package:suellas/branch/record.dart';
+import 'package:suellas/branch/history.dart';
+import 'package:http/http.dart' as http;
 
-class QRScreen extends StatefulWidget {
+class PayScreen extends StatefulWidget {
+  final Map<String, dynamic> userData; // Add this line to accept userData
+
+  PayScreen({required this.userData});
   @override
-  _QRScreenState createState() => _QRScreenState();
+  _PayScreenState createState() => _PayScreenState();
 }
 
-class _QRScreenState extends State<QRScreen> {
+class _PayScreenState extends State<PayScreen> {
   double baseWidth = 414;
   double fem = 1.0; // Set your default value
   double ffem = 1.0; // Set your default value
-  var _userEmail = '';
-  var _firstName = '';
-  var _lastName = '';
+  late String email;
+  // var _userEmail = '';
+  // var _firstName = '';
+  // var _lastName = '';
 
   @override
   void initState() {
     super.initState();
+    email = widget.userData['email'];
     // Retrieve the stored email from SharedPreferences when the screen is first loaded
-    _getUserEmail();
   }
 
-  Future<void> _getUserEmail() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String userDetails = prefs.getString('userDetails') ?? '';
+  Future<void> payRewards(double? amount) async {
+    if (amount != null) {
+      final apiUrl =
+          'https://app.suellastheshoelaundry.com/admin/auth/payrewards';
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        body: {'amount': '150', 'email': email},
+      );
 
-    if (userDetails.isNotEmpty) {
-      // Parse the JSON string to a Map
-      Map<String, dynamic> userData = json.decode(userDetails);
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        print('Amount recorded successfully.');
+        print('Response Data: $responseData');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Amount recorded successfully'),
+          ),
+        );
 
-      setState(() {
-        _userEmail = prefs.getString('userEmail') ?? '';
-        _firstName = userData['user']['first_name'] ?? '';
-        _lastName = userData['user']['last_name'] ?? '';
-      });
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HistoryScreen(),
+          ),
+        );
+      } else {
+        print(
+            'Failed to record the amount. Error code: ${response.statusCode}');
+      }
     }
   }
 
@@ -54,6 +79,9 @@ class _QRScreenState extends State<QRScreen> {
     double baseWidth = 414;
     double fem = MediaQuery.of(context).size.width / baseWidth;
     double ffem = fem * 0.97;
+    var firstName = widget.userData['first_name'];
+    var lastName = widget.userData['last_name'];
+    var rewardPoints = widget.userData['reward_points'];
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -163,7 +191,23 @@ class _QRScreenState extends State<QRScreen> {
                     margin: EdgeInsets.fromLTRB(
                         11.14 * fem, 0 * fem, 0 * fem, 36 * fem),
                     child: Text(
-                      '$_firstName $_lastName',
+                      '$firstName $lastName',
+                      textAlign: TextAlign.center,
+                      style: SafeGoogleFont(
+                        'Inter',
+                        fontSize: 20 * ffem,
+                        fontWeight: FontWeight.w600,
+                        height: 1.2125 * ffem / fem,
+                        color: Color(0xff57cc99),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    // osirisqrZw7 (4:30531)
+                    margin: EdgeInsets.fromLTRB(
+                        11.14 * fem, 0 * fem, 0 * fem, 36 * fem),
+                    child: Text(
+                      '$rewardPoints',
                       textAlign: TextAlign.center,
                       style: SafeGoogleFont(
                         'Inter',
@@ -183,7 +227,7 @@ class _QRScreenState extends State<QRScreen> {
                       maxWidth: 287 * fem,
                     ),
                     child: Text(
-                      'Scan this QR code when you avail of any service to earn a reward.',
+                      'Click the Button Below to avail free Clean for. 150 Points.',
                       textAlign: TextAlign.center,
                       style: SafeGoogleFont(
                         'Inter',
@@ -194,42 +238,55 @@ class _QRScreenState extends State<QRScreen> {
                       ),
                     ),
                   ),
-                  Container(
-                    // image144vv5 (4:30529)
-                    margin: EdgeInsets.fromLTRB(
-                        11.14 * fem, 0 * fem, 0 * fem, 86 * fem),
-                    width: 250 * fem,
-                    height: 250 * fem,
-                    child: QrImageView(
-                      data: _userEmail, // Replace with your QR code data
-                      version: QrVersions.auto,
-                      size: 250.0,
-                    ),
-                  ),
-                  Container(
-                    // autogroupbm8bEvm (Tkq3oSPCXM13MsmsXbBm8B)
-                    margin: EdgeInsets.fromLTRB(
-                        26 * fem, 0 * fem, 23.86 * fem, 89 * fem),
-                    width: double.infinity,
-                    height: 50 * fem,
-                    decoration: BoxDecoration(
-                      color: Color(0xff57cc99),
-                      borderRadius: BorderRadius.circular(70 * fem),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Download',
-                        textAlign: TextAlign.center,
-                        style: SafeGoogleFont(
-                          'Inter',
-                          fontSize: 18 * ffem,
-                          fontWeight: FontWeight.w700,
-                          height: 1.1111111111 * ffem / fem,
-                          color: Color(0xffffffff),
+                  // Container(
+                  //   // image144vv5 (4:30529)
+                  //   margin: EdgeInsets.fromLTRB(
+                  //       11.14 * fem, 0 * fem, 0 * fem, 86 * fem),
+                  //   width: 250 * fem,
+                  //   height: 250 * fem,
+                  //   // child: QrImageView(
+                  //   //   data: _userEmail, // Replace with your QR code data
+                  //   //   version: QrVersions.auto,
+                  //   //   size: 250.0,
+                  //   // ),
+                  // ),
+                  GestureDetector(
+                      // Add onTap property to handle button click
+                      onTap: () {
+                        // Call the _recordAmount method when the button is tapped
+                        double? amount = double.tryParse('150' ?? '');
+               payRewards(150);
+                      },
+                      child: Container(
+                        margin: EdgeInsets.fromLTRB(
+                          26 * fem,
+                          0 * fem,
+                          23.86 * fem,
+                          89 * fem,
+                        ),
+                        width: double.infinity,
+                        height: 50 * fem,
+                        decoration: BoxDecoration(
+                          color: Color(0xff57cc99),
+                          borderRadius: BorderRadius.circular(70 * fem),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Save Amount',
+                            textAlign: TextAlign.center,
+                            style: SafeGoogleFont(
+                              'Inter',
+                              fontSize: 18 * ffem,
+                              fontWeight: FontWeight.w700,
+                              height: 1.1111111111 * ffem / fem,
+                              color: Color(0xffffffff),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
+
+
                   // Container(
                   //   // group48095457rx9 (4:30470)
                   //   margin: EdgeInsets.fromLTRB(6.14 * fem, 0 * fem, 0 * fem, 0 * fem),
@@ -247,7 +304,7 @@ class _QRScreenState extends State<QRScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(fem, ffem, context),
+      // bottomNavigationBar: _buildBottomNavigationBar(fem, ffem, context),
     );
   }
 

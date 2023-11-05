@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'package:suellas/customer/faq_screen.dart';
+import 'package:suellas/customer/archived/faq_screen.dart';
 import 'package:suellas/customer/qr_screen.dart';
-import 'package:suellas/customer/transaction_screen.dart';
-import 'package:suellas/customer/profile_screen.dart';
-import 'package:suellas/customer/inbox_screen.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:suellas/utils.dart';
+import 'package:suellas/customer/archived/transaction_screen.dart';
+import 'package:suellas/customer/archived/profile_screen.dart';
+import 'package:suellas/customer/archived/inbox_screen.dart';
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
@@ -31,6 +29,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   String _name = '';
   String _rewardPoints = '';
   Map<String, dynamic> userDetails = {};
+  
 
   @override
   void initState() {
@@ -45,27 +44,21 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
       userDetails = jsonDecode(userDetailsString);
     });
 
-    _name = userDetails['user']['first_name'].trim();
-    _rewardPoints =
-        (userDetails['user']['reward_points']).toString().trim();
+    _name = userDetails['user']['name'].trim();
+    _rewardPoints = (userDetails['user']['reward_points']).toString().trim();
   }
 
-  final List<Widget Function(BuildContext)> _screens = [
-    (context) => const HomeScreen(),
-    (context) => QRScreen(),
-    (context) => const TransactionScreen(),
-    (context) => const FAQScreen(),
+  final List<Widget> _screens = [
+    const HomeScreen(),
+    const Text('QR Screen'),
+    const Text('Transaction Screen'),
+    const Text('FAQ Screen'),
   ];
 
   final String _greetMessage = GreetingWidget._getGreetMessage();
 
   @override
   Widget build(BuildContext context) {
-    double baseWidth = 414;
-    double fem = MediaQuery.of(context).size.width / baseWidth;
-    double ffem = fem * 0.97;
-    final String qrData = "ABC123";
-    
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -87,42 +80,6 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                                     Container(
-                          // btnbackZeH (4:30442)
-                          margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 115 * fem, 0 * fem),
-                          width: 30 * fem,
-                          height: 30 * fem,
-                          child: Image.asset(
-                            'assets/design/images/btn-back-xkh.png',
-                            width: 30 * fem,
-                            height: 30 * fem,
-                          ),
-                        ),
-                        Container(
-                          // scanqrfxD (4:30479)
-                          margin: EdgeInsets.fromLTRB(0 * fem, 4 * fem, 112 * fem, 0 * fem),
-                          child: Text(
-                            'Scan QR',
-                            style: SafeGoogleFont(
-                              'Inter',
-                              fontSize: 16 * ffem,
-                              fontWeight: FontWeight.w600,
-                              height: 1.2125 * ffem / fem,
-                              color: Color(0xff000000),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          // iconlycurvedoutlineeditsquareN (4:30441)
-                          margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 0 * fem, 4 * fem),
-                          width: 20 * fem,
-                          height: 20 * fem,
-                          child: Image.asset(
-                            'assets/design/images/iconly-curved-outline-edit-square-Bww.png',
-                            width: 20 * fem,
-                            height: 20 * fem,
-                          ),
-                        ),
                 Row(
                   children: [
                     IconButton(
@@ -134,9 +91,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => const ProfileScreen(),
-                          ),
+                             MaterialPageRoute(builder: (context) => const ProfileScreen()),
                         );
                       },
                     ),
@@ -161,9 +116,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => const InboxScreen(),
-                          ),
+                         MaterialPageRoute(builder: (context) => const InboxScreen()),
                         );
                       },
                     ),
@@ -186,15 +139,11 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
         color: Colors.grey[200],
         child: Column(
           children: [
-            RewardPointsContainer(
-                rewardPoints: _rewardPoints), // Pass the rewardPoints value
+            RewardPointsContainer(rewardPoints: _rewardPoints), // Pass the rewardPoints value
             Expanded(
               child: IndexedStack(
                 index: _currentIndex,
-                children: List.generate(
-                  _screens.length,
-                  (index) => _screens[index](context),
-                ),
+                children: _screens,
               ),
             ),
           ],
@@ -376,22 +325,19 @@ class HomeScreen extends StatelessWidget {
         PromoContainer(
           color: Colors.white,
           text: 'FREE DISCOUNT',
-          imageUrl:
-              'https://www.suellastheshoelaundry.com/wp-content/uploads/2020/02/basic-clean.png',
+          imageUrl: 'https://www.suellastheshoelaundry.com/wp-content/uploads/2020/02/basic-clean.png',
           description: '20% discount',
         ),
         PromoContainer(
           color: Colors.white,
           text: 'Promo 2',
-          imageUrl:
-              'https://www.suellastheshoelaundry.com/wp-content/uploads/2020/02/basic-clean.png',
+          imageUrl: 'https://www.suellastheshoelaundry.com/wp-content/uploads/2020/02/basic-clean.png',
           description: 'Free cleaning for every 10 pairs',
         ),
         PromoContainer(
           color: Colors.white,
           text: 'Promo 3',
-          imageUrl:
-              'https://www.suellastheshoelaundry.com/wp-content/uploads/2020/02/basic-clean.png',
+          imageUrl: 'https://www.suellastheshoelaundry.com/wp-content/uploads/2020/02/basic-clean.png',
           description: 'Free Lace',
         ),
       ],

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'package:suellas/customer/faq_screen.dart';
+import 'package:suellas/customer/archived/faq_screen.dart';
 import 'package:suellas/customer/qr_screen.dart';
-import 'package:suellas/customer/transaction_screen.dart';
-import 'package:suellas/customer/profile_screen.dart';
-import 'package:suellas/customer/inbox_screen.dart';
+import 'package:suellas/customer/archived/transaction_screen.dart';
+import 'package:suellas/customer/archived/profile_screen.dart';
+import 'package:suellas/customer/archived/inbox_screen.dart';
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {

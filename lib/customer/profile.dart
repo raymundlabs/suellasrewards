@@ -120,9 +120,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     double ffem = fem * 0.97;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Change Password'),
-      ),
+      // appBar: AppBar(r
+      //   title: Text('Change Password'),
+      // ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Container(

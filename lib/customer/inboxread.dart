@@ -7,13 +7,13 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:suellas/customer/qr_screen.dart';
 import 'package:suellas/customer/profile.dart';
 import 'package:suellas/customer/qr_screen.dart';
-import 'package:suellas/customer/profile.dart';
 import 'package:suellas/customer/location.dart';
 import 'package:suellas/customer/inbox.dart';
 import 'package:suellas/customer/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:suellas/customer/editprofile.dart';
 
 class InboxReadScreen extends StatefulWidget {
   const InboxReadScreen({Key? key}) : super(key: key);
@@ -154,14 +154,25 @@ class _InboxReadScreenState extends State<InboxReadScreen> {
                             ),
                           ),
                         ),
-                        Container(
-                          // iconlyboldfilterG1X (202:997)
+                         Container(
                           width: 30 * fem,
                           height: 30 * fem,
-                          child: Image.asset(
-                            'assets/design/images/iconly-curved-outline-edit-square.png',
-                            width: 30 * fem,
-                            height: 30 * fem,
+                          child: GestureDetector(
+                            onTap: () {
+                              // Navigate to the edit screen when tapped
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      EditProfileScreen(), // Replace EditProfileScreen with your edit screen widget
+                                ),
+                              );
+                            },
+                            child: Image.asset(
+                              'assets/design/images/iconly-curved-outline-edit-square.png',
+                              width: 30 * fem,
+                              height: 30 * fem,
+                            ),
                           ),
                         ),
                       ],
@@ -326,7 +337,7 @@ class _InboxReadScreenState extends State<InboxReadScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        InboxScreen()), // Navigate to location screen
+                        InboxScreen()), // Navigate to inbox screen
               );
             },
             child: Padding(
@@ -361,7 +372,7 @@ class _InboxReadScreenState extends State<InboxReadScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        LocationScreen()), // Navigate to QR screen
+                        LocationScreen()), // Navigate to location screen
               );
             },
             child: Padding(
@@ -375,10 +386,12 @@ class _InboxReadScreenState extends State<InboxReadScreen> {
           ),
           GestureDetector(
             onTap: () {
-              // Implement the behavior to reset or return to the current screen
-              // For example, you can scroll to the top of the current screen
-              // or refresh the content.
-              // _scrollToTopOrRefresh(); // Call a method to scroll to the top or refresh the content
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        ProfileScreen()), // Navigate to profile screen
+              );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),

@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/gestures.dart';
-import 'package:suellas/customer/home_old.dart';
 import 'package:suellas/utils.dart';
 import 'package:suellas/design/blank.dart';
 import 'package:suellas/design/done.dart';

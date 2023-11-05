@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:suellas/screens/auth.dart'; // Import the AuthScreen
+import 'package:suellas/screens/archived/auth.dart'; // Import the AuthScreen
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});

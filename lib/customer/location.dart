@@ -430,8 +430,8 @@ Container(
 
 
   
-
-  Widget _buildBottomNavigationBar(double fem, double ffem, BuildContext context) {
+  Widget _buildBottomNavigationBar(
+      double fem, double ffem, BuildContext context) {
     return Container(
       width: 333 * fem,
       height: 50 * fem,
@@ -458,31 +458,33 @@ Container(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-                GestureDetector(
-               onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CustomerHomeScreen()), // Navigate to inbox screen
-              );
-            },
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 1.0),
-                child: Image.asset(
-                  'assets/icons/images/iconly-regular-outline-ticket-star.png',
-              width: 18,
-                height: 18,
-                ),
-              ),
-              ),
-     
           GestureDetector(
-               onTap: () {
+            onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => InboxScreen()), // Navigate to location screen
+                MaterialPageRoute(
+                    builder: (context) =>
+                        CustomerHomeScreen()), // Navigate to inbox screen
               );
             },
-     
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 1.0),
+              child: Image.asset(
+                'assets/icons/images/iconly-regular-outline-ticket-star.png',
+                width: 18,
+                height: 18,
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        InboxScreen()), // Navigate to inbox screen
+              );
+            },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
@@ -492,12 +494,12 @@ Container(
               ),
             ),
           ),
-               GestureDetector(
-
+          GestureDetector(
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => QRScreen()), // Navigate to QR screen
+                MaterialPageRoute(
+                    builder: (context) => QRScreen()), // Navigate to QR screen
               );
             },
             child: Padding(
@@ -510,14 +512,14 @@ Container(
             ),
           ),
           GestureDetector(
-
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LocationScreen()), // Navigate to QR screen
+                MaterialPageRoute(
+                    builder: (context) =>
+                        LocationScreen()), // Navigate to location screen
               );
             },
-    
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
@@ -529,11 +531,13 @@ Container(
           ),
           GestureDetector(
             onTap: () {
-                // Implement the behavior to reset or return to the current screen
-                // For example, you can scroll to the top of the current screen
-                // or refresh the content.
-                // _scrollToTopOrRefresh(); // Call a method to scroll to the top or refresh the content
-              },
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        ProfileScreen()), // Navigate to profile screen
+              );
+            },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
@@ -548,6 +552,5 @@ Container(
     );
   }
 }
-
 
 

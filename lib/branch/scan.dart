@@ -12,12 +12,15 @@ import 'package:suellas/customer/profile.dart';
 import 'package:suellas/customer/qr_screen.dart';
 import 'package:suellas/customer/profile.dart';
 import 'package:suellas/customer/location.dart';
+import 'package:suellas/branch/history.dart';
 import 'package:suellas/customer/inboxread.dart';
 import 'package:suellas/customer/inbox.dart';
 import 'package:suellas/customer/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:suellas/branch/record.dart';
+import 'package:suellas/branch/pay.dart';
 
 class ScanScreen extends StatefulWidget {
   const ScanScreen({Key? key}) : super(key: key);
@@ -28,19 +31,162 @@ class ScanScreen extends StatefulWidget {
 
 class _ScanScreenState extends State<ScanScreen> {
   String _userEmail = ''; // Default value is an empty string
-  List<Map<String, dynamic>> messages = []; // List to store promotions
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  bool isCurrentPage = true; // Set this value based on your logic
+  double? _enteredAmount;
+  String _qrCode = 'Scan a QR code';
+
+  Future<void> _scanQRCode() async {
+    String qrCode = await FlutterBarcodeScanner.scanBarcode(
+      '#FF5722',
+      'Cancel',
+      false,
+      ScanMode.QR,
+    );
+
+    if (!mounted) return;
+
+    setState(() {
+      _qrCode = qrCode;
+      _getUserData(); // Call getUserData function after scanning
+    });
+  }
+
+  // Future<Map<String, dynamic>> _getUserData() async {
+  //   final headers = {
+  //     'Content-Type': 'application/json',
+  //     'X-CSRF-Token': 'd7c436fff9e0910158379791ad0aeba8',
+  //   };
+  //   final apiUrl = '/admin/auth/getUserData';
+  //   final email = _userEmail;
+  //   final response = await http.post(
+  //     Uri.parse('https://app.suellastheshoelaundry.com' + apiUrl),
+  //     body: {
+  //       'email': email, // r@g.com 1234567
+  //     },
+  //   );
+
+  //   if (response.statusCode == 200) {
+  //     final Map<String, dynamic> userData = json.decode(response.body);
+  //     return userData;
+  //   } else {
+  //     throw Exception('Failed to load user data');
+  //   }
+  // }
+
+  Future<void> _getUserData() async {
+    final apiUrl =
+        'https://app.suellastheshoelaundry.com/admin/auth/getUserData';
+    final email = _qrCode;
+
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      body: {
+        'email': email,
+      },
+    );
+
+    print(response);
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> userData = json.decode(response.body);
+
+      final user = userData; // Access the "user" object
+      print(userData);
+
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('User Data'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                    'Customer Name: ${user['first_name']} ${user['last_name']}'), // Access first_name
+                Text(
+                    'Rewards Points: ${user['reward_points']}'), // Access reward_points
+              ],
+            ),
+            actions: <Widget>[
+         
+              TextButton(
+                onPressed: () {
+                  // Navigate to Pay with Rewards screen
+                  // Replace 'PayWithRewardsScreen' with the actual screen you want to navigate to
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PayScreen(userData: userData)),
+                  );
+                },
+                child: Text('Pay with Rewards'),
+              ),
+
+              TextButton(
+                onPressed: () {
+                  // Navigate to Save Rewards screen
+                  // Replace 'SaveRewardsScreen' with the actual screen you want to navigate to
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => RecordScreen(userData: userData)),
+                  );
+                },
+                child: Text('Save Rewards'),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to load user data'),
+        ),
+      );
+    }
+  }
+
+  Future<void> _recordAmount(double? amount) async {
+    if (amount != null) {
+      final email = _userEmail;
+      final apiUrl =
+          'https://app.suellastheshoelaundry.com/admin/auth/scanrewards';
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        body: {'amount': amount.toString(), 'email': _qrCode},
+      );
+
+      if (response.statusCode == 200) {
+        final responseData =
+            jsonDecode(response.body); // Parse the response JSON
+        print('Amount recorded successfully.');
+        print('Response Data: $responseData'); // Print the response data
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Amount recorded successfully'),
+          ),
+        );
+
+        // Navigate to history.dart
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HistoryScreen(),
+          ),
+        );
+      } else {
+        print(
+            'Failed to record the amount. Error code: ${response.statusCode}');
+      }
+    } else {
+      print('Invalid amount entered.');
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     // Call the API request method to get reward points and set the state
-    _getUserEmail().then((_) {
-      _getUserMessages().then((_) {
-        // Once promotions are fetched, the widget tree will be rebuilt
-      });
-    });
+    _getUserEmail().then((_) {});
   }
 
   Future<void> _getUserEmail() async {
@@ -48,53 +194,6 @@ class _ScanScreenState extends State<ScanScreen> {
     setState(() {
       _userEmail = prefs.getString('userEmail') ?? '';
     });
-  }
-
-  void updateMessageList() {
-    _getUserMessages().then((_) {
-      // This will fetch and update the message list
-    });
-  }
-
-  void deleteMessage(int index) {
-    if (index >= 0 && index < messages.length) {
-      messages.removeAt(index); // Remove the message at the specified index
-      setState(() {}); // Trigger a rebuild of the widget
-    }
-  }
-
-  Future<void> _getUserMessages() async {
-    final headers = {
-      'Content-Type': 'application/json',
-      'X-CSRF-Token': 'd7c436fff9e0910158379791ad0aeba8',
-    };
-    final apiUrl = '/admin/auth/getMessages';
-    final email = _userEmail;
-    final response = await http.post(
-      Uri.parse('https://app.suellastheshoelaundry.com' + apiUrl),
-      body: {'email': email, 'isRead': 'No'},
-    );
-
-    if (response.statusCode == 200) {
-      final dynamic responseBody = json.decode(response.body);
-
-      if (responseBody is List) {
-        final List<Map<String, dynamic>> userMessages =
-            responseBody.cast<Map<String, dynamic>>();
-
-        // Debugging: Print the fetched promotions to the console
-        print('Fetched Messages: $userMessages');
-
-        // Update the state with the fetched promotions data
-        setState(() {
-          messages = userMessages;
-        });
-      } else {
-        throw Exception('Invalid response format');
-      }
-    } else {
-      throw Exception('Failed to load user data');
-    }
   }
 
   @override
@@ -183,7 +282,7 @@ class _ScanScreenState extends State<ScanScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => InboxScreen()),
+                                    builder: (context) => ScanScreen()),
                               );
                             },
                             child: Container(
@@ -197,7 +296,7 @@ class _ScanScreenState extends State<ScanScreen> {
                                       width: 40 * fem,
                                       height: 20 * fem,
                                       child: Text(
-                                        'New', // Change "New" to "Inbox"
+                                        'Scan', // Change "New" to "Inbox"
                                         style: SafeGoogleFont(
                                           'Inter',
                                           fontSize: 14 * ffem,
@@ -210,11 +309,10 @@ class _ScanScreenState extends State<ScanScreen> {
                                     ),
                                   ),
                                   Container(
-                                  width: double.infinity,
-                                  height: 1,
-                                        color: Color(0xff000000),
-                     
-                                ),
+                                    width: double.infinity,
+                                    height: 1,
+                                    color: Color(0xff000000),
+                                  ),
                                 ],
                               ),
                             ),
@@ -226,7 +324,7 @@ class _ScanScreenState extends State<ScanScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => InboxReadScreen()),
+                                    builder: (context) => HistoryScreen()),
                               );
                             },
                             child: Container(
@@ -240,7 +338,7 @@ class _ScanScreenState extends State<ScanScreen> {
                                       width: 40 * fem,
                                       height: 20 * fem,
                                       child: Text(
-                                        'Read',
+                                        'History',
                                         style: SafeGoogleFont(
                                           'Inter',
                                           fontSize: 14 * ffem,
@@ -248,7 +346,6 @@ class _ScanScreenState extends State<ScanScreen> {
                                           height: 1.4285714286 * ffem / fem,
                                           letterSpacing: 0.5 * fem,
                                           color: Color(0xff000000),
-                                          
                                         ),
                                       ),
                                     ),
@@ -256,7 +353,7 @@ class _ScanScreenState extends State<ScanScreen> {
                                   Container(
                                     width: double.infinity,
                                     height: 1,
-                                              color:Color.fromRGBO(17, 0, 0, 0.20) ,
+                                    color: Color.fromRGBO(17, 0, 0, 0.20),
                                   ),
                                 ],
                               ),
@@ -266,14 +363,32 @@ class _ScanScreenState extends State<ScanScreen> {
                       ],
                     ),
                   ),
-                  Messages(
-                    fem: fem,
-                    ffem: ffem,
-                    messages: messages,
-                    updateMessageList: updateMessageList,
-                    deleteMessage:
-                        deleteMessage, // Pass the deleteMessage function
-                  ),
+                  GestureDetector(
+                    onTap: _scanQRCode, // Call _scanQR when tapped
+                    child: Container(
+                      // autogroupj2pjdEq (SrCxSzNvizKye9Hh3hJ2Pj)
+                      margin: EdgeInsets.fromLTRB(
+                          0 * fem, 0 * fem, 0 * fem, 0 * fem),
+                      padding: EdgeInsets.fromLTRB(161.17 * fem, 250.5 * fem,
+                          159.08 * fem, 241.33 * fem),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Color(0xffd9d9d9),
+                      ),
+                      child: Center(
+                        // iconlyregularoutlinescanLQ9 (4:30606)
+                        child: SizedBox(
+                          width: 93.75 * fem,
+                          height: 78.17 * fem,
+                          child: Image.asset(
+                            'assets/design/images/iconly-regular-outline-scan.png',
+                            width: 93.75 * fem,
+                            height: 78.17 * fem,
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),
@@ -401,243 +516,6 @@ class _ScanScreenState extends State<ScanScreen> {
           ),
         ],
       ),
-    );
-  }
-}
-
-class Messages extends StatefulWidget {
-  final double fem;
-  final double ffem;
-  final List<Map<String, dynamic>> messages;
-  final Function updateMessageList;
-  final Function deleteMessage; // Callback function
-
-  Messages({
-    required this.fem,
-    required this.ffem,
-    required this.messages,
-    required this.updateMessageList,
-    required this.deleteMessage,
-  });
-
-  @override
-  _MessagesState createState() => _MessagesState();
-}
-
-class _MessagesState extends State<Messages> {
-  int selectedMessageIndex =
-      -1; // Initialize with -1 to indicate no message is selected
-
-  void onMessageSelected(int index) {
-    setState(() {
-      selectedMessageIndex = index;
-    });
-  }
-
-  Future<void> markMessageAsRead(int index) async {
-    if (index >= 0 && index < widget.messages.length) {
-      final message = widget.messages[index];
-
-      if (message['isRead'] != 'Read') {
-        message['isRead'] = 'Read'; // Update the status in the message data
-        final messageId = message['id'];
-
-        // Make a POST API request to update the message status
-        final headers = {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': 'd7c436fff9e0910158379791ad0aeba8',
-        };
-        final apiUrl = '/admin/auth/updateMessages';
-        final response = await http.post(
-          Uri.parse('https://app.suellastheshoelaundry.com' + apiUrl),
-          body: {'id': messageId.toString(), 'isRead': 'Yes'},
-        );
-
-        if (response.statusCode == 200) {
-          // Message status updated successfully
-          // You can handle the response as needed
-        } else {
-          // Handle API request error
-        }
-      }
-    }
-  }
-
-  void showFullMessageDialog(String message) async {
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return WillPopScope(
-          onWillPop: () async {
-            // Update the message list when the user tries to pop the dialog
-            widget.updateMessageList();
-            return true;
-          },
-          child: AlertDialog(
-            title: Text('Message'),
-            content: Text(message),
-            actions: <Widget>[
-              TextButton(
-                child: Text('Close'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-
-    // Update the message list after the dialog is closed
-    widget.updateMessageList();
-  }
-
-  Future<void> deleteMessage(int index) async {
-    if (index >= 0 && index < widget.messages.length) {
-      final message = widget.messages[index];
-
-      if (message['isRead'] != 'Read') {
-        message['isRead'] = 'Read'; // Update the status in the message data
-        final messageId = message['id'];
-
-        // Make a POST API request to update the message status
-        final headers = {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': 'd7c436fff9e0910158379791ad0aeba8',
-        };
-        final apiUrl = '/admin/auth/deleteMessages';
-        final response = await http.post(
-          Uri.parse('https://app.suellastheshoelaundry.com' + apiUrl),
-          body: {'id': messageId.toString(), 'arhieved': 'Yes'},
-        );
-
-        if (response.statusCode == 200) {
-          // Message status updated successfully
-          // You can handle the response as needed
-          widget.updateMessageList();
-        } else {
-          // Handle API request error
-        }
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: List.generate(widget.messages.length, (index) {
-        final message = widget.messages[index];
-        final isMessageSelected = selectedMessageIndex == index;
-
-        return Column(
-          children: [
-            GestureDetector(
-              onTap: () {
-                onMessageSelected(index);
-              },
-              child: Container(
-                width: 350 * widget.fem,
-                height: 82 * widget.fem,
-                color:
-                    isMessageSelected ? Color(0xfff6fff7) : Colors.transparent,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.fromLTRB(0 * widget.fem,
-                              0 * widget.fem, 0 * widget.fem, 3 * widget.fem),
-                          child: Text(
-                            message['title'] ?? '',
-                            style: SafeGoogleFont(
-                              'Inter',
-                              fontSize: 14 * widget.ffem,
-                              fontWeight: FontWeight.w600,
-                              height: 1.4285714286 * widget.ffem / widget.fem,
-                              color: Color(0xff000000),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          width: 310 * widget.fem,
-                          child: Text(
-                            (message['message'] ?? '').length > 60
-                                ? '${(message['message'] ?? '').substring(0, 60)}...'
-                                : message['message'],
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color:
-                                  Colors.black.withOpacity(0.5699999928474426),
-                              fontSize: 12 * widget.ffem,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w400,
-                              height: 1.67 * widget.ffem / widget.fem,
-                            ),
-                          ),
-                        ),
-                        if ((message['message'] ?? '').length >
-                            1) // Check if message is longer
-                          Container(
-                            margin: EdgeInsets.fromLTRB(1 * widget.fem,
-                                0 * widget.fem, 0 * widget.fem, 0 * widget.fem),
-                            child: GestureDetector(
-                              onTap: () {
-                                // Call markMessageAsRead with the current message index
-                                markMessageAsRead(index);
-                                showFullMessageDialog(message['message']);
-                              },
-                              child: Text(
-                                'Read more',
-                                style: SafeGoogleFont(
-                                  'Inter',
-                                  fontSize: 12 * widget.ffem,
-                                  fontWeight: FontWeight.w600,
-                                  height:
-                                      1.6666666667 * widget.ffem / widget.fem,
-                                  color: Color(0xff57cc99),
-                                ),
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                    if (isMessageSelected)
-                      GestureDetector(
-                        onTap: () {
-                          deleteMessage(
-                              index); // Wrap deleteMessage in an anonymous function
-                        },
-                        child: Container(
-                          width: 40 * widget.fem,
-                          decoration: BoxDecoration(
-                            color: Color(0xffed6a5a),
-                          ),
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: SizedBox(
-                              width: 20 * widget.fem,
-                              height: 20 * widget.fem,
-                              child: Image.asset(
-                                'assets/design/images/iconly-regular-outline-delete.png',
-                                width: 20 * widget.fem,
-                                height: 20 * widget.fem,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        );
-      }),
     );
   }
 }

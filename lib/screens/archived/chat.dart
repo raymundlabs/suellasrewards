@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
-import 'package:suellas/widgets/chat_messages.dart';
-import 'package:suellas/widgets/new_message.dart';
+import 'package:suellas/screens/archived/widgets/chat_messages.dart';
+import 'package:suellas/screens/archived/widgets/new_message.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});

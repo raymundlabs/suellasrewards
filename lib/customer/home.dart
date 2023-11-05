@@ -9,9 +9,11 @@ import 'package:suellas/customer/profile.dart';
 import 'package:suellas/customer/location.dart';
 import 'package:suellas/customer/inbox.dart';
 import 'package:suellas/customer/inboxread.dart';
+import 'package:suellas/customer/security.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:suellas/design/start.dart';
 
 class CustomerHomeScreen extends StatefulWidget {
   const CustomerHomeScreen({Key? key}) : super(key: key);
@@ -41,28 +43,33 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   void initState() {
     super.initState();
     // Call the API request method to get reward points and set the state
-      _getUserEmail().then((_) {
-       _getUserData().then((data) {
-
-
+    _getUserEmail().then((_) {
+      _getUserData().then((data) {
         setState(() {
           _firstName = data['first_name'] ?? '';
           _lastName = data['last_name'] ?? '';
           rewardPoints = data['reward_points'] ?? '';
-       });
-
-     
-
-
-
+        });
       });
-         _getPromotions().then((_) {
-      // Once promotions are fetched, the widget tree will be rebuilt
+      _getPromotions().then((_) {
+        // Once promotions are fetched, the widget tree will be rebuilt
+      });
     });
-    });  
-  
   }
 
+  Future<void> _logOut() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Clear user data from SharedPreferences
+    await prefs.remove('userEmail');
+    await prefs.remove('authToken');
+
+    // Navigate to the login screen
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => StartScreen()),
+    );
+  }
 
   Future<void> _getUserEmail() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -93,44 +100,41 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
     }
   }
 
-Future<void> _getPromotions() async {
-  final headers = {
-    'Content-Type': 'application/json',
-    'X-CSRF-Token': 'd7c436fff9e0910158379791ad0aeba8',
-  };
-  final apiUrl = '/admin/auth/getPromotions';
-  final email = _userEmail;
-  final response = await http.post(
-    Uri.parse('https://app.suellastheshoelaundry.com' + apiUrl),
-    body: {
-      'email': email,
-    },
-  );
+  Future<void> _getPromotions() async {
+    final headers = {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': 'd7c436fff9e0910158379791ad0aeba8',
+    };
+    final apiUrl = '/admin/auth/getPromotions';
+    final email = _userEmail;
+    final response = await http.post(
+      Uri.parse('https://app.suellastheshoelaundry.com' + apiUrl),
+      body: {
+        'email': email,
+      },
+    );
 
-  if (response.statusCode == 200) {
-    final dynamic responseBody = json.decode(response.body);
+    if (response.statusCode == 200) {
+      final dynamic responseBody = json.decode(response.body);
 
-    if (responseBody is List) {
-      final List<Map<String, dynamic>> userPromotions = responseBody.cast<Map<String, dynamic>>();
-    
-      // Debugging: Print the fetched promotions to the console
-      print('Fetched Promotions: $userPromotions');
-    
-      // Update the state with the fetched promotions data
-      setState(() {
-        promotions = userPromotions;
-      });
+      if (responseBody is List) {
+        final List<Map<String, dynamic>> userPromotions =
+            responseBody.cast<Map<String, dynamic>>();
+
+        // Debugging: Print the fetched promotions to the console
+        print('Fetched Promotions: $userPromotions');
+
+        // Update the state with the fetched promotions data
+        setState(() {
+          promotions = userPromotions;
+        });
+      } else {
+        throw Exception('Invalid response format');
+      }
     } else {
-      throw Exception('Invalid response format');
+      throw Exception('Failed to load user data');
     }
-  } else {
-    throw Exception('Failed to load user data');
   }
-}
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -263,7 +267,7 @@ Future<void> _getPromotions() async {
                         ),
                       ),
                     ),
-                   Group48095458(fem: fem, ffem: ffem, promotions: promotions),
+                    Group48095458(fem: fem, ffem: ffem, promotions: promotions),
                   ],
                 ),
               ),
@@ -280,7 +284,7 @@ Future<void> _getPromotions() async {
               // Your right-side drawer items
               ListTile(
                 leading: Icon(Icons.settings), // Customize with your icon
-               title: Text('$_firstName $_lastName'),
+                title: Text('$_firstName $_lastName'),
                 onTap: () {
                   // Handle settings action
                 },
@@ -289,15 +293,23 @@ Future<void> _getPromotions() async {
               ListTile(
                 title: Text('Member Profile'), // Customize with your text
                 onTap: () {
-                  // Handle settings action
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ProfileScreen()),
+                  );
                 },
               ),
               ListTile(
                 title: Text('Account Security'), // Customize with your text
                 onTap: () {
-                  // Handle settings action
-                },
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ChangePasswordScreen()),
+                  );
+                }, // <-- Added closing brace
               ),
+
               ListTile(
                 title: Text('Services'), // Customize with your text
                 onTap: () {
@@ -325,7 +337,7 @@ Future<void> _getPromotions() async {
               ListTile(
                 title: Text('Log Out'), // Customize with your text
                 onTap: () {
-                  // Handle settings action
+                  _logOut();
                 },
               ),
               // Add more right-side drawer items as needed
@@ -393,10 +405,12 @@ Future<void> _getPromotions() async {
         children: [
           GestureDetector(
             onTap: () {
-              // Implement the behavior to reset or return to the current screen
-              // For example, you can scroll to the top of the current screen
-              // or refresh the content.
-              // _scrollToTopOrRefresh(); // Call a method to scroll to the top or refresh the content
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        CustomerHomeScreen()), // Navigate to inbox screen
+              );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
@@ -563,213 +577,212 @@ class RewardsPointsWidget extends StatelessWidget {
       // Display a loading indicator or placeholder when rewardPoints is not available yet.
       return CircularProgressIndicator(); // You can use any other widget as a placeholder.
     } else {
-    return Container(
-      margin: EdgeInsets.fromLTRB(53 * fem, 0 * fem, 34.86 * fem, 0 * fem),
-      width: double.infinity,
-      height: 160.42 * fem,
-      child: Stack(
-        children: [
-          Positioned(
-            // rectangle39374m6h (202:980)
-            left: 0 * fem,
-            top: 4.7749023438 * fem,
-            child: Align(
-              child: SizedBox(
-                width: 250 * fem,
-                height: 152 * fem,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10 * fem),
-                    color: Color(0xffffffff),
+      return Container(
+        margin: EdgeInsets.fromLTRB(53 * fem, 0 * fem, 34.86 * fem, 0 * fem),
+        width: double.infinity,
+        height: 160.42 * fem,
+        child: Stack(
+          children: [
+            Positioned(
+              // rectangle39374m6h (202:980)
+              left: 0 * fem,
+              top: 4.7749023438 * fem,
+              child: Align(
+                child: SizedBox(
+                  width: 250 * fem,
+                  height: 152 * fem,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10 * fem),
+                      color: Color(0xffffffff),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          Positioned(
-            // sicon1rP3 (4:16617)
-            left: 142.6625976562 * fem,
-            top: 0 * fem,
-            child: Align(
-              child: SizedBox(
-                width: 107.31 * fem,
-                height: 160.42 * fem,
-                child: Image.asset(
-                  'assets/design/images/s-icon-1.png',
+            Positioned(
+              // sicon1rP3 (4:16617)
+              left: 142.6625976562 * fem,
+              top: 0 * fem,
+              child: Align(
+                child: SizedBox(
                   width: 107.31 * fem,
                   height: 160.42 * fem,
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            // suellasrewardMah (202:981)
-            left: 23 * fem,
-            top: 13.7749023438 * fem,
-            child: Align(
-              child: SizedBox(
-                width: 118 * fem,
-                height: 20 * fem,
-                child: Text(
-                  'SUELLAS REWARD',
-                  style: SafeGoogleFont(
-                    'Inter',
-                    fontSize: 11 * ffem,
-                    fontWeight: FontWeight.w700,
-                    height: 1.8181818182 * ffem / fem,
-                    letterSpacing: 1.25 * fem,
-                    color: Color(0xff00613a),
+                  child: Image.asset(
+                    'assets/design/images/s-icon-1.png',
+                    width: 107.31 * fem,
+                    height: 160.42 * fem,
                   ),
                 ),
               ),
             ),
-          ),
-          Positioned(
-            // group480954472B3 (202:984)
-            left: 22 * fem,
-            top: 92.7749023438 * fem,
-            child: Container(
-              width: 133 * fem,
-              height: 18.34 * fem,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10 * fem),
+            Positioned(
+              // suellasrewardMah (202:981)
+              left: 23 * fem,
+              top: 13.7749023438 * fem,
+              child: Align(
+                child: SizedBox(
+                  width: 118 * fem,
+                  height: 20 * fem,
+                  child: Text(
+                    'SUELLAS REWARD',
+                    style: SafeGoogleFont(
+                      'Inter',
+                      fontSize: 11 * ffem,
+                      fontWeight: FontWeight.w700,
+                      height: 1.8181818182 * ffem / fem,
+                      letterSpacing: 1.25 * fem,
+                      color: Color(0xff00613a),
+                    ),
+                  ),
+                ),
               ),
-              child: Stack(
-                children: [
-                  Positioned(
-                    // rectangle39372ipZ (202:985)
-                    left: 3 * fem,
-                    top: 0 * fem,
-                    child: Align(
-                      child: SizedBox(
-                        width: 130 * fem,
-                        height: 18 * fem,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10 * fem),
-                            border: Border.all(color: Color(0x0a000000)),
-                            color: Color(0xc9d8d8d8),
+            ),
+            Positioned(
+              // group480954472B3 (202:984)
+              left: 22 * fem,
+              top: 92.7749023438 * fem,
+              child: Container(
+                width: 133 * fem,
+                height: 18.34 * fem,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10 * fem),
+                ),
+                child: Stack(
+                  children: [
+                    Positioned(
+                      // rectangle39372ipZ (202:985)
+                      left: 3 * fem,
+                      top: 0 * fem,
+                      child: Align(
+                        child: SizedBox(
+                          width: 130 * fem,
+                          height: 18 * fem,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10 * fem),
+                              border: Border.all(color: Color(0x0a000000)),
+                              color: Color(0xc9d8d8d8),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    // rectangle39373cQ9 (202:986)
-                    left: 0 * fem,
-                    top: 0 * fem,
-                    child: Align(
-                      child: SizedBox(
-                        width: 73.82 * fem,
-                        height: 18.34 * fem,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10 * fem),
-                            color: Color(0xff57cc99),
+                    Positioned(
+                      // rectangle39373cQ9 (202:986)
+                      left: 0 * fem,
+                      top: 0 * fem,
+                      child: Align(
+                        child: SizedBox(
+                          width: 73.82 * fem,
+                          height: 18.34 * fem,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10 * fem),
+                              color: Color(0xff57cc99),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-          Positioned(
-            // starstonextrewards7bo (202:987)
-            left: 25 * fem,
-            top: 120.7749023438 * fem,
-            child: Align(
-              child: SizedBox(
-                width: 111 * fem,
-                height: 20 * fem,
-                child: Text(
-                  '65 Stars to Next Rewards',
-                  textAlign: TextAlign.center,
-                  style: SafeGoogleFont(
-                    'Inter',
-                    fontSize: 9 * ffem,
-                    fontWeight: FontWeight.w600,
-                    height: 2.2222222222 * ffem / fem,
-                    color: Color(0xff00613a),
+            Positioned(
+              // starstonextrewards7bo (202:987)
+              left: 25 * fem,
+              top: 120.7749023438 * fem,
+              child: Align(
+                child: SizedBox(
+                  width: 111 * fem,
+                  height: 20 * fem,
+                  child: Text(
+                    '65 Stars to Next Rewards',
+                    textAlign: TextAlign.center,
+                    style: SafeGoogleFont(
+                      'Inter',
+                      fontSize: 9 * ffem,
+                      fontWeight: FontWeight.w600,
+                      height: 2.2222222222 * ffem / fem,
+                      color: Color(0xff00613a),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          Positioned(
-            // group48095456bWy (4:16635)
-            left: 26.5 * fem,
-            top: 51.7749023438 * fem,
-            child: Container(
-              width: 150 * fem,
-              height: 21 * fem,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    margin:
-                        EdgeInsets.fromLTRB(0 * fem, 0 * fem, 0 * fem, 1 * fem),
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
+            Positioned(
+              // group48095456bWy (4:16635)
+              left: 26.5 * fem,
+              top: 51.7749023438 * fem,
+              child: Container(
+                width: 150 * fem,
+                height: 21 * fem,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.fromLTRB(
+                          0 * fem, 0 * fem, 0 * fem, 1 * fem),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          '$rewardPoints',
+                          textAlign: TextAlign.center,
+                          style: SafeGoogleFont(
+                            'Inter',
+                            fontSize: 11 * ffem,
+                            fontWeight: FontWeight.w700,
+                            height: 0.7692307692 * ffem / fem,
+                            letterSpacing: 1 * fem,
+                            color: Color(0xff000000),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      // Bzy (202:990)
+                      margin: EdgeInsets.fromLTRB(
+                          0 * fem, 1 * fem, 0 * fem, 0 * fem),
                       child: Text(
-                        '$rewardPoints',
+                        '/150',
                         textAlign: TextAlign.center,
                         style: SafeGoogleFont(
                           'Inter',
-                          fontSize: 11 * ffem,
+                          fontSize: 21 * ffem,
                           fontWeight: FontWeight.w700,
-                          height: 0.7692307692 * ffem / fem,
+                          height: 0.9523809524 * ffem / fem,
                           letterSpacing: 1 * fem,
                           color: Color(0xff000000),
                         ),
                       ),
                     ),
-                  ),
-                  Container(
-                    // Bzy (202:990)
-                    margin:
-                        EdgeInsets.fromLTRB(0 * fem, 1 * fem, 0 * fem, 0 * fem),
-                    child: Text(
-                      '/150',
-                      textAlign: TextAlign.center,
-                      style: SafeGoogleFont(
-                        'Inter',
-                        fontSize: 21 * ffem,
-                        fontWeight: FontWeight.w700,
-                        height: 0.9523809524 * ffem / fem,
-                        letterSpacing: 1 * fem,
-                        color: Color(0xff000000),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Positioned(
-            // star3JJu (202:991)
-            left: 175 * fem,
-            top: 39.7749023438 * fem,
-            child: Align(
-              child: SizedBox(
-                width: 36 * fem,
-                height: 36 * fem,
-                child: Image.asset(
-                  'assets/design/images/star-3.png',
-                  width: 36 * fem,
-                  height: 36 * fem,
+                  ],
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+            Positioned(
+              // star3JJu (202:991)
+              left: 175 * fem,
+              top: 39.7749023438 * fem,
+              child: Align(
+                child: SizedBox(
+                  width: 36 * fem,
+                  height: 36 * fem,
+                  child: Image.asset(
+                    'assets/design/images/star-3.png',
+                    width: 36 * fem,
+                    height: 36 * fem,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
     }
   }
 }
-
 
 class Group48095458 extends StatelessWidget {
   final double fem;
@@ -793,7 +806,8 @@ class Group48095458 extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                margin: EdgeInsets.fromLTRB(5 * fem, 5.67 * fem, 10.99 * fem, 0 * fem),
+                margin: EdgeInsets.fromLTRB(
+                    5 * fem, 5.67 * fem, 10.99 * fem, 0 * fem),
                 width: 42.01 * fem,
                 height: 50.34 * fem,
                 child: Image.asset(
@@ -810,7 +824,8 @@ class Group48095458 extends StatelessWidget {
                   SizedBox(
                     width: 261 * fem,
                     child: Text(
-                      promotion['title'] ?? '', // Use the title from the promotion
+                      promotion['title'] ??
+                          '', // Use the title from the promotion
                       style: TextStyle(
                         color: Colors.black.withOpacity(0.99),
                         fontSize: 14 * ffem,
@@ -823,7 +838,8 @@ class Group48095458 extends StatelessWidget {
                   SizedBox(
                     width: 261 * fem,
                     child: Text(
-                      promotion['description'] ?? '', // Use the description from the promotion
+                      promotion['description'] ??
+                          '', // Use the description from the promotion
                       style: TextStyle(
                         color: Colors.black.withOpacity(0.5699999928474426),
                         fontSize: 12 * ffem,
