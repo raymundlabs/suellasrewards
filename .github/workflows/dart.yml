@@ -7,11 +7,10 @@ jobs:
   build-ios:
     name: 🎉 iOS Build
     runs-on: macos-latest
+
     steps:
-      # Checkout the repository
       - uses: actions/checkout@v3
 
-      # Set up Flutter environment
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
@@ -20,33 +19,40 @@ jobs:
       # Install Flutter dependencies
       - run: flutter pub get
 
-      # Create Podfile if missing
+      # Generate Podfile if missing and configure it
       - name: Generate Podfile if missing
         run: |
           if [ ! -f ios/Podfile ]; then
-            echo "platform :ios, '11.0'" > ios/Podfile
+            echo "platform :ios, '12.0'" > ios/Podfile
             echo "target 'Runner' do" >> ios/Podfile
             echo "  use_frameworks!" >> ios/Podfile
             echo "  # Add your dependencies here" >> ios/Podfile
             echo "end" >> ios/Podfile
           fi
 
-      # Update CocoaPods repository
-      - run: pod repo update
-        working-directory: ios
+      # Ensure no `RunnerTests` target is found (prevents error)
+      - name: Fix Podfile to prevent RunnerTests target issue
+        run: |
+          sed -i '' '/target "RunnerTests" do/d' ios/Podfile  # Remove any `RunnerTests` references
 
       # Install CocoaPods dependencies
       - run: pod install --project-directory=ios
 
-      # Build iOS app for release (no code signing)
+      # Build iOS app for release
       - run: flutter build ios --release --no-codesign
 
       # Prepare for IPA export
       - run: mkdir -p Payload
         working-directory: build/ios/iphoneos
 
-      # Move the built Runner.app to Payload
-      - run: mv Runner.app/ Payload/
+      # Move the .app file to Payload folder
+      - run: |
+          if [ -d "build/ios/iphoneos/Runner.app" ]; then
+            mv build/ios/iphoneos/Runner.app Payload/
+          else
+            echo "Error: Runner.app not found!"
+            exit 1
+          fi
         working-directory: build/ios/iphoneos
 
       # Zip the output IPA
@@ -54,7 +60,7 @@ jobs:
         run: zip -qq -r -9 FlutterIpaExport.ipa Payload
         working-directory: build/ios/iphoneos
 
-      # Upload binaries to release
+      # Upload the IPA to GitHub release
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
@@ -62,4 +68,4 @@ jobs:
           file: build/ios/iphoneos/FlutterIpaExport.ipa
           tag: v1.0
           overwrite: true
-          body: "This is the first release"
+          body: "This is first release"
