@@ -1,4 +1,4 @@
-name: Suellas Rewards
+name: iOS-ipa-build
 
 on:
   workflow_dispatch:
@@ -20,7 +20,7 @@ jobs:
       # Install Flutter dependencies
       - run: flutter pub get
 
-      # Create Podfile if it doesn't exist
+      # Create Podfile if missing
       - name: Generate Podfile if missing
         run: |
           if [ ! -f ios/Podfile ]; then
