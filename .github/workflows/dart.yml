@@ -19,21 +19,22 @@ jobs:
       # Install Flutter dependencies
       - run: flutter pub get
 
-      # Generate Podfile if missing and configure it
-      - name: Generate Podfile if missing
+      # Create the RunnerTests directory and add the RunnerTests.swift file
+      - name: Create RunnerTests directory and add RunnerTests.swift
         run: |
-          if [ ! -f ios/Podfile ]; then
-            echo "platform :ios, '12.0'" > ios/Podfile
-            echo "target 'Runner' do" >> ios/Podfile
-            echo "  use_frameworks!" >> ios/Podfile
-            echo "  # Add your dependencies here" >> ios/Podfile
-            echo "end" >> ios/Podfile
-          fi
-
-      # Ensure no `RunnerTests` target is found (prevents error)
-      - name: Fix Podfile to prevent RunnerTests target issue
-        run: |
-          sed -i '' '/target "RunnerTests" do/d' ios/Podfile  # Remove any `RunnerTests` references
+          mkdir -p ios/RunnerTests
+          echo 'import Flutter' > ios/RunnerTests/RunnerTests.swift
+          echo 'import UIKit' >> ios/RunnerTests/RunnerTests.swift
+          echo 'import XCTest' >> ios/RunnerTests/RunnerTests.swift
+          echo '' >> ios/RunnerTests/RunnerTests.swift
+          echo 'class RunnerTests: XCTestCase {' >> ios/RunnerTests/RunnerTests.swift
+          echo '' >> ios/RunnerTests/RunnerTests.swift
+          echo '  func testExample() {' >> ios/RunnerTests/RunnerTests.swift
+          echo '    // If you add code to the Runner application, consider adding tests here.' >> ios/RunnerTests/RunnerTests.swift
+          echo '    // See https://developer.apple.com/documentation/xctest for more information about using XCTest.' >> ios/RunnerTests/RunnerTests.swift
+          echo '  }' >> ios/RunnerTests/RunnerTests.swift
+          echo '' >> ios/RunnerTests/RunnerTests.swift
+          echo '}' >> ios/RunnerTests/RunnerTests.swift
 
       # Install CocoaPods dependencies
       - run: pod install --project-directory=ios
