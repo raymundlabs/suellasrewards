@@ -1,0 +1,60 @@
+name: Suellas Rewards
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    name: 🎉 iOS Build
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      # Set up Flutter environment
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          architecture: x64
+
+      # Install Flutter dependencies
+      - run: flutter pub get
+
+      # Create Podfile if it doesn't exist
+      - name: Generate Podfile if missing
+        run: |
+          if [ ! -f ios/Podfile ]; then
+            flutter create .
+          fi
+
+      # Set iOS platform version in Podfile
+      - name: Update Podfile with platform version
+        run: |
+          sed -i '' 's/# platform :ios, '14.0'/platform :ios, '12.0'/g' ios/Podfile
+          
+      # Install CocoaPods dependencies
+      - run: pod install --project-directory=ios
+
+      # Build iOS app for release
+      - run: flutter build ios --release --no-codesign
+
+      # Prepare for IPA export
+      - run: mkdir Payload
+        working-directory: build/ios/iphoneos
+
+      - run: mv Runner.app/ Payload
+        working-directory: build/ios/iphoneos
+
+      # Zip the output IPA
+      - name: Zip output
+        run: zip -qq -r -9 FlutterIpaExport.ipa Payload
+        working-directory: build/ios/iphoneos
+
+      # Upload the IPA to GitHub release
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/ios/iphoneos/FlutterIpaExport.ipa
+          tag: v1.0
+          overwrite: true
+          body: "This is the first release"
