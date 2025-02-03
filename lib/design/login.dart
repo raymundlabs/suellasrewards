@@ -435,12 +435,14 @@ class _AuthScreenState extends State<AuthScreen> {
                                   child: ElevatedButton(
                                     onPressed: _submit,
                                     style: ElevatedButton.styleFrom(
-                                      primary: Colors
+                                      backgroundColor: Colors
                                           .transparent, // Make the button transparent
                                       elevation: 0, // Remove button elevation
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(70),
                                       ),
+                                      onPrimary: Colors
+                                          .white, // Text color when button is pressed
                                     ),
                                     child: Text(
                                       _isLogin ? 'Login' : 'Signup',
@@ -449,7 +451,8 @@ class _AuthScreenState extends State<AuthScreen> {
                                         fontSize: 16 * ffem,
                                         fontWeight: FontWeight.w600,
                                         height: 1.2125 * ffem / fem,
-                                        color: Color(0xffffffff),
+                                        color: Color(
+                                            0xffffffff), // Default text color
                                       ),
                                     ),
                                   ),
