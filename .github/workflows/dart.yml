@@ -29,8 +29,8 @@ jobs:
       # Set iOS platform version in Podfile
       - name: Update Podfile with platform version
         run: |
-          sed -i '' 's/# platform :ios, '14.0'/platform :ios, '12.0'/g' ios/Podfile
-          
+          sed -i '' '/platform :ios/ { s/# platform :ios, .*/platform :ios, '12.0'/; }' ios/Podfile || echo "platform :ios, '12.0'" >> ios/Podfile
+
       # Install CocoaPods dependencies
       - run: pod install --project-directory=ios
 
@@ -38,10 +38,16 @@ jobs:
       - run: flutter build ios --release --no-codesign
 
       # Prepare for IPA export
-      - run: mkdir Payload
+      - run: mkdir -p Payload
         working-directory: build/ios/iphoneos
 
-      - run: mv Runner.app/ Payload
+      - run: |
+          if [ -d "build/ios/iphoneos/Runner.app" ]; then
+            mv build/ios/iphoneos/Runner.app Payload/
+          else
+            echo "Error: Runner.app not found!"
+            exit 1
+          fi
         working-directory: build/ios/iphoneos
 
       # Zip the output IPA
