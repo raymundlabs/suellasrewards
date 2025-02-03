@@ -1,0 +1,17 @@
+# Uncomment the next line to define a global platform for your project
+platform :ios, '11.0'
+
+# CocoaPods analytics sends network stats
+# To disable this, uncomment the next line:
+# disable_input_accessors!
+
+# Pods for Runner
+target 'Runner' do
+  use_frameworks!
+  pod 'Firebase/Core', '10.0.0'  # Example pod dependency, adjust as needed.
+end
+
+# Uncomment this line to add the `RunnerTests` target
+# target 'RunnerTests' do
+#   use_frameworks!
+# end
