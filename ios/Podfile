@@ -1,18 +1,39 @@
-platform :ios, '12.0'  # Ensure iOS 12.0 or higher for compatibility
+platform :ios, '12.0'
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
-# CocoaPods analytics sends network stats
-# To disable this, uncomment the next line:
-# disable_input_accessors!
+# Define Flutter root path
+def flutter_root
+  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+  unless File.exist?(generated_xcode_build_settings_path)
+    raise "#{generated_xcode_build_settings_path} must exist. Run flutter pub get"
+  end
+
+  File.foreach(generated_xcode_build_settings_path) do |line|
+    matches = line.match(/FLUTTER_ROOT\=(.*)/)
+    return matches[1].strip if matches
+  end
+  raise "FLUTTER_ROOT not found in Generated.xcconfig"
+end
+
+# Load Flutter pod helper
+require File.join(flutter_root, 'packages', 'flutter_tools', 'bin', 'podhelper')
+
+# Apply Flutter configuration
+flutter_ios_podfile_setup
 
 target 'Runner' do
   use_frameworks!
   use_modular_headers!
 
-  pod 'Firebase/Core', '10.0.0'  # Example pod dependency, adjust as needed.
+  # Firebase dependency
+  pod 'Firebase/Core', '10.0.0'
 
-  # Explicitly add flutter_barcode_scanner
-  pod 'flutter_barcode_scanner', :path => '../.symlinks/plugins/flutter_barcode_scanner/ios'
+  # Flutter plugins will be auto-added by this line
+  flutter_install_all_ios_pods(File.dirname(File.realpath(__FILE__)))
+end
 
-  # Ensure Flutter dependencies are properly linked
-  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+  end
 end
