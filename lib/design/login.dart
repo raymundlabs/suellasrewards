@@ -114,7 +114,6 @@ class _AuthScreenState extends State<AuthScreen> {
             );
           });
         } else if (responseBody.contains('Login successful')) {
-          
           if (_enteredEmail.endsWith('@suellas.com')) {
             Navigator.pushReplacement(
               context,
@@ -334,85 +333,46 @@ class _AuthScreenState extends State<AuthScreen> {
 
                       SizedBox(height: 20 * fem),
 
-                      Positioned(
-                        left: 35 * fem,
-                        top: 312 * fem,
-                        child: Container(
-                          width: 339.5 * fem,
-                          height: 20 * fem,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Row(
-                                children: [
-                                  InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        _rememberMe = !_rememberMe;
-                                      });
-                                    },
-                                    child: Container(
-                                      width: 24.0,
-                                      height: 24.0,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: Colors.grey,
-                                          width: 2.0,
-                                        ),
-                                      ),
-                                      child: _rememberMe
-                                          ? Center(
-                                              child: Icon(
-                                                Icons.check,
-                                                size:
-                                                    11.0, // Adjust the size to match the circle
-                                                color: Colors.green,
-                                              ),
-                                            )
-                                          : Container(),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 8.0,
-                                  ),
-                                  Text(
-                                    'Remember Me',
-                                    style: SafeGoogleFont(
-                                      'Inter',
-                                      fontSize: 14 * ffem,
-                                      fontWeight: FontWeight.w500,
-                                      height: 1.4285714286 * ffem / fem,
-                                      color: Color(0xff57cc99),
-                                    ),
-                                  ),
-                                ],
+                      Container(
+                        margin: EdgeInsets.only(top: 25 * fem, left: 70 * fem),
+                        padding: EdgeInsets.fromLTRB(
+                            23 * fem, 16 * fem, 75 * fem, 13 * fem),
+                        width: 295 * fem,
+                        height: 50 * fem,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Color(0xff000000)),
+                          color: Color(0x7fffffff),
+                          borderRadius: BorderRadius.circular(70 * fem),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.fromLTRB(
+                                  0 * fem, 0 * fem, 39.36 * fem, 3 * fem),
+                              width: 17.64 * fem,
+                              height: 18 * fem,
+                              child: Image.asset(
+                                'assets/design/images/group.png',
+                                width: 17.64 * fem,
+                                height: 18 * fem,
                               ),
-                              Spacer(), // Add a spacer to push the following text to the right
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ForgotScreen(),
-                                      ),
-                                    );
-                                  },
-                                  child: Text(
-                                    'Forgot Password?',
-                                    textAlign: TextAlign.right,
-                                    style: TextStyle(
-                                      fontSize: 14 * ffem,
-                                      fontWeight: FontWeight.w500,
-                                      color: Color(0xff57cc99),
-                                    ),
-                                  ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(top: 1 * fem),
+                              child: Text(
+                                'Login with Google',
+                                textAlign: TextAlign.center,
+                                style: SafeGoogleFont(
+                                  'Inter',
+                                  fontSize: 16 * ffem,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.2125 * ffem / fem,
+                                  color: Color(0xff000000),
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
 
@@ -531,104 +491,90 @@ class _AuthScreenState extends State<AuthScreen> {
                         ],
                       ),
                     ),
-                    Positioned(
-                      left: 70 * fem,
-                      top: 602 * fem,
-                      child: Container(
-                        margin: EdgeInsets.fromLTRB(
-                            0 * fem, 25 * fem, 0 * fem, 0 * fem),
-                        padding: EdgeInsets.fromLTRB(
-                            23 * fem, 16 * fem, 75 * fem, 13 * fem),
-                        width: 295 * fem,
-                        height: 50 * fem,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Color(0xff000000)),
-                          color: Color(0x7fffffff),
-                          borderRadius: BorderRadius.circular(70 * fem),
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              margin: EdgeInsets.fromLTRB(
-                                  0 * fem, 0 * fem, 39.36 * fem, 3 * fem),
-                              width: 17.64 * fem,
-                              height: 18 * fem,
-                              child: Image.asset(
-                                'assets/design/images/group.png',
-                                width: 17.64 * fem,
-                                height: 18 * fem,
-                              ),
-                            ),
-                            Container(
-                              margin: EdgeInsets.fromLTRB(
-                                  0 * fem, 1 * fem, 0 * fem, 0 * fem),
-                              child: Text(
-                                'Login with Google',
-                                textAlign: TextAlign.center,
-                                style: SafeGoogleFont(
-                                  'Inter',
-                                  fontSize: 16 * ffem,
-                                  fontWeight: FontWeight.w600,
-                                  height: 1.2125 * ffem / fem,
-                                  color: Color(0xff000000),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+              Container(
+  margin: EdgeInsets.only(top: 602 * fem, left: 70 * fem), // Adjusted top and left for positioning
+  padding: EdgeInsets.fromLTRB(23 * fem, 16 * fem, 75 * fem, 13 * fem),
+  width: 295 * fem,
+  height: 50 * fem,
+  decoration: BoxDecoration(
+    border: Border.all(color: Color(0xff000000)),
+    color: Color(0x7fffffff),
+    borderRadius: BorderRadius.circular(70 * fem),
+  ),
+  child: Row(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Container(
+        margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 39.36 * fem, 3 * fem),
+        width: 17.64 * fem,
+        height: 18 * fem,
+        child: Image.asset(
+          'assets/design/images/group.png',
+          width: 17.64 * fem,
+          height: 18 * fem,
+        ),
+      ),
+      Container(
+        margin: EdgeInsets.fromLTRB(0 * fem, 1 * fem, 0 * fem, 0 * fem),
+        child: Text(
+          'Login with Google',
+          textAlign: TextAlign.center,
+          style: SafeGoogleFont(
+            'Inter',
+            fontSize: 16 * ffem,
+            fontWeight: FontWeight.w600,
+            height: 1.2125 * ffem / fem,
+            color: Color(0xff000000),
+          ),
+        ),
+      ),
+    ],
+  ),
+),
+
                     SizedBox(height: 10 * fem),
-                    Positioned(
-                      left: 69 * fem,
-                      top: 532 * fem,
-                      child: Container(
-                        padding: EdgeInsets.fromLTRB(
-                            21 * fem, 12 * fem, 63 * fem, 13 * fem),
-                        width: 295 * fem,
-                        height: 50 * fem,
-                        decoration: BoxDecoration(
-                          color: Color(0xff4285f4),
-                          borderRadius: BorderRadius.circular(70 * fem),
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              margin: EdgeInsets.fromLTRB(
-                                  0 * fem, 0 * fem, 25 * fem, 0 * fem),
-                              width: 25 * fem,
-                              height: 25 * fem,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12.5 * fem),
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: AssetImage(
-                                    'assets/design/images/ellipse-3-bg.png',
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              margin: EdgeInsets.fromLTRB(
-                                  0 * fem, 3 * fem, 0 * fem, 0 * fem),
-                              child: Text(
-                                'Login with Facebook',
-                                textAlign: TextAlign.center,
-                                style: SafeGoogleFont(
-                                  'Inter',
-                                  fontSize: 16 * ffem,
-                                  fontWeight: FontWeight.w600,
-                                  height: 1.2125 * ffem / fem,
-                                  color: Color(0xffffffff),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+          Container(
+  margin: EdgeInsets.only(top: 532 * fem, left: 69 * fem), // Adjusted top and left for positioning
+  padding: EdgeInsets.fromLTRB(21 * fem, 12 * fem, 63 * fem, 13 * fem),
+  width: 295 * fem,
+  height: 50 * fem,
+  decoration: BoxDecoration(
+    color: Color(0xff4285f4),
+    borderRadius: BorderRadius.circular(70 * fem),
+  ),
+  child: Row(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Container(
+        margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 25 * fem, 0 * fem),
+        width: 25 * fem,
+        height: 25 * fem,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12.5 * fem),
+          image: DecorationImage(
+            fit: BoxFit.cover,
+            image: AssetImage('assets/design/images/ellipse-3-bg.png'),
+          ),
+        ),
+      ),
+      Container(
+        margin: EdgeInsets.fromLTRB(0 * fem, 3 * fem, 0 * fem, 0 * fem),
+        child: Text(
+          'Login with Facebook',
+          textAlign: TextAlign.center,
+          style: SafeGoogleFont(
+            'Inter',
+            fontSize: 16 * ffem,
+            fontWeight: FontWeight.w600,
+            height: 1.2125 * ffem / fem,
+            color: Color(0xffffffff),
+          ),
+        ),
+      ),
+    ],
+  ),
+),
+
                   ],
                 ),
               ),
