@@ -1,22 +1,18 @@
-# Define a global platform for your project
-platform :ios, '12.0'  # Updated to iOS 12.0 for compatibility
+platform :ios, '12.0'  # Ensure iOS 12.0 or higher for compatibility
 
 # CocoaPods analytics sends network stats
 # To disable this, uncomment the next line:
 # disable_input_accessors!
 
-# Pods for Runner
 target 'Runner' do
   use_frameworks!
-  use_modular_headers!  # Added to fix compatibility issues
+  use_modular_headers!
 
   pod 'Firebase/Core', '10.0.0'  # Example pod dependency, adjust as needed.
+
+  # Explicitly add flutter_barcode_scanner
+  pod 'flutter_barcode_scanner', :path => '../.symlinks/plugins/flutter_barcode_scanner/ios'
 
   # Ensure Flutter dependencies are properly linked
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
-
-# Uncomment this line to add the `RunnerTests` target
-# target 'RunnerTests' do
-#   use_frameworks!
-# end
