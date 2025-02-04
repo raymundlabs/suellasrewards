@@ -36,7 +36,7 @@ class _RegisterScreen extends State<RegisterScreen> {
   var _enteredBarangay = '';
   var _accepted = false;
   var _isObscure = true;
-  var isAccepted='';
+  var isAccepted = '';
   bool isChecked = false;
   List<String> days = List.generate(31, (index) => (index + 1).toString());
 
@@ -64,10 +64,8 @@ class _RegisterScreen extends State<RegisterScreen> {
       return;
     }
     print(_confirmedPassword);
-     print(_enteredPassword);
+    print(_enteredPassword);
     _form.currentState!.save();
-
-   
 
     try {
       setState(() {
@@ -100,8 +98,7 @@ class _RegisterScreen extends State<RegisterScreen> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) =>
-                    Done(), // Replace with your sign-in page
+                builder: (context) => Done(), // Replace with your sign-in page
               ),
             );
           });
@@ -301,7 +298,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                           if (value == null || value.trim().length < 6) {
                             return 'Password must be at least 6 characters long.';
                           }
-                         
+
                           return null;
                         },
                         onSaved: (value) {
@@ -338,11 +335,10 @@ class _RegisterScreen extends State<RegisterScreen> {
                         obscureText:
                             _isObscure, // Toggle password visibility here
                         validator: (value) {
-                       
                           if (value == null || value.trim().length < 6) {
                             return 'Password must be at least 6 characters long.';
                           }
-                      
+
                           return null;
                         },
                         onSaved: (value) {
@@ -370,7 +366,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                           if (value == null || value.trim().isEmpty) {
                             return 'Please enter your First Name'; // Provide a more meaningful error message
                           }
-                          
+
                           return null;
                         },
                         onSaved: (value) {
@@ -842,7 +838,8 @@ class _RegisterScreen extends State<RegisterScreen> {
                                 child: ElevatedButton(
                                   onPressed: _submit,
                                   style: ElevatedButton.styleFrom(
-                                    primary: Colors.transparent,
+                                    backgroundColor: Colors
+                                        .transparent, // Use backgroundColor instead of primary
                                     elevation: 0,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(70),
@@ -857,7 +854,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                                     ),
                                   ),
                                 ),
-                              )
+                              ),
 
                               // if (!_isAuthenticating)
                               //   TextButton(
