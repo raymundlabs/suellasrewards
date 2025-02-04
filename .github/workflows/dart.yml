@@ -1,84 +1,126 @@
-name: Suellas Rewards Test
+name: iOS Production Build
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main   # Trigger only on main branch, or use tags (e.g., v1.x)
-  tags:
-    - 'v*'   # Optionally trigger on tagged releases
+    inputs:
+      release-version:
+        description: 'Release version (semver format)'
+        required: true
+        default: '1.0.0'
+
+env:
+  FLUTTER_VERSION: '3.19.5'  # Latest stable as of 2024-05-23
+  XCODE_VERSION: '15.3'      # Match your project's requirements
 
 jobs:
-  build-ios:
-    name: Suellas Rewards Test
+  build-and-sign-ios:
+    name: 🚀 iOS Production Build & Sign
     runs-on: macos-latest
     environment: production
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
-      # Step 1: Checkout code
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      # Step 2: Setup Flutter
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.9'  # Make sure you're using the latest stable version
-          channel: 'stable'
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
           architecture: x64
 
-      # Step 3: Restore dependencies cache
-      - name: Restore dependencies cache
+      - name: Setup Xcode
+        run: |
+          sudo xcode-select -switch /Applications/Xcode_${{ env.XCODE_VERSION }}.app/Contents/Developer
+          sudo xcodebuild -runFirstLaunch
+
+      - name: Cache dependencies
         uses: actions/cache@v3
         with:
           path: |
             ~/.pub-cache
             ios/Pods
-          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
+            ios/.symlinks
+            ios/Flutter/Flutter.podspec
+            .flutter-plugins
+            .flutter-plugins-dependencies
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock', 'ios/Podfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-flutter-
 
-      # Step 4: Get dependencies
       - name: Get dependencies
-        run: flutter pub get
-
-      # Step 5: CocoaPods setup
-      - name: CocoaPods setup
-        working-directory: ios
         run: |
-          sudo gem install cocoapods
-          pod repo update
-          pod install
+          flutter pub get
+          cd ios && pod install --repo-update
 
-      # Step 6: Build iOS (Release)
+      - name: Set build version
+        run: |
+          # Extract version from pubspec.yaml
+          VERSION=$(grep 'version:' pubspec.yaml | awk '{print $2}' | cut -d+ -f1)
+          BUILD_NUMBER=${{ github.run_number }}
+          
+          # Update iOS project version
+          cd ios
+          agvtool new-marketing-version $VERSION
+          agvtool new-version -all $BUILD_NUMBER
+
+      - name: Import Code Signing
+        uses: apple-actions/import-code-sign-identities@v1
+        with:
+          p12-file-base64: ${{ secrets.IOS_P12_BASE64 }}
+          p12-password: ${{ secrets.IOS_P12_PASSWORD }}
+
+      - name: Install Provisioning Profile
+        uses: apple-actions/install-provisioning-profile@v1
+        with:
+          profile-base64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+
       - name: Build iOS (Release)
-        run: flutter build ios --release --no-codesign --dart-define=APP_ENV=production
-
-      # Step 7: Package IPA
-      - name: Package IPA
-        working-directory: build/ios/iphoneos
         run: |
-          mkdir Payload
-          mv Runner.app Payload/
-          zip -r -9 ../FlutterIpaExport.ipa Payload
+          flutter build ios --release --dart-define=APP_ENV=production
+          xcodebuild -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -allowProvisioningUpdates \
+            clean archive
 
-      # Step 8: Upload artifact (production IPA)
-      - name: Upload artifact
+      - name: Package and Export IPA
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath ios/build/Runner.xcarchive \
+            -exportOptionsPlist ios/ExportOptions.plist \
+            -exportPath ios/build/ipa
+
+      - name: Validate IPA
+        run: |
+          if [ ! -f "ios/build/ipa/Runner.ipa" ]; then
+            echo "❌ IPA file not found!"
+            exit 1
+          fi
+          echo "✅ IPA file verified"
+
+      - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: production-ipa
-          path: build/ios/iphoneos/../FlutterIpaExport.ipa
+          name: production-ipa-${{ github.run_number }}
+          path: ios/build/ipa/Runner.ipa
           retention-days: 7
 
-      # Optional Step 9: Upload to Release (for tagged releases)
-      - name: Upload to Release
-        if: success() && startsWith(github.ref, 'refs/tags/v')
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
+        if: success()
         with:
-          tag_name: ${{ github.ref }}
-          name: Production Build ${{ github.ref }}
-          body: "Production IPA build - ${{ github.sha }}"
-          files: build/ios/iphoneos/../FlutterIpaExport.ipa
+          tag_name: v${{ inputs.release-version }}+${{ github.run_number }}
+          name: Production Build v${{ inputs.release-version }} (${{ github.run_number }})
+          body: |
+            Production iOS Build
+            - Commit: ${{ github.sha }}
+            - Build Number: ${{ github.run_number }}
+            - Flutter Version: ${{ env.FLUTTER_VERSION }}
+          files: ios/build/ipa/Runner.ipa
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
