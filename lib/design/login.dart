@@ -7,7 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:suellas/utils.dart';
 import 'package:suellas/design/blank.dart';
 import 'package:suellas/design/register.dart';
-import 'package:suellas/branch/scan.dart';
+// import 'package:suellas/branch/scan.dart';
 import 'package:suellas/design/forgot.dart';
 import 'package:suellas/design/done.dart';
 import 'package:suellas/customer/home.dart';
