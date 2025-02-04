@@ -1,13 +1,13 @@
-name: Suellas Rewards Test
+name: Suellas Rewards
 
 on:
   workflow_dispatch:
 
 jobs:
   build-ios:
-    name: 🎉 Suellas Rewards Test
+    name: 🎉 Suellas Rewards
     runs-on: macos-latest
-    environment: development
+    environment: production
     timeout-minutes: 30
 
     steps:
@@ -69,4 +69,3 @@ jobs:
           files: build/ios/iphoneos/../FlutterIpaExport.ipa
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
