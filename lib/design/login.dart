@@ -425,38 +425,36 @@ class _AuthScreenState extends State<AuthScreen> {
                               if (_isAuthenticating)
                                 CircularProgressIndicator(),
                               if (!_isAuthenticating)
-                                Container(
-                                  width: 200,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    color: Color(0xff57cc99),
-                                    borderRadius: BorderRadius.circular(70),
-                                  ),
-                                  child: ElevatedButton(
-                                    onPressed: _submit,
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors
-                                          .transparent, // Make the button transparent
-                                      elevation: 0, // Remove button elevation
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(70),
-                                      ),
-                                      onPrimary: Colors
-                                          .white, // Text color when button is pressed
-                                    ),
-                                    child: Text(
-                                      _isLogin ? 'Login' : 'Signup',
-                                      style: SafeGoogleFont(
-                                        'Inter',
-                                        fontSize: 16 * ffem,
-                                        fontWeight: FontWeight.w600,
-                                        height: 1.2125 * ffem / fem,
-                                        color: Color(
-                                            0xffffffff), // Default text color
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                           Container(
+  width: 200,
+  height: 40,
+  decoration: BoxDecoration(
+    color: Color(0xff57cc99), // Background color
+    borderRadius: BorderRadius.circular(70),
+  ),
+  child: ElevatedButton(
+    onPressed: _submit,
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Colors.transparent, // Allows Container's color to show
+      foregroundColor: Colors.white, // Text color
+      elevation: 0, // No shadow
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(70),
+      ),
+    ),
+    child: Text(
+      _isLogin ? 'Login' : 'Signup',
+      style: SafeGoogleFont(
+        'Inter',
+        fontSize: 16 * ffem,
+        fontWeight: FontWeight.w600,
+        height: 1.2125 * ffem / fem,
+        color: Colors.white,
+      ),
+    ),
+  ),
+)
+,
                               // if (!_isAuthenticating)
                               //   TextButton(
                               //     onPressed: () {
