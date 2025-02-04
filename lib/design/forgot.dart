@@ -358,33 +358,32 @@ class _ForgotScreen extends State<ForgotScreen> {
                               if (_isAuthenticating)
                                 CircularProgressIndicator(),
                               if (!_isAuthenticating)
-                                Container(
-                                  width: 200,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    color: Color(0xff57cc99),
-                                    borderRadius: BorderRadius.circular(70),
-                                  ),
-                                  child: ElevatedButton(
-                                    onPressed: _submit,
-                                    style: ElevatedButton.styleFrom(
-                                      primary: Colors
-                                          .transparent, // Make the button transparent
-                                      elevation: 0, // Remove button elevation
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(70),
-                                      ),
-                                    ),
-                                    child: Text(
-                                      'Reset Password',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        color: Color(0xffffffff),
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                             Container(
+  width: 200,
+  height: 40,
+  decoration: BoxDecoration(
+    color: Color(0xff57cc99), // Background color of the Container
+    borderRadius: BorderRadius.circular(70), // Rounded corners
+  ),
+  child: ElevatedButton(
+    onPressed: _submit, // Callback function for button press
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Colors.transparent, // Use backgroundColor instead of primary
+      elevation: 0, // Remove button shadow
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(70), // Match the Container's border radius
+      ),
+    ),
+    child: Text(
+      'Reset Password',
+      style: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        color: Color(0xffffffff), // White text color
+      ),
+    ),
+  ),
+)
                               // if (!_isAuthenticating)
                               //   TextButton(
                               //     onPressed: () {
