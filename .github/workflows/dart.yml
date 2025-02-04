@@ -7,36 +7,65 @@ jobs:
   build-ios:
     name: 🎉 iOS Build
     runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v3
+    environment: production
+    timeout-minutes: 30
 
-      - uses: subosito/flutter-action@v2
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.13.9'  # Specify exact version
           channel: 'stable'
           architecture: x64
-      - run: flutter pub get
-      
 
-      - run: pod repo update
-        working-directory: ios
-
-      - run: flutter build ios --release --no-codesign
-
-      - run: mkdir Payload
-        working-directory: build/ios/iphoneos
-
-      - run: mv Runner.app/ Payload
-        working-directory: build/ios/iphoneos
-
-      - name: Zip output
-        run: zip -qq -r -9 FlutterIpaExport.ipa Payload
-        working-directory: build/ios/iphoneos
-
-      - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v2
+      - name: Restore dependencies cache
+        uses: actions/cache@v3
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/ios/iphoneos/FlutterIpaExport.ipa
-          tag: v1.0
-          overwrite: true
-          body: "This is first release"
+          path: |
+            ~/.pub-cache
+            ios/Pods
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: CocoaPods setup
+        working-directory: ios
+        run: |
+          sudo gem install cocoapods
+          pod repo update
+          pod install
+
+      - name: Build iOS (Release)
+        run: flutter build ios --release --no-codesign --dart-define=APP_ENV=production
+
+      - name: Package IPA
+        working-directory: build/ios/iphoneos
+        run: |
+          mkdir Payload
+          mv Runner.app Payload/
+          zip -r -9 ../FlutterIpaExport.ipa Payload
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: production-ipa
+          path: build/ios/iphoneos/../FlutterIpaExport.ipa
+          retention-days: 7
+
+      # Optional: Upload to releases (requires existing release tag)
+      - name: Upload to Release
+        if: success()
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v1.0-${{ github.run_number }}
+          name: Production Build v1.0.${{ github.run_number }}
+          body: "Production IPA build - ${{ github.sha }}"
+          files: build/ios/iphoneos/../FlutterIpaExport.ipa
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
