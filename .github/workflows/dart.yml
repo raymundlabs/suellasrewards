@@ -1,11 +1,11 @@
-name: Suellas Rewards
+name: iOS-ipa-build
 
 on:
   workflow_dispatch:
 
 jobs:
   build-ios:
-    name: 🎉 Suellas Rewards
+    name: 🎉 iOS Build
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
@@ -15,6 +15,7 @@ jobs:
           channel: 'stable'
           architecture: x64
       - run: flutter pub get
+      
 
       - run: pod repo update
         working-directory: ios
@@ -27,28 +28,15 @@ jobs:
       - run: mv Runner.app/ Payload
         working-directory: build/ios/iphoneos
 
-      - name: Create .ipa file
-        run: |
-          xcodebuild -workspace ios/Runner.xcworkspace \
-            -scheme Runner \
-            -configuration Release \
-            -sdk iphoneos \
-            -archivePath $PWD/build/ios/iphoneos/Runner.xcarchive \
-            archive
+      - name: Zip output
+        run: zip -qq -r -9 FlutterIpaExport.ipa Payload
+        working-directory: build/ios/iphoneos
 
-          xcodebuild -exportArchive \
-            -archivePath $PWD/build/ios/iphoneos/Runner.xcarchive \
-            -exportPath $PWD/build/ios/iphoneos \
-            -exportOptionsPlist ios/ExportOptions.plist
-
-      - name: Zip .ipa for testing
-        run: zip -qq -r -9 SuellasRewards.ipa.zip build/ios/iphoneos/Runner.ipa
-
-      - name: Upload .ipa zip for testing
+      - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/ios/iphoneos/SuellasRewards.ipa.zip
+          file: build/ios/iphoneos/FlutterIpaExport.ipa
           tag: v1.0
           overwrite: true
-          body: "This is the first release .ipa for testing"
+          body: "This is first release"
