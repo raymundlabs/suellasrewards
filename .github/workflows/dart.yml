@@ -1,12 +1,7 @@
-name: Suellas Rewards Test
+name: iOS-ipa-build
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main   # Trigger only on main branch, or use tags (e.g., v1.x)
-  tags:
-    - 'v*'   # Optionally trigger on tagged releases
 
 jobs:
   build-ios:
@@ -16,19 +11,16 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      # Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Setup Flutter
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.9'  # Make sure you're using the latest stable version
+          flutter-version: '3.13.9'  # Specify exact version
           channel: 'stable'
           architecture: x64
 
-      # Step 3: Restore dependencies cache
       - name: Restore dependencies cache
         uses: actions/cache@v3
         with:
@@ -39,11 +31,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-flutter-
 
-      # Step 4: Get dependencies
       - name: Get dependencies
         run: flutter pub get
 
-      # Step 5: CocoaPods setup
       - name: CocoaPods setup
         working-directory: ios
         run: |
@@ -51,11 +41,9 @@ jobs:
           pod repo update
           pod install
 
-      # Step 6: Build iOS (Release)
       - name: Build iOS (Release)
         run: flutter build ios --release --no-codesign --dart-define=APP_ENV=production
 
-      # Step 7: Package IPA
       - name: Package IPA
         working-directory: build/ios/iphoneos
         run: |
@@ -63,7 +51,6 @@ jobs:
           mv Runner.app Payload/
           zip -r -9 ../FlutterIpaExport.ipa Payload
 
-      # Step 8: Upload artifact (production IPA)
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
@@ -71,14 +58,15 @@ jobs:
           path: build/ios/iphoneos/../FlutterIpaExport.ipa
           retention-days: 7
 
-      # Optional Step 9: Upload to Release (for tagged releases)
+      # Optional: Upload to releases (requires existing release tag)
       - name: Upload to Release
-        if: success() && startsWith(github.ref, 'refs/tags/v')
+        if: success()
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref }}
-          name: Production Build ${{ github.ref }}
+          tag_name: v1.0-${{ github.run_number }}
+          name: Production Build v1.0.${{ github.run_number }}
           body: "Production IPA build - ${{ github.sha }}"
           files: build/ios/iphoneos/../FlutterIpaExport.ipa
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
