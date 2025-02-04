@@ -856,45 +856,50 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       ],
                                     ),
                                   ),
-                                 Container(
-  margin: EdgeInsets.fromLTRB(
-    26 * fem,
-    0,
-    23.86 * fem,
-    0, // Adjust the margins as needed
-  ),
-  child: Container(
-    padding: EdgeInsets.only(
-      top: 80 * fem, // Adjust the top padding as needed
-    ),
-    child: ElevatedButton(
-      onPressed: _submitForm, // Callback function for button press
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xff57cc99), // Use backgroundColor instead of primary
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(70 * fem), // Border radius
-        ),
-        minimumSize: Size(
-          double.infinity,
-          60 * fem, // Adjust the button size
-        ),
-      ),
-      child: Center(
-        child: Text(
-          'Update Now',
-          textAlign: TextAlign.center,
-          style: SafeGoogleFont(
-            'Inter',
-            fontSize: 18 * ffem,
-            fontWeight: FontWeight.w700,
-            height: 1.1111111111 * ffem / fem,
-            color: Color(0xffffffff), // White text color
-          ),
-        ),
-      ),
-    ),
-  ),
-),
+                                  Container(
+                                    margin: EdgeInsets.fromLTRB(
+                                      26 * fem,
+                                      0,
+                                      23.86 * fem,
+                                      0, // Adjust the margins as needed
+                                    ),
+                                    child: Container(
+                                      padding: EdgeInsets.only(
+                                        top: 80 *
+                                            fem, // Adjust the top padding as needed
+                                      ),
+                                      child: ElevatedButton(
+                                        onPressed:
+                                            _submitForm, // Callback function for button press
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Color(
+                                              0xff57cc99), // Use backgroundColor instead of primary
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                70 * fem), // Border radius
+                                          ),
+                                          minimumSize: Size(
+                                            double.infinity,
+                                            60 * fem, // Adjust the button size
+                                          ),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            'Update Now',
+                                            textAlign: TextAlign.center,
+                                            style: SafeGoogleFont(
+                                              'Inter',
+                                              fontSize: 18 * ffem,
+                                              fontWeight: FontWeight.w700,
+                                              height: 1.1111111111 * ffem / fem,
+                                              color: Color(
+                                                  0xffffffff), // White text color
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
