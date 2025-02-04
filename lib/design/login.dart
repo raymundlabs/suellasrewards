@@ -7,7 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:suellas/utils.dart';
 import 'package:suellas/design/blank.dart';
 import 'package:suellas/design/register.dart';
-// import 'package:suellas/branch/scan.dart';
+import 'package:suellas/branch/scan.dart';
 import 'package:suellas/design/forgot.dart';
 import 'package:suellas/design/done.dart';
 import 'package:suellas/customer/home.dart';
@@ -114,8 +114,19 @@ class _AuthScreenState extends State<AuthScreen> {
             );
           });
         } else if (responseBody.contains('Login successful')) {
-
-           Navigator.pushReplacement(
+          
+          if (_enteredEmail.endsWith('@suellas.com')) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ScanScreen(),
+                settings: RouteSettings(
+                  arguments: responseBody,
+                ),
+              ),
+            );
+          } else {
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => CustomerHomeScreen(),
@@ -124,28 +135,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
               ),
             );
-
-          // if (_enteredEmail.endsWith('@suellas.com')) {
-          //   Navigator.pushReplacement(
-          //     context,
-          //     MaterialPageRoute(
-          //       builder: (context) => ScanScreen(),
-          //       settings: RouteSettings(
-          //         arguments: responseBody,
-          //       ),
-          //     ),
-          //   );
-          // } else {
-          //   Navigator.pushReplacement(
-          //     context,
-          //     MaterialPageRoute(
-          //       builder: (context) => CustomerHomeScreen(),
-          //       settings: RouteSettings(
-          //         arguments: responseBody,
-          //       ),
-          //     ),
-          //   );
-          // }
+          }
         } else {
           print('Authentication failed.');
         }
