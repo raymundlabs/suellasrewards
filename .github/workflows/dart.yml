@@ -8,7 +8,15 @@ jobs:
     name: 🎉 iOS Build
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Ensure `ios/` Directory Exists
+        run: |
+          if [ ! -d "ios" ]; then
+            echo "🚨 ios/ folder is missing! Running flutter create to regenerate..."
+            flutter create .
+          fi
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
