@@ -114,18 +114,8 @@ class _AuthScreenState extends State<AuthScreen> {
             );
           });
         } else if (responseBody.contains('Login successful')) {
-          if (_enteredEmail.endsWith('@suellas.com')) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ScanScreen(),
-                settings: RouteSettings(
-                  arguments: responseBody,
-                ),
-              ),
-            );
-          } else {
-            Navigator.pushReplacement(
+
+           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => CustomerHomeScreen(),
@@ -134,7 +124,28 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
               ),
             );
-          }
+
+          // if (_enteredEmail.endsWith('@suellas.com')) {
+          //   Navigator.pushReplacement(
+          //     context,
+          //     MaterialPageRoute(
+          //       builder: (context) => ScanScreen(),
+          //       settings: RouteSettings(
+          //         arguments: responseBody,
+          //       ),
+          //     ),
+          //   );
+          // } else {
+          //   Navigator.pushReplacement(
+          //     context,
+          //     MaterialPageRoute(
+          //       builder: (context) => CustomerHomeScreen(),
+          //       settings: RouteSettings(
+          //         arguments: responseBody,
+          //       ),
+          //     ),
+          //   );
+          // }
         } else {
           print('Authentication failed.');
         }
@@ -425,36 +436,38 @@ class _AuthScreenState extends State<AuthScreen> {
                               if (_isAuthenticating)
                                 CircularProgressIndicator(),
                               if (!_isAuthenticating)
-                           Container(
-  width: 200,
-  height: 40,
-  decoration: BoxDecoration(
-    color: Color(0xff57cc99), // Background color
-    borderRadius: BorderRadius.circular(70),
-  ),
-  child: ElevatedButton(
-    onPressed: _submit,
-    style: ElevatedButton.styleFrom(
-      backgroundColor: Colors.transparent, // Allows Container's color to show
-      foregroundColor: Colors.white, // Text color
-      elevation: 0, // No shadow
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(70),
-      ),
-    ),
-    child: Text(
-      _isLogin ? 'Login' : 'Signup',
-      style: SafeGoogleFont(
-        'Inter',
-        fontSize: 16 * ffem,
-        fontWeight: FontWeight.w600,
-        height: 1.2125 * ffem / fem,
-        color: Colors.white,
-      ),
-    ),
-  ),
-)
-,
+                                Container(
+                                  width: 200,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color:
+                                        Color(0xff57cc99), // Background color
+                                    borderRadius: BorderRadius.circular(70),
+                                  ),
+                                  child: ElevatedButton(
+                                    onPressed: _submit,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors
+                                          .transparent, // Allows Container's color to show
+                                      foregroundColor:
+                                          Colors.white, // Text color
+                                      elevation: 0, // No shadow
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(70),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      _isLogin ? 'Login' : 'Signup',
+                                      style: SafeGoogleFont(
+                                        'Inter',
+                                        fontSize: 16 * ffem,
+                                        fontWeight: FontWeight.w600,
+                                        height: 1.2125 * ffem / fem,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               // if (!_isAuthenticating)
                               //   TextButton(
                               //     onPressed: () {
