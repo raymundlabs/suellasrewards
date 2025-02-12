@@ -62,9 +62,9 @@ jobs:
             lane :release do
               upload_to_app_store(
                 api_key: {
-                  key_id: "S7J643PMNT",
-                  issuer_id: "6ea64670-374c-432a-ae26-2e54ddc66ed8",
-                  key_file: "/Users/runner/work/suellasrewards/suellasrewards/ios/fastlane/AuthKey.p8"
+                  key_id: ENV['APP_STORE_CONNECT_API_KEY_ID'],
+                  issuer_id: ENV['APP_STORE_CONNECT_ISSUER_ID'],
+                  key_filepath: ENV['APP_STORE_CONNECT_API_PRIVATE_KEY_PATH']
                 },
                 app_identifier: "com.suellas.rewards"
               )
@@ -83,7 +83,7 @@ jobs:
           echo "APP_STORE_CONNECT_API_KEY_ID: $APP_STORE_CONNECT_API_KEY_ID"
           echo "APP_STORE_CONNECT_ISSUER_ID: $APP_STORE_CONNECT_ISSUER_ID"
           echo "APP_STORE_CONNECT_API_PRIVATE_KEY_PATH: $APP_STORE_CONNECT_API_PRIVATE_KEY_PATH"
-          
+
           if [ ! -f "$APP_STORE_CONNECT_API_PRIVATE_KEY_PATH" ]; then
             echo "❌ Private key file not found at $APP_STORE_CONNECT_API_PRIVATE_KEY_PATH!"
             exit 1
