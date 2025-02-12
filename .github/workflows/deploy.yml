@@ -1,5 +1,3 @@
-name: Deploy iOS App to App Store
-
 on:
   workflow_dispatch:
   push:
@@ -42,15 +40,17 @@ jobs:
 
       - name: Verify AuthKey.p8 File
         run: |
-          if [ ! -f "ios/fastlane/AuthKey.p8" ]; then
-            echo "❌ AuthKey.p8 is missing in ios/fastlane!"
+          if [ ! -f "/Users/runner/work/suellasrewards/suellasrewards/ios/AuthKey.p8" ]; then
+            echo "❌ AuthKey.p8 file is missing at /Users/runner/work/suellasrewards/suellasrewards/ios/"
             exit 1
           fi
           echo "✅ AuthKey.p8 found."
-          echo "APP_STORE_CONNECT_API_PRIVATE_KEY_PATH=$GITHUB_WORKSPACE/ios/fastlane/AuthKey.p8" >> $GITHUB_ENV
 
-      - name: Debug Fastlane Files
-        run: ls -la ios/fastlane
+      - name: Debug Fastlane Environment Variables
+        run: |
+          echo "APP_STORE_CONNECT_API_KEY_ID: $APP_STORE_CONNECT_API_KEY_ID"
+          echo "APP_STORE_CONNECT_ISSUER_ID: $APP_STORE_CONNECT_ISSUER_ID"
+          echo "APP_STORE_CONNECT_API_PRIVATE_KEY_PATH: $APP_STORE_CONNECT_API_PRIVATE_KEY_PATH"
 
       - name: Configure Fastlane
         run: |
@@ -62,11 +62,11 @@ jobs:
             lane :release do
               upload_to_app_store(
                 api_key: {
-                  key_id: "C955KM32VK",
-                  issuer_id: "6ea64670-374c-432a-ae26-2e54ddc66ed8",
-                  key_filepath: ENV['APP_STORE_CONNECT_API_PRIVATE_KEY_PATH']
+                  key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
+                  issuer_id: ENV["APP_STORE_CONNECT_ISSUER_ID"],
+                  key_filepath: ENV["APP_STORE_CONNECT_API_PRIVATE_KEY_PATH"]
                 },
-                app_identifier: "com.suellas.rewardstest"
+                app_identifier: "com.suellas.rewards"
               )
             end
           end
@@ -94,7 +94,7 @@ jobs:
         env:
           APP_STORE_CONNECT_API_KEY_ID: C955KM32VK
           APP_STORE_CONNECT_ISSUER_ID: 6ea64670-374c-432a-ae26-2e54ddc66ed8
-          APP_STORE_CONNECT_API_PRIVATE_KEY_PATH: /Users/runner/work/suellasrewards/suellasrewards/ios/AuthKey.p8
+          APP_STORE_CONNECT_API_PRIVATE_KEY_PATH: $GITHUB_WORKSPACE/ios/AuthKey.p8
           FASTLANE_OPT_OUT_USAGE: true
 
       - name: Complete job
