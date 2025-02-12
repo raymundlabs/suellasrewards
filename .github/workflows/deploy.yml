@@ -22,6 +22,7 @@ jobs:
       - name: Download IPA from Latest Release
         run: |
           gh release download -p "FlutterIpaExport.ipa" -O FlutterIpaExport.ipa || { echo "❌ IPA not found!"; exit 1; }
+
       - name: Create Fastlane Directory
         run: mkdir -p ios/fastlane
 
@@ -29,23 +30,27 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.1
+          cache-version: 3.1 # Adjust as needed for the Ruby version cache
 
-      - name: Set Up Fastlane
+      - name: Install Fastlane Dependencies
         run: |
           cd ios
-          bundle init
-          echo 'gem "fastlane"' >> Gemfile
+          gem install fastlane -v 2.226.0
           bundle install
+
       - name: Create AuthKey.p8 from Secret
         run: |
           mkdir -p ios
           echo "${{ secrets.APPSTORE_AUTH_KEY }}" > ios/AuthKey.p8
           chmod 600 ios/AuthKey.p8
+
       - name: Configure Fastlane
         run: |
+          cd ios
+          bundle exec fastlane init
           cat <<EOF > ios/fastlane/Fastfile
           default_platform(:ios)
-          key = File.read('/Users/runner/work/suellasrewards/suellasrewards/ios/AuthKey.p8')
+          key = File.read('/Users/runner/work/your-repo-name/ios/AuthKey.p8')
           platform :ios do
             desc "Push a new release build to the App Store"
             lane :release do
@@ -61,16 +66,13 @@ jobs:
             end
           end
           EOF
-      - name: Install Fastlane Dependencies
-        run: |
-          cd ios
-          bundle install
+
       - name: Upload IPA to App Store
         run: |
           echo "🔍 Checking Environment Variables..."
           echo "KEY ID: $APP_STORE_CONNECT_API_KEY_ID"
           echo "ISSUER ID: $APP_STORE_CONNECT_ISSUER_ID"
-          
+
           cd ios
           bundle exec fastlane release || { echo "❌ Fastlane upload failed!"; exit 1; }
         env:
