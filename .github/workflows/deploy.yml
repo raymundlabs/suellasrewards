@@ -62,11 +62,11 @@ jobs:
             lane :release do
               upload_to_app_store(
                 api_key: {
-                  key_id: "${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}",
-                  issuer_id: "${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}",
+                  key_id: "S7J643PMNT",
+                  issuer_id: "6ea64670-374c-432a-ae26-2e54ddc66ed8",
                   key_file: ENV["APP_STORE_CONNECT_API_PRIVATE_KEY_PATH"]
                 },
-                app_identifier: "${{ secrets.APP_IDENTIFIER }}"
+                app_identifier: "com.suellas.rewards"
               )
             end
           end
