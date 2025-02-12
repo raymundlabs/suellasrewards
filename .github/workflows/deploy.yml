@@ -21,7 +21,7 @@ jobs:
         run: brew install gh
 
       - name: Authenticate GitHub CLI
-        run: echo "${GITHUB_TOKEN}" | gh auth login --with-token
+        run: gh auth login --with-token < "${GITHUB_TOKEN}"
 
       - name: Download IPA from Latest Release
         run: |
