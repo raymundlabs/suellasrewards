@@ -24,7 +24,7 @@ jobs:
             echo "Error: su.p12 not found in ios/keys"
             exit 1
           fi
-          if [ ! -f ios/keys/provisioning_profile.mobileprovision ]; then
+          if [ ! -f ios/keys/su.mobileprovision ]; then
             echo "Error: su.mobileprovision not found in ios/keys"
             exit 1
           fi
