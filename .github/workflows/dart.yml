@@ -27,11 +27,20 @@ jobs:
           echo "${{ secrets.PROVISIONING_PROFILE }}" | base64 --decode > provisioning_profile.mobileprovision
         shell: bash
 
-      # Install the certificate
-      - name: Install certificate
+      # Create and configure the keychain
+      - name: Create and configure keychain
         run: |
           security create-keychain -p "" build.keychain
-          security import certificate.p12 -k ~/Library/Keychains/build.keychain -P ${{ secrets.CERT_PASSWORD }} -T /usr/bin/codesign
+          security set-keychain-settings -t 3600 -u build.keychain
+          security unlock-keychain -p "" build.keychain
+        shell: bash
+
+      # Import the certificate into the keychain
+      - name: Import certificate
+        run: |
+          security import certificate.p12 -k build.keychain -P ${{ secrets.CERT_PASSWORD }} -T /usr/bin/codesign
+          security list-keychains -d user -s build.keychain
+          security set-keychain-settings build.keychain
         shell: bash
 
       # Set up the provisioning profile
