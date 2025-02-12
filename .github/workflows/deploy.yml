@@ -12,35 +12,35 @@ jobs:
     runs-on: macos-latest
 
     steps:
+      # Checkout the repository
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      # Install GitHub CLI
       - name: Install GitHub CLI
         run: brew install gh
 
+      # Authenticate GitHub CLI with the GitHub Token
       - name: Authenticate GitHub CLI
         run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
 
+      # Download the IPA from the latest release
       - name: Download IPA from Latest Release
         run: |
           gh release download -p "FlutterIpaExport.ipa" -O FlutterIpaExport.ipa || { echo "❌ IPA not found!"; exit 1; }
 
+      # Create Fastlane directory if it doesn't exist
       - name: Create Fastlane Directory
         run: mkdir -p ios/fastlane
 
+      # Install Ruby & Fastlane dependencies
       - name: Install Ruby & Fastlane
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.1
 
-      - name: Set Up Fastlane
-        run: |
-          cd ios
-          bundle init
-          echo 'gem "fastlane"' >> Gemfile
-          bundle install
-
-      - name: Verify AuthKey.p8 File
+      # Verify the existence of AuthKey.p8 and configure environment variables
+      - name: Verify and Configure API Key
         run: |
           if [ ! -f "ios/fastlane/AuthKey.p8" ]; then
             echo "❌ AuthKey.p8 is missing in ios/fastlane!"
@@ -49,9 +49,11 @@ jobs:
           echo "✅ AuthKey.p8 found."
           echo "APP_STORE_CONNECT_API_PRIVATE_KEY_PATH=$GITHUB_WORKSPACE/ios/fastlane/AuthKey.p8" >> $GITHUB_ENV
 
+      # Debug Fastlane files for troubleshooting
       - name: Debug Fastlane Files
         run: ls -la ios/fastlane
 
+      # Configure Fastlane's Fastfile for iOS deployment
       - name: Configure Fastlane
         run: |
           cat <<EOF > ios/fastlane/Fastfile
@@ -62,8 +64,8 @@ jobs:
             lane :release do
               upload_to_app_store(
                 api_key: {
-                  key_id: C955KM32VK,
-                  issuer_id: 6ea64670-374c-432a-ae26-2e54ddc66ed8,
+                  key_id: "${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}",
+                  issuer_id: "${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}",
                   key_filepath: ENV['APP_STORE_CONNECT_API_PRIVATE_KEY_PATH']
                 },
                 app_identifier: "com.suellas.rewards"
@@ -72,30 +74,35 @@ jobs:
           end
           EOF
 
+      # Install Fastlane dependencies via Bundler
       - name: Install Fastlane Dependencies
         run: |
           cd ios
           bundle install
 
+      # Upload IPA to App Store using Fastlane
       - name: Upload IPA to App Store
         run: |
           echo "🔍 Checking API Key Environment Variables..."
-          echo "APP_STORE_CONNECT_API_KEY_ID: $APP_STORE_CONNECT_API_KEY_ID"
-          echo "APP_STORE_CONNECT_ISSUER_ID: $APP_STORE_CONNECT_ISSUER_ID"
+          echo "APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}"
+          echo "APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}"
           echo "APP_STORE_CONNECT_API_PRIVATE_KEY_PATH: $APP_STORE_CONNECT_API_PRIVATE_KEY_PATH"
 
+          # Ensure the private key exists before uploading
           if [ ! -f "$APP_STORE_CONNECT_API_PRIVATE_KEY_PATH" ]; then
             echo "❌ Private key file not found at $APP_STORE_CONNECT_API_PRIVATE_KEY_PATH!"
             exit 1
           fi
 
+          # Execute Fastlane for deployment
           cd ios
           bundle exec fastlane release || { echo "❌ Fastlane upload failed!"; exit 1; }
-        env:
-          APP_STORE_CONNECT_API_KEY_ID: C955KM32VK
-          APP_STORE_CONNECT_ISSUER_ID: 6ea64670-374c-432a-ae26-2e54ddc66ed8
-          APP_STORE_CONNECT_API_PRIVATE_KEY_PATH: /Users/runner/work/suellasrewards/suellasrewards/ios/fastlane/AuthKey.p8
-          FASTLANE_OPT_OUT_USAGE: true
 
+      # Completion message
       - name: Complete job
         run: echo "✅ Deployment Completed Successfully"
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_API_PRIVATE_KEY_PATH: ${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY_PATH }}
+          FASTLANE_OPT_OUT_USAGE: true
