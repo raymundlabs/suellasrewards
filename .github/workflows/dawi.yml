@@ -29,18 +29,18 @@ jobs:
           mkdir -p ~/certificates
           
           # Copy the certificate and provisioning profile from the repo
-          cp ios/keys/suellas.p12 ~/certificates/
-          cp ios/keys/Suellasrewards.mobileprovision ~/certificates/
+          cp ios/keys/su.p12 ~/certificates/
+          cp ios/keys/su.mobileprovision ~/certificates/
           
           # Import the certificate into keychain
           security create-keychain -p "" build.keychain
-          security import ~/certificates/suellas.p12 -k build.keychain -P suellas -T /usr/bin/codesign
+          security import ~/certificates/su.p12 -k build.keychain -P "suellas" -T /usr/bin/codesign
           security list-keychains -s build.keychain
           security unlock-keychain -p "" build.keychain
 
           # Install the provisioning profile
           sudo mkdir -p /Library/MobileDevice/Provisioning\ Profiles
-          sudo cp ~/certificates/provisioning_profile.mobileprovision /Library/MobileDevice/Provisioning\ Profiles/
+          sudo cp ~/certificates/su.mobileprovision /Library/MobileDevice/Provisioning\ Profiles/
 
       # Build the app (with code signing)
       - run: flutter build ios --release --no-codesign
