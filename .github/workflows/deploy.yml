@@ -64,15 +64,26 @@ jobs:
           end
           EOF
 
-      - name: Upload IPA to App Store
-        run: |
-          bundle exec fastlane release || { echo "❌ Fastlane upload failed!"; exit 1; }
-        working-directory: ios
-        env:
-          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
-          APP_IDENTIFIER: ${{ secrets.APP_IDENTIFIER }}
-          FASTLANE_OPT_OUT_USAGE: true
+   - name: Upload IPA to App Store
+      run: |
+        echo "🔍 Checking API Key Environment Variables..."
+        echo "APP_STORE_CONNECT_API_KEY_ID: $APP_STORE_CONNECT_API_KEY_ID"
+        echo "APP_STORE_CONNECT_ISSUER_ID: $APP_STORE_CONNECT_ISSUER_ID"
+        echo "APP_STORE_CONNECT_API_PRIVATE_KEY_PATH: $APP_STORE_CONNECT_API_PRIVATE_KEY_PATH"
+        
+        if [ ! -f "$APP_STORE_CONNECT_API_PRIVATE_KEY_PATH" ]; then
+          echo "❌ Private key file not found at $APP_STORE_CONNECT_API_PRIVATE_KEY_PATH!"
+          exit 1
+        fi
+
+        bundle exec fastlane release || { echo "❌ Fastlane upload failed!"; exit 1; }
+      working-directory: ios
+      env:
+        APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+        APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        APP_STORE_CONNECT_API_PRIVATE_KEY_PATH: ${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY_PATH }}
+        FASTLANE_OPT_OUT_USAGE: true
+
 
       - name: Complete job
         run: echo "✅ Deployment Completed Successfully"
