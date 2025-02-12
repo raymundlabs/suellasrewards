@@ -64,7 +64,7 @@ jobs:
                 api_key: {
                   key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
                   issuer_id: ENV["APP_STORE_CONNECT_ISSUER_ID"],
-                  key_filepath: /Users/runner/work/suellasrewards/suellasrewards/ios/AuthKey.p8
+                  key_filepath: "/Users/runner/work/suellasrewards/suellasrewards/ios/AuthKey.p8"
                 },
                 app_identifier: "com.suellas.rewards"
               )
