@@ -1,62 +1,38 @@
-name: iOS-ipa-build-deploy
+name: Deploy iOS App to App Store
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
-  build-and-deploy:
-    name: 🚀 Build & Deploy iOS App
+  deploy:
+    name: 🚀 Deploy to App Store
     runs-on: macos-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
+      - name: Download Built IPA
+        uses: actions/download-artifact@v3
         with:
-          channel: 'stable'
-          architecture: x64
+          name: ios-ipa
+          path: build/ios/iphoneos
 
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Update CocoaPods
-        run: pod repo update
-        working-directory: ios
-
-      - name: Build iOS app
-        run: flutter build ios --release --no-codesign
-
-      - name: Create IPA package
-        run: |
-          mkdir -p Payload
-          mv build/ios/iphoneos/Runner.app Payload/
-          zip -qq -r -9 FlutterIpaExport.ipa Payload
-        working-directory: build/ios/iphoneos
-
-      - name: Upload IPA as a GitHub Release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/ios/iphoneos/FlutterIpaExport.ipa
-          tag: v1.0
-          overwrite: true
-          body: "First release of the iOS app"
-
-      - name: Set up Ruby
+      - name: Install Ruby & Fastlane
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.0
 
-      - name: Install Fastlane
-        run: gem install fastlane
+      - name: Install Fastlane Dependencies
+        run: bundle install
+        working-directory: ios
 
-      - name: Deploy to App Store
+      - name: Upload IPA to App Store
         run: bundle exec fastlane release
+        working-directory: ios
         env:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
