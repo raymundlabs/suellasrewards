@@ -92,8 +92,8 @@ jobs:
           cd ios
           bundle exec fastlane release || { echo "❌ Fastlane upload failed!"; exit 1; }
         env:
-          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_ID: "S7J643PMNT"
+          APP_STORE_CONNECT_ISSUER_ID: "6ea64670-374c-432a-ae26-2e54ddc66ed8"
           APP_STORE_CONNECT_API_PRIVATE_KEY_PATH: ${{ env.APP_STORE_CONNECT_API_PRIVATE_KEY_PATH }}
           FASTLANE_OPT_OUT_USAGE: true
 
