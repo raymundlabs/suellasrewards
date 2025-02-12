@@ -14,21 +14,18 @@ jobs:
         with:
           channel: 'stable'
           architecture: x64
+      
 
-      - run: flutter pub get
-
-      - run: pod repo update
-        working-directory: ios
 
       # Check if the certificate and provisioning profile exist before proceeding
       - name: Check if certificate and provisioning profile exist
         run: |
-          if [ ! -f ios/keys/certificate.p12 ]; then
-            echo "Error: certificate.p12 not found in ios/keys"
+          if [ ! -f ios/keys/su.p12 ]; then
+            echo "Error: su.p12 not found in ios/keys"
             exit 1
           fi
           if [ ! -f ios/keys/provisioning_profile.mobileprovision ]; then
-            echo "Error: provisioning_profile.mobileprovision not found in ios/keys"
+            echo "Error: su.mobileprovision not found in ios/keys"
             exit 1
           fi
           echo "Both certificate and provisioning profile are found. Proceeding with build."
@@ -36,11 +33,17 @@ jobs:
 
       # Decrypt the certificate and provisioning profile if needed (if stored as secrets)
       # Copy to the ios/keys folder
+
+      - run: flutter pub get
+
+      - run: pod repo update
+        working-directory: ios
+
       - name: Copy certificate and provisioning profile
         run: |
           mkdir -p ios/keys
-          echo "${{ secrets.IOS_CERTIFICATE }}" | base64 --decode > ios/keys/certificate.p12
-          echo "${{ secrets.PROVISIONING_PROFILE }}" | base64 --decode > ios/keys/provisioning_profile.mobileprovision
+          echo "${{ secrets.IOS_CERTIFICATE }}" | base64 --decode > ios/keys/su.p12
+          echo "${{ secrets.PROVISIONING_PROFILE }}" | base64 --decode > ios/keys/su.mobileprovision
         shell: bash
 
       # Create and configure the keychain
@@ -54,7 +57,7 @@ jobs:
       # Import the certificate into the keychain
       - name: Import certificate
         run: |
-          security import ios/keys/certificate.p12 -k build.keychain -P ${{ secrets.CERT_PASSWORD }} -T /usr/bin/codesign
+          security import ios/keys/su.p12 -k build.keychain -P ${{ secrets.CERT_PASSWORD }} -T /usr/bin/codesign
           security list-keychains -d user -s build.keychain
           security set-keychain-settings build.keychain
         shell: bash
