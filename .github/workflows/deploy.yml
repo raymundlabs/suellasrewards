@@ -8,7 +8,7 @@ on:
 
 jobs:
   deploy:
-    name: 🚀 Deploy to App Store
+    name: "🚀 Deploy to App Store"
     runs-on: macos-latest
 
     steps:
@@ -22,7 +22,8 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
 
       - name: Download IPA from Latest Release
-        run: gh release download -p "FlutterIpaExport.ipa" -O FlutterIpaExport.ipa
+        run: |
+          gh release download -p "FlutterIpaExport.ipa" -O FlutterIpaExport.ipa || echo "IPA not found!"
 
       - name: Create Fastlane Directory
         run: mkdir -p ios/fastlane
@@ -32,23 +33,31 @@ jobs:
         with:
           ruby-version: 3.0
 
-      - name: Create Gemfile
+      - name: Set Up Fastlane
         run: |
-          echo 'source "https://rubygems.org"' > ios/Gemfile
-          echo 'gem "fastlane"' >> ios/Gemfile
-          echo 'gem "logger"' >> ios/Gemfile
-          echo 'gem "mutex_m"' >> ios/Gemfile
-          echo 'gem "abbrev"' >> ios/Gemfile
-          echo 'gem "ostruct"' >> ios/Gemfile
-      - name: Install Fastlane Dependencies
-        run: bundle install
-        working-directory: ios
+          cd ios
+          bundle init
+          echo 'gem "fastlane"' >> Gemfile
+          bundle install
 
-      - name: Initialize Fastlane
-        run: bundle exec fastlane init
-        working-directory: ios
-        env:
-          FASTLANE_OPT_OUT_USAGE: true
+      - name: Configure Fastlane
+        run: |
+          cat <<EOF > ios/fastlane/Fastfile
+          default_platform(:ios)
+
+          platform :ios do
+            desc "Push a new release build to the App Store"
+            lane :release do
+              app_identifier ENV["APP_IDENTIFIER"]
+              upload_to_app_store(api_key: {
+                key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
+                issuer_id: ENV["APP_STORE_CONNECT_ISSUER_ID"],
+                key_content: File.read(ENV["APP_STORE_CONNECT_API_PRIVATE_KEY_PATH"])
+              })
+            end
+          end
+          EOF
+        shell: bash
 
       - name: Upload IPA to App Store
         run: bundle exec fastlane release
@@ -56,7 +65,7 @@ jobs:
         env:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
-          APP_STORE_CONNECT_API_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY }}
+          APP_STORE_CONNECT_API_PRIVATE_KEY_PATH: ${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY_PATH }}
           APP_IDENTIFIER: ${{ secrets.APP_IDENTIFIER }}
           FASTLANE_OPT_OUT_USAGE: true
 
