@@ -45,6 +45,12 @@ jobs:
         run: bundle install
         working-directory: ios
 
+      - name: Initialize Fastlane
+        run: bundle exec fastlane init
+        working-directory: ios
+        env:
+          FASTLANE_OPT_OUT_USAGE: true
+
       - name: Upload IPA to App Store
         run: bundle exec fastlane release
         working-directory: ios
