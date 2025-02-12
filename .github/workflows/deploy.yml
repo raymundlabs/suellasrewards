@@ -39,6 +39,7 @@ jobs:
           echo 'gem "logger"' >> ios/Gemfile
           echo 'gem "mutex_m"' >> ios/Gemfile
           echo 'gem "abbrev"' >> ios/Gemfile
+          echo 'gem "ostruct"' >> ios/Gemfile
 
       - name: Install Fastlane Dependencies
         run: bundle install
@@ -52,6 +53,7 @@ jobs:
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_API_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY }}
           APP_IDENTIFIER: ${{ secrets.APP_IDENTIFIER }}
+          FASTLANE_OPT_OUT_USAGE: true
 
       - name: Complete job
         run: echo "Job Completed"
