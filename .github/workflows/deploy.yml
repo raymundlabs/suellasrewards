@@ -62,11 +62,11 @@ jobs:
             lane :release do
               upload_to_app_store(
                 api_key: {
-                  key_id: "C955KM32VK",
-                  issuer_id: "6ea64670-374c-432a-ae26-2e54ddc66ed8",
+                  key_id: C955KM32VK,
+                  issuer_id: 6ea64670-374c-432a-ae26-2e54ddc66ed8,
                   key_filepath: ENV['APP_STORE_CONNECT_API_PRIVATE_KEY_PATH']
                 },
-                app_identifier: "com.suellas.rewards"
+                app_identifier: com.suellas.rewards
               )
             end
           end
@@ -92,9 +92,9 @@ jobs:
           cd ios
           bundle exec fastlane release || { echo "❌ Fastlane upload failed!"; exit 1; }
         env:
-          APP_STORE_CONNECT_API_KEY_ID: "C955KM32VK"
-          APP_STORE_CONNECT_ISSUER_ID: "6ea64670-374c-432a-ae26-2e54ddc66ed8"
-          APP_STORE_CONNECT_API_PRIVATE_KEY_PATH: "/Users/runner/work/suellasrewards/suellasrewards/ios/fastlane/AuthKey.p8"
+          APP_STORE_CONNECT_API_KEY_ID: C955KM32VK
+          APP_STORE_CONNECT_ISSUER_ID: 6ea64670-374c-432a-ae26-2e54ddc66ed8
+          APP_STORE_CONNECT_API_PRIVATE_KEY_PATH: /Users/runner/work/suellasrewards/suellasrewards/ios/fastlane/AuthKey.p8
           FASTLANE_OPT_OUT_USAGE: true
 
       - name: Complete job
