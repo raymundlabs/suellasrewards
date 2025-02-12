@@ -20,11 +20,27 @@ jobs:
       - run: pod repo update
         working-directory: ios
 
-      # Decrypt and install certificate
-      - name: Decrypt certificate and provisioning profile
+      # Check if the certificate and provisioning profile exist before proceeding
+      - name: Check if certificate and provisioning profile exist
         run: |
-          echo "${{ secrets.IOS_CERTIFICATE }}" | base64 --decode > certificate.p12
-          echo "${{ secrets.PROVISIONING_PROFILE }}" | base64 --decode > provisioning_profile.mobileprovision
+          if [ ! -f ios/keys/certificate.p12 ]; then
+            echo "Error: certificate.p12 not found in ios/keys"
+            exit 1
+          fi
+          if [ ! -f ios/keys/provisioning_profile.mobileprovision ]; then
+            echo "Error: provisioning_profile.mobileprovision not found in ios/keys"
+            exit 1
+          fi
+          echo "Both certificate and provisioning profile are found. Proceeding with build."
+        shell: bash
+
+      # Decrypt the certificate and provisioning profile if needed (if stored as secrets)
+      # Copy to the ios/keys folder
+      - name: Copy certificate and provisioning profile
+        run: |
+          mkdir -p ios/keys
+          echo "${{ secrets.IOS_CERTIFICATE }}" | base64 --decode > ios/keys/certificate.p12
+          echo "${{ secrets.PROVISIONING_PROFILE }}" | base64 --decode > ios/keys/provisioning_profile.mobileprovision
         shell: bash
 
       # Create and configure the keychain
@@ -38,7 +54,7 @@ jobs:
       # Import the certificate into the keychain
       - name: Import certificate
         run: |
-          security import certificate.p12 -k build.keychain -P ${{ secrets.CERT_PASSWORD }} -T /usr/bin/codesign
+          security import ios/keys/certificate.p12 -k build.keychain -P ${{ secrets.CERT_PASSWORD }} -T /usr/bin/codesign
           security list-keychains -d user -s build.keychain
           security set-keychain-settings build.keychain
         shell: bash
@@ -47,24 +63,27 @@ jobs:
       - name: Set up provisioning profile
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp provisioning_profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+          cp ios/keys/provisioning_profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
         shell: bash
 
-      # Build iOS release with codesigning
-      - run: flutter build ios --release --no-codesign
+      # Build iOS release with code signing
+      - run: flutter build ios --release
         env:
           CI: true
 
+      # Create Payload directory and move the built app
       - run: mkdir Payload
         working-directory: build/ios/iphoneos
 
       - run: mv Runner.app/ Payload
         working-directory: build/ios/iphoneos
 
+      # Zip the output .ipa file
       - name: Zip output
         run: zip -qq -r -9 FlutterIpaExport.ipa Payload
         working-directory: build/ios/iphoneos
 
+      # Upload the .ipa file to the release
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
