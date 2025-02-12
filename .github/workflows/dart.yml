@@ -56,12 +56,13 @@ jobs:
         run: zip -qq -r -9 FlutterIpaExport.ipa Payload
         working-directory: build/ios/iphoneos
 
-      # Upload the IPA to release
-      - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v2
+      # Upload the IPA to App Store Connect
+      - name: Upload to App Store Connect
+        uses: apple-actions/upload-to-app-store-connect@v1
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/ios/iphoneos/FlutterIpaExport.ipa
-          tag: v1.0
-          overwrite: true
-          body: "This is the first release"
+          app-store-connect-api-key: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+          app-store-connect-api-key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          app-store-connect-issuer-id: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          ipa-path: build/ios/iphoneos/FlutterIpaExport.ipa
+          app-id: com.suellas.rewardtest   # Replace with your app's bundle ID in App Store Connect
+          version: '1.0'   # Version number of your app
