@@ -1,17 +1,13 @@
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   deploy:
     name: "🚀 Deploy to App Store"
     runs-on: macos-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      APP_STORE_CONNECT_API_KEY_ID: WKG2975B2P
-      APP_STORE_CONNECT_ISSUER_ID: 6ea64670-374c-432a-ae26-2e54ddc66ed8
-      FASTLANE_OPT_OUT_USAGE: true
 
     steps:
       - name: Checkout Repository
@@ -25,61 +21,39 @@ jobs:
 
       - name: Download IPA from Latest Release
         run: |
-          gh release download -p "FlutterIpaExport.ipa" -O FlutterIpaExport.ipa || { 
-            echo "❌ IPA not found!"; 
-            exit 1; 
-          }
-
+          gh release download -p "FlutterIpaExport.ipa" -O FlutterIpaExport.ipa || { echo "❌ IPA not found!"; exit 1; }
       - name: Create Fastlane Directory
         run: mkdir -p ios/fastlane
-
-      - name: Create Gemfile in iOS Directory
-        run: |
-          cat <<EOF > ios/Gemfile
-          source 'https://rubygems.org'
-          gem 'fastlane'
-          gem 'deliver'
-          gem 'match'
-          EOF
 
       - name: Install Ruby & Fastlane
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7.4
-          gem-set: |
-            fastlane
-            deliver
-            match
+          ruby-version: 3.1
 
-      - name: Install Fastlane Dependencies
+      - name: Set Up Fastlane
         run: |
           cd ios
+          bundle init
+          echo 'gem "fastlane"' >> Gemfile
           bundle install
-
-      - name: Update Fastlane Plugins
-        run: |
-          cd ios
-          bundle update fastlane deliver match
-
       - name: Create AuthKey.p8 from Secret
         run: |
-          mkdir -p ios/Auth
-          echo "${{ secrets.APPSTORE_AUTH_KEY }}" > ios/Auth/AuthKey_WKG2975B2P.p8
-          chmod 600 ios/Auth/AuthKey_WKG2975B2P.p8
-
+          mkdir -p ios
+          echo "${{ secrets.APPSTORE_AUTH_KEY }}" > ios/AuthKey.p8
+          chmod 600 ios/AuthKey.p8
       - name: Configure Fastlane
         run: |
           cat <<EOF > ios/fastlane/Fastfile
           default_platform(:ios)
-          
+          key = File.read('/Users/runner/work/suellasrewards/suellasrewards/ios/AuthKey.p8')
           platform :ios do
             desc "Push a new release build to the App Store"
             lane :release do
               upload_to_app_store(
                 api_key: {
-                  key_id: "${APP_STORE_CONNECT_API_KEY_ID}",
-                  issuer_id: "${APP_STORE_CONNECT_ISSUER_ID}",
-                  key: File.read("ios/Auth/AuthKey_WKG2975B2P.p8")
+                  key_id: "C955KM32VK",
+                  issuer_id: "6ea64670-374c-432a-ae26-2e54ddc66ed8",
+                  key: key
                 },
                 app_identifier: "com.suellas.rewards",
                 ipa: "../FlutterIpaExport.ipa"
@@ -87,11 +61,22 @@ jobs:
             end
           end
           EOF
-
-      - name: Upload IPA to App Store
+      - name: Install Fastlane Dependencies
         run: |
           cd ios
-          bundle exec fastlane release
+          bundle install
+      - name: Upload IPA to App Store
+        run: |
+          echo "🔍 Checking Environment Variables..."
+          echo "KEY ID: $APP_STORE_CONNECT_API_KEY_ID"
+          echo "ISSUER ID: $APP_STORE_CONNECT_ISSUER_ID"
+          
+          cd ios
+          bundle exec fastlane release || { echo "❌ Fastlane upload failed!"; exit 1; }
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: C955KM32VK
+          APP_STORE_CONNECT_ISSUER_ID: 6ea64670-374c-432a-ae26-2e54ddc66ed8
+          FASTLANE_OPT_OUT_USAGE: true
 
-      - name: Complete Job
+      - name: Complete job
         run: echo "✅ Deployment Completed Successfully"
