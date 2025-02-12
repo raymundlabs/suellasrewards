@@ -10,18 +10,42 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      # Set up Flutter environment
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           architecture: x64
-      - run: flutter pub get
-      
 
+      # Install dependencies
+      - run: flutter pub get
+
+      # Update CocoaPods repo
       - run: pod repo update
         working-directory: ios
 
-      - run: flutter build ios --release --no-codesign
+      # Decrypt and install the provisioning profile and certificate (via secrets)
+      - name: Decrypt and install provisioning profile and certificate
+        run: |
+          mkdir -p ~/certificates
+          echo "${{ secrets.SIGNING_CERTIFICATE }}" | base64 --decode > ~/certificates/certificate.p12
+          echo "${{ secrets.PROVISIONING_PROFILE }}" | base64 --decode > ~/certificates/provisioning_profile.mobileprovision
+          security create-keychain -p "" build.keychain
+          security import ~/certificates/certificate.p12 -k build.keychain -P "${{ secrets.CERT_PASSWORD }}" -T /usr/bin/codesign
+          security list-keychains -s build.keychain
+          security unlock-keychain -p "" build.keychain
+          sudo mkdir -p /Library/MobileDevice/Provisioning\ Profiles
+          sudo cp ~/certificates/provisioning_profile.mobileprovision /Library/MobileDevice/Provisioning\ Profiles/
 
+      # Build the app with code signing enabled
+      - run: flutter build ios --release --no-codesign
+        working-directory: ios
+
+      # Archive the app and create the IPA
+      - run: |
+          xcodebuild -workspace ios/Runner.xcworkspace -scheme Runner -archivePath $PWD/build/ios/iphoneos/Runner.xcarchive archive
+          xcodebuild -exportArchive -archivePath $PWD/build/ios/iphoneos/Runner.xcarchive -exportOptionsPlist ios/ExportOptions.plist -exportPath $PWD/build/ios/iphoneos
+
+      # Prepare the IPA for upload
       - run: mkdir Payload
         working-directory: build/ios/iphoneos
 
@@ -32,6 +56,7 @@ jobs:
         run: zip -qq -r -9 FlutterIpaExport.ipa Payload
         working-directory: build/ios/iphoneos
 
+      # Upload the IPA to release
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
@@ -39,4 +64,4 @@ jobs:
           file: build/ios/iphoneos/FlutterIpaExport.ipa
           tag: v1.0
           overwrite: true
-          body: "This is first release"
+          body: "This is the first release"
