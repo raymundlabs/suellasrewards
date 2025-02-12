@@ -24,11 +24,17 @@ jobs:
       - name: Download IPA from Latest Release
         run: gh release download -p "FlutterIpaExport.ipa" -O FlutterIpaExport.ipa
 
-      - name: Install Fastlane
-        run: gem install fastlane  # ⬅️ Directly install Fastlane
+      - name: Install Ruby & Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.0
+
+      - name: Install Fastlane Dependencies
+        run: bundle install
+        working-directory: ios
 
       - name: Upload IPA to App Store
-        run: fastlane release
+        run: bundle exec fastlane release
         working-directory: ios
         env:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
