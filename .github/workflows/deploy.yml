@@ -54,11 +54,11 @@ jobs:
             lane :release do
               upload_to_app_store(
                 api_key: {
-                  key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
-                  issuer_id: ENV["APP_STORE_CONNECT_ISSUER_ID"],
+                  key_id: "${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}",
+                  issuer_id: "${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}",
                   key_file: ENV["APP_STORE_CONNECT_API_PRIVATE_KEY_PATH"]
                 },
-                app_identifier: ENV["APP_IDENTIFIER"]
+                app_identifier: "${{ secrets.APP_IDENTIFIER }}"
               )
             end
           end
