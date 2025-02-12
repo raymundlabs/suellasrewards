@@ -41,21 +41,21 @@ jobs:
       - name: Create AuthKey.p8 from Secret
         run: |
           mkdir -p ios
-          echo "${{ secrets.APPSTORE_AUTH_KEY }}" > ios/AuthKey.p8
+          echo "${{ secrets.APPSTORE_AUTH_KEY }}" > ios/AuthKey_WKG2975B2P.p8
           chmod 600 ios/AuthKey.p8
 
       - name: Configure Fastlane
         run: |
           cat <<EOF > ios/fastlane/Fastfile
           default_platform(:ios)
-          key = File.read('/Users/runner/work/suellasrewards/suellasrewards/ios/AuthKey.p8')
+          key = File.read('/Users/runner/work/suellasrewards/suellasrewards/ios/AuthKey_WKG2975B2P.p8')
 
           platform :ios do
             desc "Push a new release build to the App Store"
             lane :release do
               upload_to_app_store(
                 api_key: {
-                  key_id: "C955KM32VK",
+                  key_id: "WKG2975B2P",
                   issuer_id: "6ea64670-374c-432a-ae26-2e54ddc66ed8",
                   key: key
                 },
@@ -80,7 +80,7 @@ jobs:
           cd ios
           bundle exec fastlane release || { echo "❌ Fastlane upload failed!"; exit 1; }
         env:
-          APP_STORE_CONNECT_API_KEY_ID: C955KM32VK
+          APP_STORE_CONNECT_API_KEY_ID: WKG2975B2P
           APP_STORE_CONNECT_ISSUER_ID: 6ea64670-374c-432a-ae26-2e54ddc66ed8
           FASTLANE_OPT_OUT_USAGE: true
 
