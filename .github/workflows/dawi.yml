@@ -1,0 +1,73 @@
+name: iOS-ipa-build-dawi
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    name: 🎉 iOS Build
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      # Set up Flutter environment
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          architecture: x64
+
+      # Install dependencies
+      - run: flutter pub get
+
+      # Update CocoaPods repo
+      - run: pod repo update
+        working-directory: ios
+
+      # Decrypt and install the certificate and provisioning profile
+      - name: Install provisioning profile and certificate
+        run: |
+          mkdir -p ~/certificates
+          
+          # Copy the certificate and provisioning profile from the repo
+          cp ios/keys/suellas.p12 ~/certificates/
+          cp ios/keys/Suellasrewards.mobileprovision ~/certificates/
+          
+          # Import the certificate into keychain
+          security create-keychain -p "" build.keychain
+          security import ~/certificates/suellas.p12 -k build.keychain -P "suellas" -T /usr/bin/codesign
+          security list-keychains -s build.keychain
+          security unlock-keychain -p "" build.keychain
+
+          # Install the provisioning profile
+          sudo mkdir -p /Library/MobileDevice/Provisioning\ Profiles
+          sudo cp ~/certificates/provisioning_profile.mobileprovision /Library/MobileDevice/Provisioning\ Profiles/
+
+      # Build the app (with code signing)
+      - run: flutter build ios --release --no-codesign
+        working-directory: ios
+
+      # Archive the app and create the IPA
+      - run: |
+          xcodebuild -workspace ios/Runner.xcworkspace -scheme Runner -archivePath $PWD/build/ios/iphoneos/Runner.xcarchive archive
+          xcodebuild -exportArchive -archivePath $PWD/build/ios/iphoneos/Runner.xcarchive -exportOptionsPlist ios/ExportOptions.plist -exportPath $PWD/build/ios/iphoneos
+
+      # Prepare the IPA for upload
+      - run: mkdir Payload
+        working-directory: build/ios/iphoneos
+
+      - run: mv Runner.app/ Payload
+        working-directory: build/ios/iphoneos
+
+      - name: Zip output
+        run: zip -qq -r -9 suellas.ipa Payload
+        working-directory: build/ios/iphoneos
+
+      # Upload the IPA to release
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/ios/iphoneos/suellas.ipa
+          tag: v1.0
+          overwrite: true
+          body: "This is the first release"
