@@ -64,7 +64,7 @@ jobs:
                 api_key: {
                   key_id: "S7J643PMNT",
                   issuer_id: "6ea64670-374c-432a-ae26-2e54ddc66ed8",
-                  key_file: ENV["APP_STORE_CONNECT_API_PRIVATE_KEY_PATH"]
+                  key_file: "/Users/runner/work/suellasrewards/suellasrewards/ios/fastlane/AuthKey.p8"
                 },
                 app_identifier: "com.suellas.rewards"
               )
@@ -92,9 +92,9 @@ jobs:
           cd ios
           bundle exec fastlane release || { echo "❌ Fastlane upload failed!"; exit 1; }
         env:
-          APP_STORE_CONNECT_API_KEY_ID: "S7J643PMNT"
-          APP_STORE_CONNECT_ISSUER_ID: "6ea64670-374c-432a-ae26-2e54ddc66ed8"
-          APP_STORE_CONNECT_API_PRIVATE_KEY_PATH: ${{ env.APP_STORE_CONNECT_API_PRIVATE_KEY_PATH }}
+          APP_STORE_CONNECT_API_KEY_ID: "S7J643PMNT",
+          APP_STORE_CONNECT_ISSUER_ID: "6ea64670-374c-432a-ae26-2e54ddc66ed8",
+          APP_STORE_CONNECT_API_PRIVATE_KEY_PATH: "/Users/runner/work/suellasrewards/suellasrewards/ios/fastlane/AuthKey.p8",
           FASTLANE_OPT_OUT_USAGE: true
 
       - name: Complete job
