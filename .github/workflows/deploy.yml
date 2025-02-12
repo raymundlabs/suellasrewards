@@ -33,24 +33,24 @@ jobs:
         with:
           ruby-version: 3.1
 
-      - name: Install Fastlane Dependencies
+      - name: Set Up Fastlane
         run: |
           cd ios
-          gem install bundler
+          bundle init
+          echo 'gem "fastlane"' >> Gemfile
           bundle install
 
-      - name: Write API Key to File
+      - name: Verify AuthKey.p8 File
         run: |
-          mkdir -p ios/fastlane
-          cat <<EOF > ios/fastlane/AuthKey.p8
-          -----BEGIN PRIVATE KEY-----
-          MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgOxleVa7L6nDKHn9R
-          sOCuQlgBA64rOYQFogf17YvFKzigCgYIKoZIzj0DAQehRANCAAQCOM7tPvkeTii1
-          1VvE2S4+K+4RWB89mBzj6GGxCDkoJlQrbcVlZL9WVBVbTak+0t/EHCponth00vVL
-          /4Gs2hEI
-          -----END PRIVATE KEY-----
-          EOF
-          echo "✅ AuthKey.p8 file written successfully."
+          if [ ! -f "ios/fastlane/AuthKey.p8" ]; then
+            echo "❌ AuthKey.p8 is missing in ios/fastlane!"
+            exit 1
+          fi
+          echo "✅ AuthKey.p8 found."
+          echo "APP_STORE_CONNECT_API_PRIVATE_KEY_PATH=$GITHUB_WORKSPACE/ios/fastlane/AuthKey.p8" >> $GITHUB_ENV
+
+      - name: Debug Fastlane Files
+        run: ls -la ios/fastlane
 
       - name: Configure Fastlane
         run: |
@@ -72,6 +72,11 @@ jobs:
           end
           EOF
 
+      - name: Install Fastlane Dependencies
+        run: |
+          cd ios
+          bundle install
+
       - name: Upload IPA to App Store
         run: |
           echo "🔍 Checking API Key Environment Variables..."
@@ -89,7 +94,7 @@ jobs:
         env:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
-          APP_STORE_CONNECT_API_PRIVATE_KEY_PATH: $GITHUB_WORKSPACE/ios/fastlane/AuthKey.p8
+          APP_STORE_CONNECT_API_PRIVATE_KEY_PATH: ${{ env.APP_STORE_CONNECT_API_PRIVATE_KEY_PATH }}
           FASTLANE_OPT_OUT_USAGE: true
 
       - name: Complete job
