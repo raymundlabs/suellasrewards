@@ -47,7 +47,7 @@ jobs:
             exit 1
           fi
           echo "✅ AuthKey.p8 found."
-          echo "APP_STORE_CONNECT_API_PRIVATE_KEY_PATH=$GITHUB_WORKSPACE/ios/fastlane/AuthKey.p8" >> $GITHUB_ENV
+          echo "APP_STORE_CONNECT_API_PRIVATE_KEY_PATH=$GITHUB_WORKSPACE/ios/AuthKey.p8" >> $GITHUB_ENV
 
       - name: Debug Fastlane Files
         run: ls -la ios/fastlane
