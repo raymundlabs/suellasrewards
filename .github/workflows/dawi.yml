@@ -34,7 +34,7 @@ jobs:
           
           # Import the certificate into keychain
           security create-keychain -p "" build.keychain
-          security import ~/certificates/suellas.p12 -k build.keychain -P "Suellas" -T /usr/bin/codesign
+          security import ~/certificates/suellas.p12 -k build.keychain -P Suellas -T /usr/bin/codesign
           security list-keychains -s build.keychain
           security unlock-keychain -p "" build.keychain
 
