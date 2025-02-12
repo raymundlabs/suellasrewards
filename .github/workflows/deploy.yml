@@ -18,10 +18,10 @@ jobs:
       - name: Install GitHub CLI
         run: brew install gh
 
-      - name: Authenticate GitHub CLI
+      - name: Authenticate GitHub CLI (No Manual Login Needed)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: echo "$GH_TOKEN" | gh auth login --with-token
+        run: gh auth status
 
       - name: Download IPA from Latest Release
         run: gh release download -p "FlutterIpaExport.ipa" -O FlutterIpaExport.ipa
