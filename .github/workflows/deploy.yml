@@ -38,35 +38,29 @@ jobs:
           echo 'gem "fastlane"' >> Gemfile
           bundle install
 
-      - name: Verify AuthKey.p8 File
+      - name: Create AuthKey.p8 from Secret
         run: |
-          if [ ! -f "/Users/runner/work/suellasrewards/suellasrewards/ios/AuthKey.p8" ]; then
-            echo "❌ AuthKey.p8 file is missing at /Users/runner/work/suellasrewards/suellasrewards/ios/"
-            exit 1
-          fi
-          echo "✅ AuthKey.p8 found."
-
-      - name: Debug Fastlane Environment Variables
-        run: |
-          echo "APP_STORE_CONNECT_API_KEY_ID: $APP_STORE_CONNECT_API_KEY_ID"
-          echo "APP_STORE_CONNECT_ISSUER_ID: $APP_STORE_CONNECT_ISSUER_ID"
-          echo "APP_STORE_CONNECT_API_PRIVATE_KEY_PATH: $APP_STORE_CONNECT_API_PRIVATE_KEY_PATH"
+          mkdir -p ios
+          echo "${{ secrets.APPSTORE_AUTH_KEY }}" > ios/AuthKey.p8
+          chmod 600 ios/AuthKey.p8
 
       - name: Configure Fastlane
         run: |
           cat <<EOF > ios/fastlane/Fastfile
           default_platform(:ios)
+          key = File.read('/Users/runner/work/suellasrewards/suellasrewards/ios/AuthKey.p8')
 
           platform :ios do
             desc "Push a new release build to the App Store"
             lane :release do
               upload_to_app_store(
                 api_key: {
-                  key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
-                  issuer_id: ENV["APP_STORE_CONNECT_ISSUER_ID"],
-                  key_filepath: "/Users/runner/work/suellasrewards/suellasrewards/ios/AuthKey.p8"
+                  key_id: "$APP_STORE_CONNECT_API_KEY_ID",
+                  issuer_id: "$APP_STORE_CONNECT_ISSUER_ID",
+                  key: key
                 },
-                app_identifier: "com.suellas.rewards"
+                app_identifier: "com.suellas.rewards",
+                ipa: "../FlutterIpaExport.ipa"
               )
             end
           end
@@ -79,24 +73,15 @@ jobs:
 
       - name: Upload IPA to App Store
         run: |
-          echo "🔍 Checking API Key Environment Variables..."
-          echo "APP_STORE_CONNECT_API_KEY_ID: $APP_STORE_CONNECT_API_KEY_ID"
-          echo "APP_STORE_CONNECT_ISSUER_ID: $APP_STORE_CONNECT_ISSUER_ID"
-          echo "APP_STORE_CONNECT_API_PRIVATE_KEY_PATH: $APP_STORE_CONNECT_API_PRIVATE_KEY_PATH"
-
-          if [ ! -f "$APP_STORE_CONNECT_API_PRIVATE_KEY_PATH" ]; then
-            echo "❌ Private key file not found at $APP_STORE_CONNECT_API_PRIVATE_KEY_PATH!"
-            exit 1
-          fi
-
+          echo "🔍 Checking Environment Variables..."
+          echo "KEY ID: $APP_STORE_CONNECT_API_KEY_ID"
+          echo "ISSUER ID: $APP_STORE_CONNECT_ISSUER_ID"
+          
           cd ios
           bundle exec fastlane release || { echo "❌ Fastlane upload failed!"; exit 1; }
         env:
           APP_STORE_CONNECT_API_KEY_ID: C955KM32VK
           APP_STORE_CONNECT_ISSUER_ID: 6ea64670-374c-432a-ae26-2e54ddc66ed8
-          APP_STORE_CONNECT_API_PRIVATE_KEY_PATH: /Users/runner/work/suellasrewards/suellasrewards/ios/AuthKey.p8
-
-
           FASTLANE_OPT_OUT_USAGE: true
 
       - name: Complete job
