@@ -40,7 +40,6 @@ jobs:
           echo 'gem "mutex_m"' >> ios/Gemfile
           echo 'gem "abbrev"' >> ios/Gemfile
           echo 'gem "ostruct"' >> ios/Gemfile
-
       - name: Install Fastlane Dependencies
         run: bundle install
         working-directory: ios
