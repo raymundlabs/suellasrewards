@@ -1,29 +1,46 @@
-name: Build and Release
+name: Deploy iOS App to App Store
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
 
 jobs:
-  release:
+  deploy:
+    name: "🚀 Deploy to App Store"
     runs-on: macos-latest
+
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      - name: Set Up Ruby
+      - name: Install GitHub CLI
+        run: brew install gh
+
+      - name: Authenticate GitHub CLI
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+
+      - name: Download IPA from Latest Release
+        run: |
+          gh release download -p "FlutterIpaExport.ipa" -O FlutterIpaExport.ipa || { echo "❌ IPA not found!"; exit 1; }
+
+      - name: Create Fastlane Directory
+        run: mkdir -p ios/fastlane
+
+      - name: Install Ruby & Fastlane
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.0
+          ruby-version: 3.1
 
-      - name: Install Fastlane
-        run: gem install fastlane
-
-      - name: Decode API Key and Store as a File
+      - name: Set Up Fastlane
         run: |
-          mkdir -p ios/fastlane  # Ensure the directory exists
-          echo "${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY }}" | base64 --decode > ios/fastlane/AuthKey.p8
+          cd ios
+          bundle init
+          echo 'gem "fastlane"' >> Gemfile
+          bundle install
+          
+          echo "${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY }}" | base64 --decode > fastlane/AuthKey.p8
           echo "APP_STORE_CONNECT_API_PRIVATE_KEY_PATH=$GITHUB_WORKSPACE/ios/fastlane/AuthKey.p8" >> $GITHUB_ENV
 
       - name: Configure Fastlane
@@ -45,7 +62,16 @@ jobs:
             end
           end
           EOF
-        shell: bash
 
-      - name: Run Fastlane Release
-        run: fastlane ios release
+      - name: Upload IPA to App Store
+        run: bundle exec fastlane release
+        working-directory: ios
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_API_PRIVATE_KEY_PATH: ${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY_PATH }}
+          APP_IDENTIFIER: ${{ secrets.APP_IDENTIFIER }}
+          FASTLANE_OPT_OUT_USAGE: true
+
+      - name: Complete job
+        run: echo "✅ Deployment Completed Successfully"
