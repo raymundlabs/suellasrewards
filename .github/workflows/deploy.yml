@@ -25,8 +25,8 @@ jobs:
       - name: Set Up Ruby & Fastlane
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7.4  # Use a stable Ruby version
-          gem-set: |          # Install required gems
+          ruby-version: 2.7.4
+          gem-set: |
             fastlane
             deliver
             match
@@ -37,8 +37,8 @@ jobs:
       - name: Create AuthKey.p8 from Secret
         run: |
           mkdir -p ios/Auth
-          echo "${{ secrets.APPSTORE_AUTH_KEY }}" > ios/keys/AuthKey_WKG2975B2P.p8
-          chmod 600 ios/keys/AuthKey_WKG2975B2P.p8
+          echo "${{ secrets.APPSTORE_AUTH_KEY }}" > ios/Auth/AuthKey_WKG2975B2P.p8
+          chmod 600 ios/Auth/AuthKey_WKG2975B2P.p8
 
       - name: Configure Fastlane
         run: |
@@ -52,7 +52,7 @@ jobs:
                 api_key: {
                   key_id: "WKG2975B2P",
                   issuer_id: "6ea64670-374c-432a-ae26-2e54ddc66ed8",
-                  key: File.read("ios/keys/AuthKey_WKG2975B2P.p8")
+                  key: File.read("ios/Auth/AuthKey_WKG2975B2P.p8")
                 },
                 app_identifier: "com.suellas.rewards",
                 ipa: "../FlutterIpaExport.ipa"
@@ -65,15 +65,12 @@ jobs:
         run: |
           cd ios
           bundle install
+          bundle update fastlane deliver match
 
       - name: Upload IPA to App Store
         run: |
-          echo "🔍 Checking Environment Variables..."
-          echo "KEY ID: WKG2975B2P"
-          echo "ISSUER ID: 6ea64670-374c-432a-ae26-2e54ddc66ed8"
-          
           cd ios
-          bundle exec fastlane release
+          bundle exec fastlane release --verbose
         env:
           APP_STORE_CONNECT_API_KEY_ID: WKG2975B2P
           APP_STORE_CONNECT_ISSUER_ID: 6ea64670-374c-432a-ae26-2e54ddc66ed8
