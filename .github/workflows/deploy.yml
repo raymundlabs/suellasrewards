@@ -32,6 +32,11 @@ jobs:
         with:
           ruby-version: 3.0
 
+      - name: Create Gemfile
+        run: |
+          echo 'source "https://rubygems.org"' > ios/Gemfile
+          echo 'gem "fastlane"' >> ios/Gemfile
+
       - name: Install Fastlane Dependencies
         run: bundle install
         working-directory: ios
@@ -45,7 +50,7 @@ jobs:
           APP_STORE_CONNECT_API_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY }}
           APP_IDENTIFIER: ${{ secrets.APP_IDENTIFIER }}
 
-      - name: Post Checkout Repository # This step is already in your original workflow.
+      - name: Post Checkout Repository
         run: |
           /opt/homebrew/bin/git version
           git version 2.48.1
@@ -60,5 +65,5 @@ jobs:
           /opt/homebrew/bin/git config --local --unset-all http.https://github.com/.extraheader
           /opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
 
-      - name: Complete job # This step is already in your original workflow.
-        run: echo "Job Completed" # You can add custom commands here if needed.
+      - name: Complete job
+        run: echo "Job Completed"
