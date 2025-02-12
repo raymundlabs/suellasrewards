@@ -66,7 +66,7 @@ jobs:
                   issuer_id: 6ea64670-374c-432a-ae26-2e54ddc66ed8,
                   key_filepath: ENV['APP_STORE_CONNECT_API_PRIVATE_KEY_PATH']
                 },
-                app_identifier: com.suellas.rewards
+                app_identifier: "com.suellas.rewards"
               )
             end
           end
