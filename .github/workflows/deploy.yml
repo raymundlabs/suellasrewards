@@ -24,6 +24,9 @@ jobs:
       - name: Download IPA from Latest Release
         run: gh release download -p "FlutterIpaExport.ipa" -O FlutterIpaExport.ipa
 
+      - name: Create Fastlane Directory
+        run: mkdir -p ios/fastlane
+
       - name: Install Ruby & Fastlane
         uses: ruby/setup-ruby@v1
         with:
@@ -41,3 +44,21 @@ jobs:
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_API_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY }}
           APP_IDENTIFIER: ${{ secrets.APP_IDENTIFIER }}
+
+      - name: Post Checkout Repository # This step is already in your original workflow.
+        run: |
+          /opt/homebrew/bin/git version
+          git version 2.48.1
+          Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/4d2177b6-95ba-47b8-9b03-ec1b3630aadc/.gitconfig'
+          Temporarily overriding HOME='/Users/runner/work/_temp/4d2177b6-95ba-47b8-9b03-ec1b3630aadc' before making global git config changes
+          Adding repository directory to the temporary git global config as a safe directory
+          /opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/suellasrewards/suellasrewards
+          /opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+          /opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+          /opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+          http.https://github.com/.extraheader
+          /opt/homebrew/bin/git config --local --unset-all http.https://github.com/.extraheader
+          /opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+
+      - name: Complete job # This step is already in your original workflow.
+        run: echo "Job Completed" # You can add custom commands here if needed.
