@@ -57,7 +57,7 @@ jobs:
                 api_key: {
                   key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
                   issuer_id: ENV["APP_STORE_CONNECT_ISSUER_ID"],
-                  key_content: ENV["APP_STORE_CONNECT_API_PRIVATE_KEY_PATH"]
+                  key_content: ENV["APP_STORE_CONNECT_API_PRIVATE_KEY"]
                 },
                 app_identifier: ENV["APP_IDENTIFIER"]
               )
@@ -71,7 +71,7 @@ jobs:
         env:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
-          APP_STORE_CONNECT_API_PRIVATE_KEY_PATH: ${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY_PATH }}
+          APP_STORE_CONNECT_API_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY }}
           APP_IDENTIFIER: ${{ secrets.APP_IDENTIFIER }}
           FASTLANE_OPT_OUT_USAGE: true
 
