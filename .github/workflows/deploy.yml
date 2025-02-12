@@ -7,6 +7,11 @@ jobs:
   deploy:
     name: "🚀 Deploy to App Store"
     runs-on: macos-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      APP_STORE_CONNECT_API_KEY_ID: WKG2975B2P
+      APP_STORE_CONNECT_ISSUER_ID: 6ea64670-374c-432a-ae26-2e54ddc66ed8
+      FASTLANE_OPT_OUT_USAGE: true
 
     steps:
       - name: Checkout Repository
@@ -16,28 +21,26 @@ jobs:
         run: brew install gh
 
       - name: Authenticate GitHub CLI
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
-        with:
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh auth login --with-token
+        run: echo "${GITHUB_TOKEN}" | gh auth login --with-token
 
       - name: Download IPA from Latest Release
         run: |
-          gh release download -p "FlutterIpaExport.ipa" -O FlutterIpaExport.ipa || { echo "❌ IPA not found!"; exit 1; }
+          gh release download -p "FlutterIpaExport.ipa" -O FlutterIpaExport.ipa || { 
+            echo "❌ IPA not found!"; 
+            exit 1; 
+          }
 
       - name: Create Fastlane Directory
         run: mkdir -p ios/fastlane
 
       - name: Create Gemfile in iOS Directory
         run: |
-          cat <<EOF >ios/Gemfile
-source 'https://rubygems.org'
-
-gem 'fastlane'
-gem 'deliver'
-gem 'match'
-EOF
+          cat <<EOF > ios/Gemfile
+          source 'https://rubygems.org'
+          gem 'fastlane'
+          gem 'deliver'
+          gem 'match'
+          EOF
 
       - name: Install Ruby & Fastlane
         uses: ruby/setup-ruby@v1
@@ -68,14 +71,14 @@ EOF
         run: |
           cat <<EOF > ios/fastlane/Fastfile
           default_platform(:ios)
-
+          
           platform :ios do
             desc "Push a new release build to the App Store"
             lane :release do
               upload_to_app_store(
                 api_key: {
-                  key_id: "WKG2975B2P",
-                  issuer_id: "6ea64670-374c-432a-ae26-2e54ddc66ed8",
+                  key_id: "${APP_STORE_CONNECT_API_KEY_ID}",
+                  issuer_id: "${APP_STORE_CONNECT_ISSUER_ID}",
                   key: File.read("ios/Auth/AuthKey_WKG2975B2P.p8")
                 },
                 app_identifier: "com.suellas.rewards",
@@ -89,10 +92,6 @@ EOF
         run: |
           cd ios
           bundle exec fastlane release
-        env:
-          APP_STORE_CONNECT_API_KEY_ID: WKG2975B2P
-          APP_STORE_CONNECT_ISSUER_ID: 6ea64670-374c-432a-ae26-2e54ddc66ed8
-          FASTLANE_OPT_OUT_USAGE: true
 
       - name: Complete Job
         run: echo "✅ Deployment Completed Successfully"
