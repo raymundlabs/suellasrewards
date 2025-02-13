@@ -8,7 +8,7 @@ workflows:
     environment:
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: com.suellas.rewards
+        bundle_identifier: com.suellas.rewardstest
       vars:
         BUNDLE_ID: "com.suellas.rewards"
         XCODE_PROJECT: "CodemagicSample.xcodeproj" 
