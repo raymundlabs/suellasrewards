@@ -9,8 +9,6 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.suellas.rewardstest
-        apple_id: "romyjeninapisigan@gmail.com"
-        app_store_connect_key: Encrypted(Suellas)
       flutter: stable
       xcode: latest # Lock Xcode version to avoid issues
       cocoapods: default
