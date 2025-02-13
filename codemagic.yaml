@@ -9,10 +9,10 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.suellas.rewardstest
-      vars:
-        APP_ID: 6741890858 # <-- Put your APP ID here
+        apple_id: "romyjeninapisigan@gmail.com"
+        app_store_connect_key: Encrypted(Suellas)
       flutter: stable
-      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
+      xcode: latest # Lock Xcode version to avoid issues
       cocoapods: default
     scripts:
       - name: Set up code signing settings on Xcode project
@@ -72,32 +72,6 @@ workflows:
         # Note: This action is performed during post-processing.
         submit_to_app_store: false
 
-  web-workflow:
-    name: Web app workflow
-    max_build_duration: 10
-    environment:
-      flutter: stable
-    scripts:
-      - name: Get Flutter packages
-        script: |
-          flutter packages pub get
-      - name: Flutter analyze
-        script: |
-          flutter analyze
-      - name: Flutter unit tests
-        script: |
-          flutter test
-      - name: Flutter build webapp
-        script: |
-          flutter build web --release
-          cd build/web
-          7z a -r ../web.zip ./*
-    artifacts:
-      - build/web.zip
-      - flutter_drive.log
-    publishing:
-      email:
-        recipients:
-          - user_1@example.com
+
 
 
