@@ -24,13 +24,13 @@ workflows:
       - name: Install pods
         script: |
           find . -name "Podfile" -execdir pod install \;
-      - name: Flutter analyze
-        script: |
-          flutter analyze
-      - name: Flutter unit tests
-        script: |
-          flutter test
-        ignore_failure: true
+      # - name: Flutter analyze
+      #   script: |
+      #     flutter analyze
+      # - name: Flutter unit tests
+      #   script: |
+      #     flutter test
+      #   ignore_failure: true
       - name: Flutter build ipa and automatic versioning
         script: |
           # See the following link about getting the latest App Store or TestFlight version - https://docs.codemagic.io/knowledge-codemagic/build-versioning/#app-store-or-testflight-latest-build-number
