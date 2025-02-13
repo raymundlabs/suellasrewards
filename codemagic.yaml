@@ -8,7 +8,7 @@ workflows:
     environment:
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: com.suellas.rewardstest
+        bundle_identifier: com.suellas.rewardstesting
       flutter: stable
       xcode: latest # Lock Xcode version to avoid issues
       cocoapods: default
