@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>NSPrivacyAccessedAPITypes</key>
+    <array>
+      <dict>
+        <key>PrivacyAccessedAPIType</key>
+        <string>Camera</string>
+        <key>PrivacyAccessedAPIReasons</key>
+        <array>
+          <string>App Functionality</string>
+        </array>
+      </dict>
+      <dict>
+        <key>PrivacyAccessedAPIType</key>
+        <string>PhotoLibrary</string>
+        <key>PrivacyAccessedAPIReasons</key>
+        <array>
+          <string>App Functionality</string>
+        </array>
+      </dict>
+    </array>
+  </dict>
+</plist>
