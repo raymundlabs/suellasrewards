@@ -21,5 +21,40 @@
         </array>
       </dict>
     </array>
+    
+    <key>NSPrivacyThirdPartySDKs</key>
+    <array>
+      <!-- FirebaseCore SDK -->
+      <dict>
+        <key>NSPrivacyThirdPartySDKName</key>
+        <string>FirebaseCore</string>
+        <key>NSPrivacyThirdPartySDKPurpose</key>
+        <array>
+          <string>Analytics</string>
+          <string>Crash Reporting</string>
+        </array>
+      </dict>
+
+      <!-- image_picker_ios SDK -->
+      <dict>
+        <key>NSPrivacyThirdPartySDKName</key>
+        <string>image_picker_ios</string>
+        <key>NSPrivacyThirdPartySDKPurpose</key>
+        <array>
+          <string>Photo Selection</string>
+          <string>Media Upload</string>
+        </array>
+      </dict>
+
+      <!-- nanopb SDK (used internally by Firebase) -->
+      <dict>
+        <key>NSPrivacyThirdPartySDKName</key>
+        <string>nanopb</string>
+        <key>NSPrivacyThirdPartySDKPurpose</key>
+        <array>
+          <string>Data Encoding</string>
+        </array>
+      </dict>
+    </array>
   </dict>
 </plist>
