@@ -1,50 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
   <dict>
     <key>NSPrivacyAccessedAPITypes</key>
     <array>
+      <!-- Camera Usage -->
       <dict>
-        <key>PrivacyAccessedAPIType</key>
-        <string>Camera</string>
-        <key>PrivacyAccessedAPIReasons</key>
-        <array>
-          <string>Scanning Barcodes</string>
-          <string>Taking Photos</string>
-        </array>
-      </dict>
-      <dict>
-        <key>PrivacyAccessedAPIType</key>
-        <string>PhotoLibrary</string>
-        <key>PrivacyAccessedAPIReasons</key>
-        <array>
-          <string>Photo Selection</string>
-          <string>Media Upload</string>
-        </array>
-      </dict>
-    </array>
-
-    <key>NSPrivacyThirdPartySDKs</key>
-    <array>
-      <!-- image_picker_ios SDK -->
-      <dict>
-        <key>NSPrivacyThirdPartySDKName</key>
-        <string>image_picker_ios</string>
-        <key>NSPrivacyThirdPartySDKPurpose</key>
-        <array>
-          <string>Photo Selection</string>
-          <string>Media Upload</string>
-        </array>
+        <key>NSPrivacyAccessedAPIType</key>
+        <string>NSPrivacyAccessedAPITypeCamera</string>
+        <key>NSPrivacyAccessedReason</key>
+        <string>Used for scanning QR codes and picking images</string>
       </dict>
 
-      <!-- flutter_barcode_scanner SDK -->
+      <!-- Photo Library -->
       <dict>
-        <key>NSPrivacyThirdPartySDKName</key>
-        <string>flutter_barcode_scanner</string>
-        <key>NSPrivacyThirdPartySDKPurpose</key>
-        <array>
-          <string>Barcode Scanning</string>
-        </array>
+        <key>NSPrivacyAccessedAPIType</key>
+        <string>NSPrivacyAccessedAPITypePhotoLibrary</string>
+        <key>NSPrivacyAccessedReason</key>
+        <string>Allows users to upload images</string>
+      </dict>
+
+      <!-- Internet Access -->
+      <dict>
+        <key>NSPrivacyAccessedAPIType</key>
+        <string>NSPrivacyAccessedAPITypeNetworking</string>
+        <key>NSPrivacyAccessedReason</key>
+        <string>Used for API calls to communicate with the server</string>
       </dict>
     </array>
   </dict>
