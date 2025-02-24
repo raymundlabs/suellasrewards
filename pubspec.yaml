@@ -43,7 +43,7 @@ dependencies:
   # google_sign_in: ^5.0.0
   qr_flutter: ^4.1.0
   # firebase_storage: ^11.1.0
-  image_picker: ^0.8.7+1
+  image_picker_ios: ^0.8.12+2
   # cloud_firestore: ^4.5.0
   flutter_barcode_scanner: ^2.0.0
   

@@ -1,31 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plist version="1.0">
-  <dict>
-    <key>NSPrivacyAccessedAPITypes</key>
-    <array>
-      <!-- Camera Usage -->
-      <dict>
-        <key>NSPrivacyAccessedAPIType</key>
-        <string>NSPrivacyAccessedAPITypeCamera</string>
-        <key>NSPrivacyAccessedReason</key>
-        <string>Used for scanning QR codes and picking images</string>
-      </dict>
+<dict>
+  <key>NSPrivacyAccessedAPITypes</key>
+  <array>
+    <!-- Camera Access (for taking photos) -->
+    <dict>
+      <key>NSPrivacyAccessedAPIType</key>
+      <string>NSPrivacyAccessedAPITypeCamera</string>
+      <key>NSPrivacyAccessedReason</key>
+      <string>Allows users to take and upload pictures.</string>
+    </dict>
 
-      <!-- Photo Library -->
-      <dict>
-        <key>NSPrivacyAccessedAPIType</key>
-        <string>NSPrivacyAccessedAPITypePhotoLibrary</string>
-        <key>NSPrivacyAccessedReason</key>
-        <string>Allows users to upload images</string>
-      </dict>
-
-      <!-- Internet Access -->
-      <dict>
-        <key>NSPrivacyAccessedAPIType</key>
-        <string>NSPrivacyAccessedAPITypeNetworking</string>
-        <key>NSPrivacyAccessedReason</key>
-        <string>Used for API calls to communicate with the server</string>
-      </dict>
-    </array>
-  </dict>
+    <!-- Photo Library Access (for selecting images) -->
+    <dict>
+      <key>NSPrivacyAccessedAPIType</key>
+      <string>NSPrivacyAccessedAPITypePhotoLibrary</string>
+      <key>NSPrivacyAccessedReason</key>
+      <string>Allows users to select and upload images.</string>
+    </dict>
+  </array>
+</dict>
 </plist>
