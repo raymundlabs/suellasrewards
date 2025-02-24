@@ -5,10 +5,6 @@ workflows:
     max_build_duration: 120
     integrations:
       app_store_connect: Suellas
-    triggering:
-      events:
-        - push
-        - tag
     environment:
       ios_signing:
         distribution_type: app_store
@@ -20,43 +16,40 @@ workflows:
       - name: Set up code signing settings on Xcode project
         script: |
           xcode-project use-profiles
+          
       - name: Get Flutter packages
         script: |
           flutter packages pub get
+
       - name: Install pods
         script: |
           find . -name "Podfile" -execdir pod install \;
-      - name: Get latest build number from App Store Connect
+
+      - name: Fetch latest TestFlight build number
         script: |
           LATEST_BUILD_NUMBER=$(app-store-connect get-latest-testflight-build-number "com.suellas.rewardstesting" || echo 0)
           NEW_BUILD_NUMBER=$((LATEST_BUILD_NUMBER + 1))
-          echo "New build number: $NEW_BUILD_NUMBER"
+          echo "Latest TestFlight Build Number: $LATEST_BUILD_NUMBER"
+          echo "New Build Number: $NEW_BUILD_NUMBER"
           echo "BUILD_NUMBER=$NEW_BUILD_NUMBER" >> $CM_ENV
-      - name: Flutter clean and build IPA
+
+      - name: Flutter clean (prevent caching issues)
         script: |
           flutter clean
+
+      - name: Flutter build ipa with automatic versioning
+        script: |
           flutter build ipa --release \
-            --build-name=1.0.$NEW_BUILD_NUMBER \
-            --build-number=$NEW_BUILD_NUMBER \
+            --build-name=1.0.7 \
+            --build-number=$BUILD_NUMBER \
             --export-options-plist=/Users/builder/export_options.plist
+
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
       - flutter_drive.log
+
     publishing:
-      email:
-        recipients:
-          - user_1@example.com
-          - user_2@example.com
-        notify:
-          success: true
-          failure: false
-      slack:
-        channel: "#builds"
-        notify_on_build_start: true
-        notify:
-          success: true
-          failure: false
       app_store_connect:
         auth: integration
         submit_to_testflight: true
