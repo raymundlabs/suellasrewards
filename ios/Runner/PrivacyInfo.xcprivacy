@@ -9,7 +9,8 @@
         <string>Camera</string>
         <key>PrivacyAccessedAPIReasons</key>
         <array>
-          <string>App Functionality</string>
+          <string>Scanning Barcodes</string>
+          <string>Taking Photos</string>
         </array>
       </dict>
       <dict>
@@ -17,24 +18,14 @@
         <string>PhotoLibrary</string>
         <key>PrivacyAccessedAPIReasons</key>
         <array>
-          <string>App Functionality</string>
+          <string>Photo Selection</string>
+          <string>Media Upload</string>
         </array>
       </dict>
     </array>
-    
+
     <key>NSPrivacyThirdPartySDKs</key>
     <array>
-      <!-- FirebaseCore SDK -->
-      <dict>
-        <key>NSPrivacyThirdPartySDKName</key>
-        <string>FirebaseCore</string>
-        <key>NSPrivacyThirdPartySDKPurpose</key>
-        <array>
-          <string>Analytics</string>
-          <string>Crash Reporting</string>
-        </array>
-      </dict>
-
       <!-- image_picker_ios SDK -->
       <dict>
         <key>NSPrivacyThirdPartySDKName</key>
@@ -46,13 +37,13 @@
         </array>
       </dict>
 
-      <!-- nanopb SDK (used internally by Firebase) -->
+      <!-- flutter_barcode_scanner SDK -->
       <dict>
         <key>NSPrivacyThirdPartySDKName</key>
-        <string>nanopb</string>
+        <string>flutter_barcode_scanner</string>
         <key>NSPrivacyThirdPartySDKPurpose</key>
         <array>
-          <string>Data Encoding</string>
+          <string>Barcode Scanning</string>
         </array>
       </dict>
     </array>
