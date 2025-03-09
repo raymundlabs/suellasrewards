@@ -9,6 +9,10 @@ workflows:
       events:
         - push
         - tag
+      branch_patterns:
+        - pattern: main
+          include: true
+          build_type: release
     environment:
       ios_signing:
         distribution_type: app_store
@@ -17,54 +21,79 @@ workflows:
       xcode: latest
       cocoapods: default
     scripts:
-      - name: Set up code signing settings on Xcode project
+      - name: Set up code signing
         script: |
           xcode-project use-profiles
-      - name: Get Flutter packages
-        script: |
-          flutter packages pub get
-      - name: Update CocoaPods Repo
-        script: |
-          gem install cocoapods
-          pod repo update # Update the local CocoaPods repository
-      - name: Install pods
-        script: |
-          find . -name "Podfile" -execdir pod install --repo-update \; # Ensure the pods are installed correctly
-      - name: Get latest build number from App Store Connect
-        script: |
-          LATEST_BUILD_NUMBER=$(app-store-connect get-latest-testflight-build-number "com.suellas.rewardstesting" || echo 0)
-          NEW_BUILD_NUMBER=$((LATEST_BUILD_NUMBER + 1))
-          echo "New build number: $NEW_BUILD_NUMBER"
-          echo "BUILD_NUMBER=$NEW_BUILD_NUMBER" >> $CM_ENV
-      - name: Flutter clean and build IPA
+
+      - name: Clean workspace
         script: |
           flutter clean
+          rm -rf ios/Podfile.lock ios/Pods
+
+      - name: Get Flutter packages
+        script: |
+          flutter pub get
+
+      - name: Update CocoaPods
+        script: |
+          gem uninstall cocoapods -a --force
+          gem install cocoapods -v 1.15.2 # Stable version for Firebase
+          pod setup --verbose
+
+      - name: Install Pods (Firebase-compatible)
+        script: |
+          cd ios
+          pod install --repo-update --clean-install --verbose
+          cd ..
+
+      - name: Auto-versioning
+        script: |
+          VERSION_NAME="1.0.9" # Manually update for releases
+          LATEST_BUILD=$(app-store-connect get-latest-testflight-build-number "com.suellas.rewardstesting" || echo 0)
+          NEW_BUILD=$((LATEST_BUILD + 1))
+          echo "BUILD_NUMBER=$NEW_BUILD" >> $CM_ENV
+          echo "VERSION_NAME=$VERSION_NAME" >> $CM_ENV
+
+      - name: Build IPA
+        script: |
           flutter build ipa --release \
-            --build-name=1.0.$NEW_BUILD_NUMBER \
-            --build-number=$NEW_BUILD_NUMBER \
-            --export-options-plist=/Users/builder/export_options.plist
+            --build-name=$VERSION_NAME \
+            --build-number=$BUILD_NUMBER \
+            --export-options-plist=/Users/builder/export_options.plist \
+            --verbose
+
+      - name: Validate Firebase
+        script: |
+          if unzip -l build/ios/ipa/*.ipa | grep -q 'Firebase'; then
+            echo "Firebase integration successful"
+          else
+            echo "Firebase missing from build!"
+            exit 1
+          fi
+
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
-      - flutter_drive.log
+
     publishing:
       email:
         recipients:
-          - user_1@example.com
-          - user_2@example.com
+          - dev-team@suellas.com
         notify:
           success: true
-          failure: false
+          failure: true
       slack:
         channel: "#builds"
         notify_on_build_start: true
         notify:
           success: true
-          failure: false
+          failure: true
       app_store_connect:
         auth: integration
         submit_to_testflight: true
-        beta_groups:
-          - group name 1
-          - group name 2
         submit_to_app_store: true
+        release_type: AUTOMATIC
+        beta_groups:
+          - "Internal Testers"
+        release_notes:
+          en-US: "Production release with Firebase integration"
