@@ -40,7 +40,7 @@ workflows:
       - name: Flutter build ipa with automatic versioning
         script: |
           flutter build ipa --release \
-            --build-name=1.0.8 \
+            --build-name=1.0.10 \
             --build-number=$BUILD_NUMBER \
             --export-options-plist=/Users/builder/export_options.plist
 
