@@ -23,9 +23,13 @@ workflows:
       - name: Get Flutter packages
         script: |
           flutter packages pub get
+      - name: Update CocoaPods Repo
+        script: |
+          gem install cocoapods
+          pod repo update # Update the local CocoaPods repository
       - name: Install pods
         script: |
-          find . -name "Podfile" -execdir pod install \;
+          find . -name "Podfile" -execdir pod install --repo-update \; # Ensure the pods are installed correctly
       - name: Get latest build number from App Store Connect
         script: |
           LATEST_BUILD_NUMBER=$(app-store-connect get-latest-testflight-build-number "com.suellas.rewardstesting" || echo 0)
@@ -64,5 +68,3 @@ workflows:
           - group name 1
           - group name 2
         submit_to_app_store: true
-
-        
