@@ -35,9 +35,6 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   win32: ^5.10.1
 
-flutter:
-  uses-material-design: true
-
 
 flutter_launcher_icons:
   android: "launcher_icon"
