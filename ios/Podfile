@@ -26,7 +26,8 @@
     use_modular_headers!
 
     # Firebase dependency
-    pod 'Firebase/Core', '10.22.0'
+    pod 'Firebase/CoreOnly', '10.25.0'
+
 
     # Flutter plugins will be auto-added by this line
     flutter_install_all_ios_pods(File.dirname(File.realpath(__FILE__)))
