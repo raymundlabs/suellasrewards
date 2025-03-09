@@ -19,8 +19,8 @@ dependencies:
   # Other dependencies
   google_sign_in: ^6.1.5
   cupertino_icons: ^1.0.6
-  qr_flutter: ^4.2.0
-  image_picker: ^1.0.7
+  qr_flutter: ^4.1.0
+  image_picker: ^0.8.7+1
   flutter_barcode_scanner: ^2.0.0
   http: ^1.2.0
   shared_preferences: ^2.2.2
