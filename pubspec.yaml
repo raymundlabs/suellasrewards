@@ -24,7 +24,6 @@ dependencies:
   flutter_barcode_scanner: ^2.0.0
   http: ^1.2.0
   shared_preferences: ^2.2.2
-  flutter_local_notifications: ^17.1.0
   google_fonts: ^6.2.1
   win32: ^5.10.1
 
