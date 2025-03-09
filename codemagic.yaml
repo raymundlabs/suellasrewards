@@ -16,58 +16,59 @@ workflows:
       - name: Set up code signing settings on Xcode project
         script: |
           xcode-project use-profiles
-
       - name: Get Flutter packages
         script: |
           flutter packages pub get
-
-      - name: Update CocoaPods
+      - name: Install pods
         script: |
-          gem install cocoapods --user-install
-          pod repo update
-
-      - name: Clean and Install Pods
-        script: |
-          rm -rf ios/Pods ios/Podfile.lock
-          pod install --repo-update
-
-      - name: Verify Pod Dependencies
-        script: |
-          pod deintegrate
-          pod install --repo-update
-
+          find . -name "Podfile" -execdir pod install \;
+      # - name: Flutter analyze
+      #   script: |
+      #     flutter analyze
+      # - name: Flutter unit tests
+      #   script: |
+      #     flutter test
+      #   ignore_failure: true
       - name: Flutter build ipa and automatic versioning
         script: |
+          # See the following link about getting the latest App Store or TestFlight version - https://docs.codemagic.io/knowledge-codemagic/build-versioning/#app-store-or-testflight-latest-build-number
           flutter build ipa --release \
             --build-name=1.0.9 \
             --build-number=2 \
             --export-options-plist=/Users/builder/export_options.plist
-
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
       - flutter_drive.log
-
     publishing:
+      # See the following link for details about email publishing - https://docs.codemagic.io/publishing-yaml/distribution/#email
       email:
         recipients:
           - user_1@example.com
           - user_2@example.com
         notify:
-          success: true
-          failure: false
-
+          success: true # To receive a notification when a build succeeds
+          failure: false # To not receive a notification when a build fails
       slack:
+        # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
         channel: "#builds"
-        notify_on_build_start: true
+        notify_on_build_start: true # To receive a notification when a build starts
         notify:
-          success: true
-          failure: false
-
+          success: true # To receive a notification when a build succeeds
+          failure: false # To not receive a notification when a build fails
       app_store_connect:
         auth: integration
+        
+        # Configuration related to TestFlight (optional)
+        # Note: This action is performed during post-processing.
         submit_to_testflight: true
-        beta_groups:
+        beta_groups: # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
           - group name 1
           - group name 2
+
+        # Configuration related to App Store (optional)
+        # Note: This action is performed during post-processing.
         submit_to_app_store: false
+
+
+
