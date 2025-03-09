@@ -30,11 +30,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  firebase_core: ^1.10.0 
   google_sign_in: ^5.2.1
   firebase_auth: ^3.3.3
   cupertino_icons: ^1.0.2
-  firebase_core: ^2.10.0   # Downgraded to match firebase_auth
   firebase_messaging: ^14.4.0   # Consider downgrading for compatibility
   flutter_local_notifications: ^17.0.0
 
