@@ -5,16 +5,12 @@ workflows:
     max_build_duration: 120
     integrations:
       app_store_connect: Suellas
-    triggering:
-      events:
-        - push
-        - tag
     environment:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.suellas.rewardstesting
       flutter: stable
-      xcode: latest
+      xcode: latest # Lock Xcode version to avoid issues
       cocoapods: default
     scripts:
       - name: Set up code signing settings on Xcode project
@@ -23,48 +19,56 @@ workflows:
       - name: Get Flutter packages
         script: |
           flutter packages pub get
-      - name: Update CocoaPods Repo
-        script: |
-          gem install cocoapods
-          pod repo update # Update the local CocoaPods repository
       - name: Install pods
         script: |
-          find . -name "Podfile" -execdir pod install --repo-update \; # Ensure the pods are installed correctly
-      - name: Get latest build number from App Store Connect
+          find . -name "Podfile" -execdir pod install \;
+      # - name: Flutter analyze
+      #   script: |
+      #     flutter analyze
+      # - name: Flutter unit tests
+      #   script: |
+      #     flutter test
+      #   ignore_failure: true
+      - name: Flutter build ipa and automatic versioning
         script: |
-          LATEST_BUILD_NUMBER=$(app-store-connect get-latest-testflight-build-number "com.suellas.rewardstesting" || echo 0)
-          NEW_BUILD_NUMBER=$((LATEST_BUILD_NUMBER + 1))
-          echo "New build number: $NEW_BUILD_NUMBER"
-          echo "BUILD_NUMBER=$NEW_BUILD_NUMBER" >> $CM_ENV
-      - name: Flutter clean and build IPA
-        script: |
-          flutter clean
+          # See the following link about getting the latest App Store or TestFlight version - https://docs.codemagic.io/knowledge-codemagic/build-versioning/#app-store-or-testflight-latest-build-number
           flutter build ipa --release \
-            --build-name=1.0.$NEW_BUILD_NUMBER \
-            --build-number=$NEW_BUILD_NUMBER \
+            --build-name=1.0.7 \
+            --build-number=11 \
             --export-options-plist=/Users/builder/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
       - flutter_drive.log
     publishing:
+      # See the following link for details about email publishing - https://docs.codemagic.io/publishing-yaml/distribution/#email
       email:
         recipients:
           - user_1@example.com
           - user_2@example.com
         notify:
-          success: true
-          failure: false
+          success: true # To receive a notification when a build succeeds
+          failure: false # To not receive a notification when a build fails
       slack:
+        # See the following link about how to connect your Slack account - https://docs.codemagic.io/publishing-yaml/distribution/#slack
         channel: "#builds"
-        notify_on_build_start: true
+        notify_on_build_start: true # To receive a notification when a build starts
         notify:
-          success: true
-          failure: false
+          success: true # To receive a notification when a build succeeds
+          failure: false # To not receive a notification when a build fails
       app_store_connect:
         auth: integration
+        
+        # Configuration related to TestFlight (optional)
+        # Note: This action is performed during post-processing.
         submit_to_testflight: true
-        beta_groups:
+        beta_groups: # Specify the names of beta tester groups that will get access to the build once it has passed beta review.
           - group name 1
           - group name 2
-        submit_to_app_store: true
+
+        # Configuration related to App Store (optional)
+        # Note: This action is performed during post-processing.
+        submit_to_app_store: false
+
+
+
