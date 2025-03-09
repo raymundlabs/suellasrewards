@@ -12,7 +12,6 @@ workflows:
       branch_patterns:
         - pattern: main
           include: true
-          build_type: release
     environment:
       ios_signing:
         distribution_type: app_store
@@ -37,10 +36,10 @@ workflows:
       - name: Update CocoaPods
         script: |
           gem uninstall cocoapods -a --force
-          gem install cocoapods -v 1.15.2 # Stable version for Firebase
+          gem install cocoapods -v 1.15.2
           pod setup --verbose
 
-      - name: Install Pods (Firebase-compatible)
+      - name: Install Pods
         script: |
           cd ios
           pod install --repo-update --clean-install --verbose
@@ -48,7 +47,7 @@ workflows:
 
       - name: Auto-versioning
         script: |
-          VERSION_NAME="1.0.9" # Manually update for releases
+          VERSION_NAME="1.0.9"
           LATEST_BUILD=$(app-store-connect get-latest-testflight-build-number "com.suellas.rewardstesting" || echo 0)
           NEW_BUILD=$((LATEST_BUILD + 1))
           echo "BUILD_NUMBER=$NEW_BUILD" >> $CM_ENV
@@ -61,15 +60,6 @@ workflows:
             --build-number=$BUILD_NUMBER \
             --export-options-plist=/Users/builder/export_options.plist \
             --verbose
-
-      - name: Validate Firebase
-        script: |
-          if unzip -l build/ios/ipa/*.ipa | grep -q 'Firebase'; then
-            echo "Firebase integration successful"
-          else
-            echo "Firebase missing from build!"
-            exit 1
-          fi
 
     artifacts:
       - build/ios/ipa/*.ipa
@@ -92,8 +82,5 @@ workflows:
         auth: integration
         submit_to_testflight: true
         submit_to_app_store: true
-        release_type: AUTOMATIC
         beta_groups:
           - "Internal Testers"
-        release_notes:
-          en-US: "Production release with Firebase integration"
