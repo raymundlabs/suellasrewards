@@ -5,6 +5,10 @@ workflows:
     max_build_duration: 120
     integrations:
       app_store_connect: Suellas
+    triggering:
+      events:
+        - push
+        - tag
     environment:
       ios_signing:
         distribution_type: app_store
@@ -13,69 +17,54 @@ workflows:
       xcode: latest
       cocoapods: default
     scripts:
-      - name: Nuclear CocoaPods Reset
+      - name: Set up code signing settings on Xcode project
         script: |
-          cd ios
-          pod cache clean --all
-          pod deintegrate
-          rm -rf Podfile.lock Pods/ Flutter/Flutter.podspec
-          cd ..
-          gem uninstall cocoapods -a --force
-          gem install cocoapods -v 1.15.2
-
-      - name: Full Specs Update
+          xcode-project use-profiles
+      - name: Get Flutter packages
         script: |
-          pod repo remove trunk
-          pod setup --verbose
-          pod repo update --verbose
-
-      - name: Generate Podfile
+          flutter packages pub get
+      - name: Update CocoaPods Repo
         script: |
-          cd ios
-          echo "source 'https://cdn.cocoapods.org/'" > Podfile
-          echo "platform :ios, '13.0'" >> Podfile
-          echo "target 'Runner' do" >> Podfile
-          echo "  use_frameworks!" >> Podfile
-          echo "  use_modular_headers!" >> Podfile
-          echo "  pod 'Firebase/Auth', '11.8.0'" >> Podfile
-          echo "  pod 'FirebaseCore', '11.8.0'" >> Podfile
-          cat ../.symlinks/plugins/*/ios/*.podspec | grep "pod '" >> Podfile
-          cd ..
-
-      - name: Install Pods
+          gem install cocoapods
+          pod repo update # Update the local CocoaPods repository
+      - name: Install pods
         script: |
-          cd ios
-          pod install --repo-update --clean-install --verbose
-          cd ..
-
-      - name: Build IPA
+          find . -name "Podfile" -execdir pod install --repo-update \; # Ensure the pods are installed correctly
+      - name: Get latest build number from App Store Connect
+        script: |
+          LATEST_BUILD_NUMBER=$(app-store-connect get-latest-testflight-build-number "com.suellas.rewardstesting" || echo 0)
+          NEW_BUILD_NUMBER=$((LATEST_BUILD_NUMBER + 1))
+          echo "New build number: $NEW_BUILD_NUMBER"
+          echo "BUILD_NUMBER=$NEW_BUILD_NUMBER" >> $CM_ENV
+      - name: Flutter clean and build IPA
         script: |
           flutter clean
           flutter build ipa --release \
-            --build-name=1.0.9 \
-            --build-number=$BUILD_NUMBER \
-            --export-options-plist=/Users/builder/export_options.plist \
-            --verbose
+            --build-name=1.0.$NEW_BUILD_NUMBER \
+            --build-number=$NEW_BUILD_NUMBER \
+            --export-options-plist=/Users/builder/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
-
+      - flutter_drive.log
     publishing:
       email:
         recipients:
-          - dev-team@suellas.com
+          - user_1@example.com
+          - user_2@example.com
         notify:
           success: true
-          failure: true
+          failure: false
       slack:
         channel: "#builds"
         notify_on_build_start: true
         notify:
           success: true
-          failure: true
+          failure: false
       app_store_connect:
         auth: integration
         submit_to_testflight: true
-        submit_to_app_store: true
         beta_groups:
-          - "Internal Testers"
+          - group name 1
+          - group name 2
+        submit_to_app_store: true
