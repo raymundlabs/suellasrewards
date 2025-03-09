@@ -27,6 +27,9 @@
 
     # Firebase dependency
     pod 'Firebase/CoreOnly', '10.25.0'
+    pod 'Firebase/Auth', '10.25.0', :modular_headers => true
+    pod 'Firebase/Analytics', '10.25.0', :modular_headers => true
+    pod 'Firebase/Messaging', '10.25.0', :modular_headers => true
 
 
     # Flutter plugins will be auto-added by this line
