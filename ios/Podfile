@@ -1,43 +1,36 @@
-  platform :ios, '13.0'
-  ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+platform :ios, '13.0'
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
-  # Define Flutter root path
-  def flutter_root
-    generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
-    unless File.exist?(generated_xcode_build_settings_path)
-      raise "#{generated_xcode_build_settings_path} must exist. Run flutter pub get"
-    end
-
-    File.foreach(generated_xcode_build_settings_path) do |line|
-      matches = line.match(/FLUTTER_ROOT\=(.*)/)
-      return matches[1].strip if matches
-    end
-    raise "FLUTTER_ROOT not found in Generated.xcconfig"
+# Define Flutter root path
+def flutter_root
+  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+  unless File.exist?(generated_xcode_build_settings_path)
+    raise "#{generated_xcode_build_settings_path} must exist. Run flutter pub get"
   end
 
-  # Load Flutter pod helper
-  require File.join(flutter_root, 'packages', 'flutter_tools', 'bin', 'podhelper')
-
-  # Apply Flutter configuration
-  flutter_ios_podfile_setup
-
-  target 'Runner' do
-    use_frameworks!
-    use_modular_headers!
-
-    # Firebase dependency
-    pod 'Firebase/CoreOnly', '10.25.0'
-    pod 'Firebase/Auth', '10.25.0', :modular_headers => true
-    pod 'Firebase/Analytics', '10.25.0', :modular_headers => true
-    pod 'Firebase/Messaging', '10.25.0', :modular_headers => true
-
-
-    # Flutter plugins will be auto-added by this line
-    flutter_install_all_ios_pods(File.dirname(File.realpath(__FILE__)))
+  File.foreach(generated_xcode_build_settings_path) do |line|
+    matches = line.match(/FLUTTER_ROOT\=(.*)/)
+    return matches[1].strip if matches
   end
+  raise "FLUTTER_ROOT not found in Generated.xcconfig"
+end
 
-  post_install do |installer|
-    installer.pods_project.targets.each do |target|
-      flutter_additional_ios_build_settings(target)
-    end
+# Load Flutter pod helper
+require File.join(flutter_root, 'packages', 'flutter_tools', 'bin', 'podhelper')
+
+# Apply Flutter configuration
+flutter_ios_podfile_setup
+
+target 'Runner' do
+  use_frameworks!
+  use_modular_headers!
+
+  # Flutter plugins will be auto-added by this line
+  flutter_install_all_ios_pods(File.dirname(File.realpath(__FILE__)))
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
   end
+end
