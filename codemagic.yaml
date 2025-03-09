@@ -63,11 +63,6 @@ workflows:
         beta_groups:
           - group name 1
           - group name 2
-        submit_to_app_store: false
+        submit_to_app_store: true
 
-        triggering:
-  events:
-    - push:
-        branches:
-          - main  # or specify any branch you want to trigger the build for
-    - tag
+        
