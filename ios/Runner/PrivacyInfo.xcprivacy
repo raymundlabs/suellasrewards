@@ -18,6 +18,22 @@
       <key>NSPrivacyAccessedReason</key>
       <string>Allows users to select and upload images.</string>
     </dict>
+
+    <!-- Firebase Authentication (if used) -->
+    <dict>
+      <key>NSPrivacyAccessedAPIType</key>
+      <string>NSPrivacyAccessedAPITypeLocation</string>
+      <key>NSPrivacyAccessedReason</key>
+      <string>Allows the app to use Firebase features like authentication and messaging.</string>
+    </dict>
+
+    <!-- Firebase Push Notifications -->
+    <dict>
+      <key>NSPrivacyAccessedAPIType</key>
+      <string>NSPrivacyAccessedAPITypeNotifications</string>
+      <key>NSPrivacyAccessedReason</key>
+      <string>Allows the app to send push notifications through Firebase.</string>
+    </dict>
   </array>
 </dict>
 </plist>
