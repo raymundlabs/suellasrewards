@@ -5,13 +5,6 @@ workflows:
     max_build_duration: 120
     integrations:
       app_store_connect: Suellas
-    triggering:
-      events:
-        - push
-        - tag
-      branch_patterns:
-        - pattern: main
-          include: true
     environment:
       ios_signing:
         distribution_type: app_store
@@ -20,24 +13,34 @@ workflows:
       xcode: latest
       cocoapods: default
     scripts:
-      - name: Set up code signing
+      - name: Nuclear CocoaPods Reset
         script: |
-          xcode-project use-profiles
-
-      - name: Clean workspace
-        script: |
-          flutter clean
-          rm -rf ios/Podfile.lock ios/Pods
-
-      - name: Get Flutter packages
-        script: |
-          flutter pub get
-
-      - name: Update CocoaPods
-        script: |
+          cd ios
+          pod cache clean --all
+          pod deintegrate
+          rm -rf Podfile.lock Pods/ Flutter/Flutter.podspec
+          cd ..
           gem uninstall cocoapods -a --force
           gem install cocoapods -v 1.15.2
+
+      - name: Full Specs Update
+        script: |
+          pod repo remove trunk
           pod setup --verbose
+          pod repo update --verbose
+
+      - name: Generate Podfile
+        script: |
+          cd ios
+          echo "source 'https://cdn.cocoapods.org/'" > Podfile
+          echo "platform :ios, '13.0'" >> Podfile
+          echo "target 'Runner' do" >> Podfile
+          echo "  use_frameworks!" >> Podfile
+          echo "  use_modular_headers!" >> Podfile
+          echo "  pod 'Firebase/Auth', '11.8.0'" >> Podfile
+          echo "  pod 'FirebaseCore', '11.8.0'" >> Podfile
+          cat ../.symlinks/plugins/*/ios/*.podspec | grep "pod '" >> Podfile
+          cd ..
 
       - name: Install Pods
         script: |
@@ -45,22 +48,14 @@ workflows:
           pod install --repo-update --clean-install --verbose
           cd ..
 
-      - name: Auto-versioning
-        script: |
-          VERSION_NAME="1.0.9"
-          LATEST_BUILD=$(app-store-connect get-latest-testflight-build-number "com.suellas.rewardstesting" || echo 0)
-          NEW_BUILD=$((LATEST_BUILD + 1))
-          echo "BUILD_NUMBER=$NEW_BUILD" >> $CM_ENV
-          echo "VERSION_NAME=$VERSION_NAME" >> $CM_ENV
-
       - name: Build IPA
         script: |
+          flutter clean
           flutter build ipa --release \
-            --build-name=$VERSION_NAME \
+            --build-name=1.0.9 \
             --build-number=$BUILD_NUMBER \
             --export-options-plist=/Users/builder/export_options.plist \
             --verbose
-
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
