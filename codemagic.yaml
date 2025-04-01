@@ -26,7 +26,7 @@ workflows:
           rm -rf Pods Podfile.lock
           pod install --repo-update
           cd ..
-      - name: Flutter build ipa and automatic versioning
+      - name: Flutter build signed ipa and automatic versioning
         script: |
           LATEST_BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "com.suellas.rewardstesting")
           NEW_BUILD_NUMBER=$((LATEST_BUILD_NUMBER + 1))
@@ -35,8 +35,15 @@ workflows:
             --build-name=1.1.1 \
             --build-number=$NEW_BUILD_NUMBER \
             --export-options-plist=/Users/builder/export_options.plist
+      - name: Flutter build unsigned ipa (no code signing)
+        script: |
+          flutter build ipa --release \
+            --build-name=1.1.1 \
+            --build-number=$NEW_BUILD_NUMBER \
+            --no-codesign
     artifacts:
-      - build/ios/ipa/*.ipa
+      - build/ios/ipa/*.ipa  # Signed IPA artifact
+      - build/ios/ipa/*.unsigned.ipa  # Unsigned IPA artifact
       - /tmp/xcodebuild_logs/*.log
       - flutter_drive.log
     publishing:
