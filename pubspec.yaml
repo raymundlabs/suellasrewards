@@ -22,7 +22,7 @@ dependencies:
   # Uncomment if needed:
   # firebase_storage: ^11.6.4
   # cloud_firestore: ^4.15.0
-  # firebase_messaging: ^14.9.1
+  firebase_messaging: ^14.9.1
 
   # QR & Image Handling
   qr_flutter: ^4.1.0
