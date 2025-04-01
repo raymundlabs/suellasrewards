@@ -9,13 +9,13 @@ import 'package:suellas/customer/profile.dart';
 import 'package:suellas/customer/editprofile.dart';
 import 'package:suellas/customer/location.dart';
 import 'package:suellas/customer/inbox.dart';
-import 'package:suellas/customer/home.dart';
+import 'package:suellas/branch/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:suellas/branch/pay.dart';
 import 'package:suellas/branch/scan.dart';
 import 'package:suellas/branch/record.dart';
-import 'package:suellas/branch/history.dart';
+import 'package:suellas/branch/historyscan.dart';
 import 'package:http/http.dart' as http;
 
 class PayScreen extends StatefulWidget {
@@ -31,15 +31,38 @@ class _PayScreenState extends State<PayScreen> {
   double fem = 1.0; // Set your default value
   double ffem = 1.0; // Set your default value
   late String email;
-  // var _userEmail = '';
+  String _userEmail = ''; // Default value is an empty string
   // var _firstName = '';
   // var _lastName = '';
+  var _stubNumber = '';
 
   @override
   void initState() {
     super.initState();
-    email = widget.userData['email'];
-    // Retrieve the stored email from SharedPreferences when the screen is first loaded
+    // Call the API request method to get reward points and set the state
+    _getUserEmail().then((_) {
+
+        setState(() {
+
+         email = widget.userData['email'];
+
+        });
+  
+
+    });
+  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   email = widget.userData['email'];
+  //   // Retrieve the stored email from SharedPreferences when the screen is first loaded
+  // }
+
+ Future<void> _getUserEmail() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _userEmail = prefs.getString('userEmail') ?? '';
+    });
   }
 
   Future<void> payRewards(double? amount) async {
@@ -48,7 +71,13 @@ class _PayScreenState extends State<PayScreen> {
           'https://app.suellastheshoelaundry.com/admin/auth/payrewards';
       final response = await http.post(
         Uri.parse(apiUrl),
-        body: {'amount': '150', 'email': email},
+        body: {
+          'amount': '150',
+          'email': email,
+          'stubNumber': _stubNumber,
+          'userEmail': _userEmail,
+
+        },
       );
 
       if (response.statusCode == 200) {
@@ -64,7 +93,7 @@ class _PayScreenState extends State<PayScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => HistoryScreen(),
+            builder: (context) => HistoryScan(),
           ),
         );
       } else {
@@ -73,6 +102,7 @@ class _PayScreenState extends State<PayScreen> {
       }
     }
   }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -207,7 +237,7 @@ class _PayScreenState extends State<PayScreen> {
                     margin: EdgeInsets.fromLTRB(
                         11.14 * fem, 0 * fem, 0 * fem, 36 * fem),
                     child: Text(
-                      '$rewardPoints',
+                      'Total Points : $rewardPoints',
                       textAlign: TextAlign.center,
                       style: SafeGoogleFont(
                         'Inter',
@@ -238,54 +268,56 @@ class _PayScreenState extends State<PayScreen> {
                       ),
                     ),
                   ),
-                  // Container(
-                  //   // image144vv5 (4:30529)
-                  //   margin: EdgeInsets.fromLTRB(
-                  //       11.14 * fem, 0 * fem, 0 * fem, 86 * fem),
-                  //   width: 250 * fem,
-                  //   height: 250 * fem,
-                  //   // child: QrImageView(
-                  //   //   data: _userEmail, // Replace with your QR code data
-                  //   //   version: QrVersions.auto,
-                  //   //   size: 250.0,
-                  //   // ),
-                  // ),
-                  GestureDetector(
-                      // Add onTap property to handle button click
-                      onTap: () {
-                        // Call the _recordAmount method when the button is tapped
-                        double? amount = double.tryParse('150' ?? '');
-               payRewards(150);
+                  Container(
+                    // stubnumberTextField (Replace with your desired container name)
+                    margin: EdgeInsets.fromLTRB(
+                        0 * fem, 0 * fem, 5.86 * fem, 33 * fem),
+                    constraints: BoxConstraints(
+                      maxWidth: 287 * fem,
+                    ),
+                    child: TextField(
+                      onChanged: (value) {
+                        setState(() {
+                          _stubNumber = value;
+                        });
                       },
-                      child: Container(
-                        margin: EdgeInsets.fromLTRB(
-                          26 * fem,
-                          0 * fem,
-                          23.86 * fem,
-                          89 * fem,
-                        ),
-                        width: double.infinity,
-                        height: 50 * fem,
-                        decoration: BoxDecoration(
-                          color: Color(0xff57cc99),
-                          borderRadius: BorderRadius.circular(70 * fem),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Save Amount',
-                            textAlign: TextAlign.center,
-                            style: SafeGoogleFont(
-                              'Inter',
-                              fontSize: 18 * ffem,
-                              fontWeight: FontWeight.w700,
-                              height: 1.1111111111 * ffem / fem,
-                              color: Color(0xffffffff),
-                            ),
+                      keyboardType: TextInputType.text,
+                      decoration: InputDecoration(
+                        hintText: 'Enter Claim Stub Number',
+                      ),
+                    ),
+                  ),
+
+                  GestureDetector(
+                    onTap: () {
+                      double? amount = double.tryParse('150' ?? '');
+                      payRewards(amount);
+                    },
+                    child: Container(
+                      // saveAmountButton (Replace with your desired container name)
+                      margin: EdgeInsets.fromLTRB(
+                          26 * fem, 0 * fem, 23.86 * fem, 89 * fem),
+                      width: double.infinity,
+                      height: 50 * fem,
+                      decoration: BoxDecoration(
+                        color: Color(0xff57cc99),
+                        borderRadius: BorderRadius.circular(70 * fem),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Submit',
+                          textAlign: TextAlign.center,
+                          style: SafeGoogleFont(
+                            'Inter',
+                            fontSize: 18 * ffem,
+                            fontWeight: FontWeight.w700,
+                            height: 1.1111111111 * ffem / fem,
+                            color: Color(0xffffffff),
                           ),
                         ),
                       ),
                     ),
-
+                  ),
 
                   // Container(
                   //   // group48095457rx9 (4:30470)
@@ -342,7 +374,7 @@ class _PayScreenState extends State<PayScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        CustomerHomeScreen()), // Navigate to inbox screen
+                        BranchHomeScreen()), // Navigate to inbox screen
               );
             },
             child: Padding(
@@ -374,10 +406,10 @@ class _PayScreenState extends State<PayScreen> {
           ),
           GestureDetector(
             onTap: () {
-              // Implement the behavior to reset or return to the current screen
-              // For example, you can scroll to the top of the current screen
-              // or refresh the content.
-              // _scrollToTopOrRefresh(); // Call a method to scroll to the top or refresh the content
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ScanScreen()),
+              );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),

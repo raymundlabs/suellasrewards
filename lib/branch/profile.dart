@@ -2,28 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:suellas/branch/scan.dart';
 import 'package:suellas/utils.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:suellas/customer/qr_screen.dart';
-import 'package:suellas/customer/profile.dart';
+import 'package:suellas/branch/profile.dart';
 import 'package:suellas/customer/qr_screen.dart';
-import 'package:suellas/customer/security.dart';
+import 'package:suellas/branch/security.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:suellas/customer/location.dart';
-import 'package:suellas/customer/inbox.dart';
-import 'package:suellas/customer/home.dart';
+import 'package:suellas/branch/location.dart';
+import 'package:suellas/branch/inbox.dart';
+import 'package:suellas/branch/home.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:suellas/customer/editprofile.dart';
+import 'package:suellas/branch/editprofile.dart';
 
 import 'package:flutter/material.dart';
 
-class ProfileScreen extends StatefulWidget {
+class BranchProfileScreen extends StatefulWidget {
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  _BranchProfileScreenState createState() => _BranchProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _BranchProfileScreenState extends State<BranchProfileScreen> {
   String _userEmail = ''; // Default value is an empty string
   String _firstName = '';
   String _lastName = '';
@@ -185,7 +186,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      EditProfileScreen(), // Replace EditProfileScreen with your edit screen widget
+                                      BranchEditProfileScreen(), // Replace EditProfileScreen with your edit screen widget
                                 ),
                               );
                             },
@@ -211,7 +212,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => ProfileScreen(),
+                                  builder: (context) => BranchProfileScreen(),
                                 ),
                               );
                             },
@@ -256,7 +257,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => ChangePasswordScreen(),
+                                  builder: (context) => BranchChangePasswordScreen(),
                                 ),
                               );
                             },
@@ -830,7 +831,7 @@ Widget _buildBottomNavigationBar(double fem, double ffem, BuildContext context) 
                onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => CustomerHomeScreen()), // Navigate to inbox screen
+                MaterialPageRoute(builder: (context) => BranchHomeScreen()), // Navigate to inbox screen
               );
             },
               child: Padding(
@@ -847,7 +848,7 @@ Widget _buildBottomNavigationBar(double fem, double ffem, BuildContext context) 
                onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => InboxScreen()), // Navigate to location screen
+                MaterialPageRoute(builder: (context) => BranchInboxScreen()), // Navigate to location screen
               );
             },
      
@@ -865,13 +866,13 @@ Widget _buildBottomNavigationBar(double fem, double ffem, BuildContext context) 
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => QRScreen()), // Navigate to QR screen
+                MaterialPageRoute(builder: (context) => ScanScreen()), // Navigate to QR screen
               );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/qr.png',
+               'assets/icons/images/iconly-regular-outline-scan-q2q.png',
              width: 50,
                 height: 50,
               ),
@@ -882,7 +883,7 @@ Widget _buildBottomNavigationBar(double fem, double ffem, BuildContext context) 
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LocationScreen()), // Navigate to QR screen
+                MaterialPageRoute(builder: (context) => BranchLocationScreen()), // Navigate to QR screen
               );
             },
     
@@ -896,12 +897,12 @@ Widget _buildBottomNavigationBar(double fem, double ffem, BuildContext context) 
             ),
           ),
           GestureDetector(
-            onTap: () {
-                // Implement the behavior to reset or return to the current screen
-                // For example, you can scroll to the top of the current screen
-                // or refresh the content.
-                // _scrollToTopOrRefresh(); // Call a method to scroll to the top or refresh the content
-              },
+          onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => BranchProfileScreen()), // Navigate to QR screen
+              );
+            },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(

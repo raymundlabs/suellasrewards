@@ -2,17 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:suellas/branch/scan.dart';
 import 'package:suellas/utils.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:suellas/customer/qr_screen.dart';
-import 'package:suellas/customer/profile.dart';
-import 'package:suellas/customer/qr_screen.dart';
-import 'package:suellas/customer/profile.dart';
-import 'package:suellas/customer/location.dart';
-import 'package:suellas/customer/inbox.dart';
-import 'package:suellas/customer/home.dart';
+import 'package:suellas/branch/profile.dart';
+import 'package:suellas/branch/profile.dart';
+import 'package:suellas/branch/location.dart';
+import 'package:suellas/branch/inbox.dart';
+import 'package:suellas/branch/home.dart';
 
-class LocationScreen extends StatelessWidget {
+class BranchLocationScreen extends StatelessWidget {
   @override
 Widget build(BuildContext context) {
     double baseWidth = 414;
@@ -465,7 +464,7 @@ Container(
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        CustomerHomeScreen()), // Navigate to inbox screen
+                        BranchHomeScreen()), // Navigate to inbox screen
               );
             },
             child: Padding(
@@ -483,7 +482,7 @@ Container(
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        InboxScreen()), // Navigate to inbox screen
+                        BranchInboxScreen()), // Navigate to inbox screen
               );
             },
             child: Padding(
@@ -500,13 +499,13 @@ Container(
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => QRScreen()), // Navigate to QR screen
+                    builder: (context) => ScanScreen()), // Navigate to QR screen
               );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/qr.png',
+                        'assets/icons/images/iconly-regular-outline-scan-q2q.png',
               width: 50,
                 height: 50,
               ),
@@ -518,7 +517,7 @@ Container(
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        LocationScreen()), // Navigate to location screen
+                        BranchLocationScreen()), // Navigate to location screen
               );
             },
             child: Padding(
@@ -536,7 +535,7 @@ Container(
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        ProfileScreen()), // Navigate to profile screen
+                        BranchProfileScreen()), // Navigate to profile screen
               );
             },
             child: Padding(

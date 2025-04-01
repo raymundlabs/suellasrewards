@@ -21,9 +21,7 @@ class Done extends StatelessWidget {
     final String qrData = "ABC123";
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(''),
-      ),
+
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Container(

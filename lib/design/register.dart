@@ -175,9 +175,7 @@ class _RegisterScreen extends State<RegisterScreen> {
     final String qrData = "ABC123";
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(''),
-      ),
+
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Container(
@@ -739,61 +737,53 @@ class _RegisterScreen extends State<RegisterScreen> {
                         ),
                       ),
                       SizedBox(height: 20 * fem),
+
                       Container(
                         child: Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Positioned(
-                                left: 31 * fem,
-                                top: 695 * fem,
-                                child: Container(
-                                  width: 328 * fem,
-                                  height: 40 * fem,
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Checkbox(
-                                        value:
-                                            isChecked, // Bind the checkbox value to the 'isChecked' variable.
-                                        onChanged: (bool? newValue) {
-                                          if (newValue != null) {
-                                            // Update the 'isChecked' variable when the checkbox changes.
-                                            setState(() {
-                                              isChecked = newValue;
-                                              isAccepted = isChecked
-                                                  ? "yes"
-                                                  : "no"; // Update isAccepted based on isChecked
-                                            });
-                                          }
-                                        },
+                              Container(
+                                width: 328 * fem,
+                                height: 40 * fem,
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Checkbox(
+                                      value: isChecked,
+                                      onChanged: (bool? newValue) {
+                                        if (newValue != null) {
+                                          setState(() {
+                                            isChecked = newValue;
+                                            isAccepted =
+                                                isChecked ? "yes" : "no";
+                                          });
+                                        }
+                                      },
+                                    ),
+                                    Container(
+                                      constraints: BoxConstraints(
+                                        maxWidth: 328 * fem,
                                       ),
-                                      Container(
-                                        constraints: BoxConstraints(
-                                          maxWidth: 279 * fem,
-                                        ),
-                                        child: Text(
-                                          'I do not wish to receive news, special offers and more from Suellas',
-                                          style: SafeGoogleFont(
-                                            'Inter',
-                                            fontSize: 12 * ffem,
-                                            fontWeight: FontWeight.w500,
-                                            height: 1.6666666667 * ffem / fem,
-                                            color: Color(0xff000000),
-                                          ),
+                                      child: Text(
+                                        'I do not wish to receive news, special \noffers and more from Suellas',
+                                        style: SafeGoogleFont(
+                                          'Inter',
+                                          fontSize: 12 * ffem,
+                                          fontWeight: FontWeight.w500,
+                                          height: 1.6666666667 * ffem / fem,
+                                          color: Color(0xff000000),
                                         ),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                    
+                                  ],
                                 ),
                               ),
-
                               SizedBox(height: 20 * fem),
                               Align(
-                                alignment: Alignment
-                                    .topLeft, // Align to the top left (start)
+                                alignment: Alignment.topLeft,
                                 child: SizedBox(
                                   width: 500 * fem,
                                   height: 50 * fem,
@@ -810,8 +800,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                                 ),
                               ),
                               Align(
-                                alignment: Alignment
-                                    .topLeft, // Align to the top left (start)
+                                alignment: Alignment.topLeft,
                                 child: SizedBox(
                                   width: 500 * fem,
                                   height: 50 * fem,
@@ -827,7 +816,6 @@ class _RegisterScreen extends State<RegisterScreen> {
                                   ),
                                 ),
                               ),
-
                               Container(
                                 width: 200,
                                 height: 40,
@@ -838,8 +826,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                                 child: ElevatedButton(
                                   onPressed: _submit,
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors
-                                        .transparent, // Use backgroundColor instead of primary
+                                    primary: Colors.transparent,
                                     elevation: 0,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(70),
@@ -854,19 +841,7 @@ class _RegisterScreen extends State<RegisterScreen> {
                                     ),
                                   ),
                                 ),
-                              ),
-
-                              // if (!_isAuthenticating)
-                              //   TextButton(
-                              //     onPressed: () {
-                              //       setState(() {
-                              //         _isLogin = !_isLogin;
-                              //       });
-                              //     },
-                              //     child: Text(
-                              //       _isLogin ? '' : '',
-                              //     ),
-                              //   ),
+                              )
                             ],
                           ),
                         ),

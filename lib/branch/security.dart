@@ -16,16 +16,16 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:suellas/customer/editprofile.dart';
 
-class ChangePasswordScreen extends StatefulWidget {
-  const ChangePasswordScreen({Key? key}) : super(key: key);
+class BranchChangePasswordScreen extends StatefulWidget {
+  const BranchChangePasswordScreen({Key? key}) : super(key: key);
 
   @override
-  State<ChangePasswordScreen> createState() {
-    return _ChangePasswordScreenState();
+  State<BranchChangePasswordScreen> createState() {
+    return _BranchChangePasswordScreenState();
   }
 }
 
-class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
+class _BranchChangePasswordScreenState extends State<BranchChangePasswordScreen> {
   final _formKey = GlobalKey<FormState>();
 
   var _currentPassword = '';

@@ -2,28 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:suellas/branch/scan.dart';
 import 'package:suellas/utils.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:suellas/customer/qr_screen.dart';
-import 'package:suellas/customer/profile.dart';
-import 'package:suellas/customer/qr_screen.dart';
-import 'package:suellas/customer/profile.dart';
-import 'package:suellas/customer/location.dart';
-import 'package:suellas/customer/inboxread.dart';
-import 'package:suellas/customer/home.dart';
+import 'package:suellas/branch/editprofile.dart';
+
+import 'package:suellas/branch/profile.dart';
+import 'package:suellas/branch/location.dart';
+import 'package:suellas/branch/inboxread.dart';
+import 'package:suellas/branch/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:suellas/customer/editprofile.dart';
+import 'package:suellas/branch/editprofile.dart';
 
-class InboxScreen extends StatefulWidget {
-  const InboxScreen({Key? key}) : super(key: key);
+class BranchInboxScreen extends StatefulWidget {
+  const BranchInboxScreen({Key? key}) : super(key: key);
 
   @override
-  _InboxScreenState createState() => _InboxScreenState();
+  _BranchInboxScreenState createState() => _BranchInboxScreenState();
 }
 
-class _InboxScreenState extends State<InboxScreen> {
+class _BranchInboxScreenState extends State<BranchInboxScreen> {
   String _userEmail = ''; // Default value is an empty string
   List<Map<String, dynamic>> messages = []; // List to store promotions
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
@@ -94,62 +94,206 @@ class _InboxScreenState extends State<InboxScreen> {
     }
   }
 
-@override
-Widget build(BuildContext context) {
-  double baseWidth = 414;
-  double fem = MediaQuery.of(context).size.width / baseWidth;
-  double ffem = fem * 0.97;
-  final String qrData = "ABC123";
+  @override
+  Widget build(BuildContext context) {
+    double baseWidth = 414;
+    double fem = MediaQuery.of(context).size.width / baseWidth;
+    double ffem = fem * 0.97;
+    final String qrData = "ABC123";
 
-  return Scaffold(
-    appBar: PreferredSize(
-      preferredSize: Size.fromHeight(110.0),
-      child: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.fromLTRB(
-              29 * fem, 50.77 * fem, 40.14 * fem, 1 * fem),
-            child: CustomAppBar(fem: fem, ffem: ffem),
-          ),
-        ],
-      ),
-    ),
-    backgroundColor: Colors.white,
-    body: SingleChildScrollView(
-      child: Container(
-        width: double.infinity,
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
         child: Container(
-          // scanqrcustomer5Ym (4:30439)
           width: double.infinity,
           child: Container(
-            // rewardsRcd (4:30440)
-            padding: EdgeInsets.fromLTRB(29 * fem, 20 * fem, 29 * fem, 27 * fem),
+            // scanqrcustomer5Ym (4:30439)
             width: double.infinity,
-
-            decoration: BoxDecoration(
-              color: Color.fromARGB(255, 255, 255, 255),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Messages(
-                  fem: fem,
-                  ffem: ffem,
-                  messages: messages,
-                  updateMessageList: updateMessageList,
-                  deleteMessage: deleteMessage,
-                ),
-              ],
+            height: 896 * fem,
+            child: Container(
+              // rewardsRcd (4:30440)
+              padding:
+                  EdgeInsets.fromLTRB(29 * fem, 50 * fem, 29 * fem, 27 * fem),
+              width: double.infinity,
+              height: double.infinity,
+              decoration: BoxDecoration(
+                color: Color.fromARGB(255, 255, 255, 255),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Align(
+                    alignment: Alignment.center,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            // btnbackfGd (202:999)
+                            width: 30 * fem,
+                            height: 30 * fem,
+                            child: Image.asset(
+                              'assets/icons/images/back.png',
+                              width: 30 * fem,
+                              height: 30 * fem,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Center(
+                            child: Container(
+                              // scanqrfxD (4:30479)
+                              margin: EdgeInsets.fromLTRB(
+                                  0 * fem, 4 * fem, 0 * fem, 0 * fem),
+                              child: Text(
+                                'Inbox',
+                                style: SafeGoogleFont(
+                                  'Inter',
+                                  fontSize: 18 * ffem,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.2125 * ffem / fem,
+                                  color: Color(0xff000000),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: 30 * fem,
+                          height: 30 * fem,
+                          child: GestureDetector(
+                            onTap: () {
+                              // Navigate to the edit screen when tapped
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      BranchEditProfileScreen(), // Replace EditProfileScreen with your edit screen widget
+                                ),
+                              );
+                            },
+                            child: Image.asset(
+                              'assets/icons/images/edit.png',
+                              width: 30 * fem,
+                              height: 30 * fem,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10.0),
+                  Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => BranchInboxScreen()),
+                              );
+                            },
+                            child: Container(
+                              margin: EdgeInsets.fromLTRB(
+                                  10.14 * fem, 0 * fem, 0 * fem, 16 * fem),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Align(
+                                    child: SizedBox(
+                                      width: 40 * fem,
+                                      height: 20 * fem,
+                                      child: Text(
+                                        'New', // Change "New" to "Inbox"
+                                        style: SafeGoogleFont(
+                                          'Inter',
+                                          fontSize: 14 * ffem,
+                                          fontWeight: FontWeight.w600,
+                                          height: 1.4285714286 * ffem / fem,
+                                          letterSpacing: 0.5 * fem,
+                                          color: Color(0xff000000),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: double.infinity,
+                                    height: 1,
+                                    color: Color(0xff000000),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => BranchInboxReadScreen()),
+                              );
+                            },
+                            child: Container(
+                              margin: EdgeInsets.fromLTRB(
+                                  10.14 * fem, 0 * fem, 0 * fem, 16 * fem),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Align(
+                                    child: SizedBox(
+                                      width: 40 * fem,
+                                      height: 20 * fem,
+                                      child: Text(
+                                        'Read',
+                                        style: SafeGoogleFont(
+                                          'Inter',
+                                          fontSize: 14 * ffem,
+                                          fontWeight: FontWeight.w600,
+                                          height: 1.4285714286 * ffem / fem,
+                                          letterSpacing: 0.5 * fem,
+                                          color: Color(0xff000000),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: double.infinity,
+                                    height: 1,
+                                    color: Color.fromRGBO(17, 0, 0, 0.20),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Messages(
+                    fem: fem,
+                    ffem: ffem,
+                    messages: messages,
+                    updateMessageList: updateMessageList,
+                    deleteMessage:
+                        deleteMessage, // Pass the deleteMessage function
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
-    ),
-    bottomNavigationBar: _buildBottomNavigationBar(fem, ffem, context),
-  );
-}
-
-
+      bottomNavigationBar: _buildBottomNavigationBar(fem, ffem, context),
+    );
+  }
 
   Widget _buildBottomNavigationBar(
       double fem, double ffem, BuildContext context) {
@@ -185,7 +329,7 @@ Widget build(BuildContext context) {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        CustomerHomeScreen()), // Navigate to inbox screen
+                        BranchHomeScreen()), // Navigate to inbox screen
               );
             },
             child: Padding(
@@ -203,7 +347,7 @@ Widget build(BuildContext context) {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        InboxScreen()), // Navigate to inbox screen
+                        BranchInboxScreen()), // Navigate to inbox screen
               );
             },
             child: Padding(
@@ -220,13 +364,13 @@ Widget build(BuildContext context) {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => QRScreen()), // Navigate to QR screen
+                    builder: (context) => ScanScreen()), // Navigate to QR screen
               );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/qr.png',
+                  'assets/icons/images/iconly-regular-outline-scan-q2q.png',
                 width: 50,
                 height: 50,
               ),
@@ -238,7 +382,7 @@ Widget build(BuildContext context) {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        LocationScreen()), // Navigate to location screen
+                        BranchLocationScreen()), // Navigate to location screen
               );
             },
             child: Padding(
@@ -256,7 +400,7 @@ Widget build(BuildContext context) {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        ProfileScreen()), // Navigate to profile screen
+                        BranchProfileScreen()), // Navigate to profile screen
               );
             },
             child: Padding(
@@ -394,24 +538,27 @@ class _MessagesState extends State<Messages> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: List.generate(widget.messages.length, (index) {
-        final message = widget.messages[index];
-        final isMessageSelected = selectedMessageIndex == index;
+@override
+Widget build(BuildContext context) {
+  return Column(
+    children: [
+      Expanded(
+        child: ListView.builder(
+          itemCount: widget.messages.length,
+          itemBuilder: (BuildContext context, int index) {
+            final message = widget.messages[index];
+            final isMessageSelected = selectedMessageIndex == index;
 
-        return Column(
-          children: [
-            GestureDetector(
+            return GestureDetector(
               onTap: () {
                 onMessageSelected(index);
               },
               child: Container(
                 width: 350 * widget.fem,
-                height: 82 * widget.fem,
-                color:
-                    isMessageSelected ? Color(0xfff6fff7) : Colors.transparent,
+                height: 120 * widget.fem,
+                color: isMessageSelected
+                    ? Color(0xfff6fff7)
+                    : Colors.transparent,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -420,15 +567,20 @@ class _MessagesState extends State<Messages> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          margin: EdgeInsets.fromLTRB(0 * widget.fem,
-                              0 * widget.fem, 0 * widget.fem, 3 * widget.fem),
+                          margin: EdgeInsets.fromLTRB(
+                            0 * widget.fem,
+                            0 * widget.fem,
+                            0 * widget.fem,
+                            3 * widget.fem,
+                          ),
                           child: Text(
                             message['title'] ?? '',
                             style: SafeGoogleFont(
                               'Inter',
                               fontSize: 14 * widget.ffem,
                               fontWeight: FontWeight.w600,
-                              height: 1.4285714286 * widget.ffem / widget.fem,
+                              height:
+                                  1.4285714286 * widget.ffem / widget.fem,
                               color: Color(0xff000000),
                             ),
                           ),
@@ -436,14 +588,13 @@ class _MessagesState extends State<Messages> {
                         Container(
                           width: 310 * widget.fem,
                           child: Text(
-                            (message['message'] ?? '').length > 60
-                                ? '${(message['message'] ?? '').substring(0, 60)}...'
+                            (message['message'] ?? '').length > 100
+                                ? '${(message['message'] ?? '').substring(0, 100)}...'
                                 : message['message'],
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              color:
-                                  Colors.black.withOpacity(0.5699999928474426),
+                              color: Colors.black.withOpacity(0.5699999928474426),
                               fontSize: 12 * widget.ffem,
                               fontFamily: 'Inter',
                               fontWeight: FontWeight.w400,
@@ -451,14 +602,16 @@ class _MessagesState extends State<Messages> {
                             ),
                           ),
                         ),
-                        if ((message['message'] ?? '').length >
-                            1) // Check if message is longer
+                        if ((message['message'] ?? '').length > 1)
                           Container(
-                            margin: EdgeInsets.fromLTRB(1 * widget.fem,
-                                0 * widget.fem, 0 * widget.fem, 0 * widget.fem),
+                            margin: EdgeInsets.fromLTRB(
+                              1 * widget.fem,
+                              0 * widget.fem,
+                              0 * widget.fem,
+                              0 * widget.fem,
+                            ),
                             child: GestureDetector(
                               onTap: () {
-                                // Call markMessageAsRead with the current message index
                                 markMessageAsRead(index);
                                 showFullMessageDialog(message['message']);
                               },
@@ -480,8 +633,7 @@ class _MessagesState extends State<Messages> {
                     if (isMessageSelected)
                       GestureDetector(
                         onTap: () {
-                          deleteMessage(
-                              index); // Wrap deleteMessage in an anonymous function
+                          deleteMessage(index);
                         },
                         child: Container(
                           width: 40 * widget.fem,
@@ -505,179 +657,11 @@ class _MessagesState extends State<Messages> {
                   ],
                 ),
               ),
-            ),
-          ],
-        );
-      }),
-    );
-  }
-}
-
-class CustomAppBar extends StatelessWidget {
-  final double fem;
-  final double ffem;
-
-  CustomAppBar({
-    required this.fem,
-    required this.ffem,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 0.0),
-      child: Column(
-        children: [
-          Align(
-            alignment: Alignment.center,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Container(
-                    // btnbackfGd (202:999)
-                    width: 30 * fem,
-                    height: 30 * fem,
-                    child: Image.asset(
-                      'assets/icons/images/back.png',
-                      width: 30 * fem,
-                      height: 30 * fem,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Center(
-                    child: Container(
-                      margin: EdgeInsets.fromLTRB(
-                          0 * fem, 4 * fem, 0 * fem, 0 * fem),
-                      child: Text(
-                        'Inbox',
-                        style: TextStyle(
-                          color: Color(0xff000000),
-                          fontSize: 18 * ffem,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  width: 30 * fem,
-                  height: 30 * fem,
-                  child: GestureDetector(
-                    onTap: () {
-                      // Navigate to the edit screen when tapped
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              EditProfileScreen(), // Replace EditProfileScreen with your edit screen widget
-                        ),
-                      );
-                    },
-                    child: Image.asset(
-                      'assets/icons/images/edit.png',
-                      width: 30 * fem,
-                      height: 30 * fem,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 10.0),
-          Container(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => InboxScreen(),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      margin: EdgeInsets.fromLTRB(
-                          10.14 * fem, 0 * fem, 0 * fem, 16 * fem),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Align(
-                            child: SizedBox(
-                              width: 60 * fem,
-                              height: 20 * fem,
-                              child: Text(
-                                'New',
-                                style: TextStyle(
-                                  fontSize: 14 * ffem,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xff000000),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: double.infinity,
-                            height: 1,
-                            color: Color(0xff000000),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => InboxReadScreen(),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      margin: EdgeInsets.fromLTRB(
-                          10.14 * fem, 0 * fem, 0 * fem, 16 * fem),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Align(
-                            child: SizedBox(
-                              width: 60 * fem,
-                              height: 20 * fem,
-                              child: Text(
-                                'Read',
-                                style: TextStyle(
-                                  fontSize: 14 * ffem,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xff000000),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: double.infinity,
-                            height: 1,
-                            color: Color.fromRGBO(17, 0, 0, 0.20),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+            );
+          },
+        ),
       ),
-    );
-  }
+    ],
+  );
+}
 }

@@ -2,27 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:suellas/branch/scan.dart';
 import 'package:suellas/utils.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:suellas/customer/qr_screen.dart';
-import 'package:suellas/customer/profile.dart';
-import 'package:suellas/customer/qr_screen.dart';
-import 'package:suellas/customer/security.dart';
+
+import 'package:suellas/branch/profile.dart';
+import 'package:suellas/branch/security.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:suellas/customer/location.dart';
-import 'package:suellas/customer/inbox.dart';
-import 'package:suellas/customer/home.dart';
+import 'package:suellas/branch/location.dart';
+import 'package:suellas/branch/inbox.dart';
+import 'package:suellas/branch/home.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
-class EditProfileScreen extends StatefulWidget {
+class BranchEditProfileScreen extends StatefulWidget {
   @override
-  _EditProfileScreenState createState() => _EditProfileScreenState();
+  _BranchEditProfileScreenState createState() => _BranchEditProfileScreenState();
 }
 
-class _EditProfileScreenState extends State<EditProfileScreen> {
+class _BranchEditProfileScreenState extends State<BranchEditProfileScreen> {
   String _userEmail = ''; // Default value is an empty string
   String _firstName = '';
   String _lastName = '';
@@ -300,7 +300,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        EditProfileScreen(), // Replace EditProfileScreen with your edit screen widget
+                                        BranchEditProfileScreen(), // Replace EditProfileScreen with your edit screen widget
                                   ),
                                 );
                               },
@@ -326,7 +326,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => ProfileScreen(),
+                                    builder: (context) => BranchProfileScreen(),
                                   ),
                                 );
                               },
@@ -372,7 +372,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        ChangePasswordScreen(),
+                                        BranchChangePasswordScreen(),
                                   ),
                                 );
                               },
@@ -948,15 +948,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        CustomerHomeScreen()), // Navigate to inbox screen
+                        BranchHomeScreen()), // Navigate to inbox screen
               );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/iconly-regular-outline-ticket-star.png',
-                width: 18,
-                height: 18,
+                'assets/icons/images/rewards.png',
+                width: 50,
+                height: 50,
               ),
             ),
           ),
@@ -966,15 +966,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        InboxScreen()), // Navigate to inbox screen
+                        BranchInboxScreen()), // Navigate to inbox screen
               );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/iconly-regular-outline-message-8Pb.png',
-                width: 18,
-                height: 18,
+                'assets/icons/images/inbox.png',
+                width: 50,
+                height: 50,
               ),
             ),
           ),
@@ -983,15 +983,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => QRScreen()), // Navigate to QR screen
+                    builder: (context) => ScanScreen()), // Navigate to QR screen
               );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
                 'assets/icons/images/iconly-regular-outline-scan-q2q.png',
-                width: 28,
-                height: 28,
+                 width: 50,
+                height: 50,
               ),
             ),
           ),
@@ -1001,15 +1001,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        LocationScreen()), // Navigate to location screen
+                        BranchLocationScreen()), // Navigate to location screen
               );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/iconly-regular-outline-location.png',
-                width: 18,
-                height: 18,
+                'assets/icons/images/location.png',
+                  width: 50,
+                height: 50,
               ),
             ),
           ),
@@ -1019,15 +1019,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        ProfileScreen()), // Navigate to profile screen
+                        BranchProfileScreen()), // Navigate to profile screen
               );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/iconly-regular-light-profile.png',
-                width: 18,
-                height: 18,
+                'assets/icons/images/profile.png',
+               width: 50,
+                height: 50,
               ),
             ),
           ),

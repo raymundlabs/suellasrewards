@@ -11,13 +11,6 @@ import 'package:suellas/branch/scan.dart';
 import 'package:suellas/design/forgot.dart';
 import 'package:suellas/design/done.dart';
 import 'package:suellas/customer/home.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-// import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({Key? key}) : super(key: key);
@@ -45,7 +38,7 @@ class _AuthScreenState extends State<AuthScreen> {
   var _acceptedTerms = false;
   var _isObscure = true;
   bool _rememberMe = false;
-GoogleSignIn _googleSignIn = GoogleSignIn();
+
   @override
   void initState() {
     super.initState();
@@ -64,7 +57,7 @@ GoogleSignIn _googleSignIn = GoogleSignIn();
         _enteredPassword = savedPassword;
         _rememberMe = true;
       });
-      
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -204,112 +197,6 @@ GoogleSignIn _googleSignIn = GoogleSignIn();
     return response;
   }
 
-  Future<void> _handleGoogleSignIn() async {
-    try {
-      FirebaseAuth auth = FirebaseAuth.instance;
-      final GoogleSignIn googleSignIn = GoogleSignIn();
-
-      // Trigger the authentication flow
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-
-      // Obtain the auth details from the request
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser!.authentication;
-
-      // Create a new credentials
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      // Sign in the user with the credentials
-      final UserCredential userCredential =
-          await auth.signInWithCredential(credential);
-
-      // Check if the user is signed in
-      if (userCredential.user != null) {
-        // Access the user's email
-        String userEmail = userCredential.user!.email ?? 'Email not available';
-
-        // Print the email
-        print('User email: $userEmail');
-        await _sendGoogleAuthRequest(userEmail);
-
- 
-      }
-    } catch (error) {
-      print('Google Sign-In Error: $error');
-    }
-  }
-
-Future<void> _sendGoogleAuthRequest(String email) async {
-  try {
-    final headers = {
-      'Content-Type': 'application/json',
-      'X-CSRF-Token': 'd7c436fff9e0910158379791ad0aeba8',
-    };
-    final apiUrl = '/admin/auth/loginWithGoogle';
-
-    final response = await http.post(
-      Uri.parse('https://app.suellastheshoelaundry.com' + apiUrl),
-      body: {
-        'email': email,
-      },
-    );
-
-    if (response.statusCode == 200) {
-      // Handle the response as needed
-      final responseBody = response.body;
-      print(responseBody);
-
-      // Save email and response to shared preferences
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('userEmail', email);
-      await prefs.setString('userDetails', responseBody);
-
-      if (responseBody.contains('Login successful')) {
-        if (email.endsWith('@suellas.com')) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ScanScreen(),
-              settings: RouteSettings(
-                arguments: responseBody,
-              ),
-            ),
-          );
-        } else {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CustomerHomeScreen(),
-              settings: RouteSettings(
-                arguments: responseBody,
-              ),
-            ),
-          );
-        }
-      }
-    } else if (response.statusCode == 401) {
-      // Handle 401 Unauthorized status code
-      // Sign out of Google to allow selecting another email
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('User does not exist'),
-            duration: Duration(seconds: 3),
-          ),
-        );
-      await _googleSignIn.signOut();
-    } else {
-      // Handle other cases or show an error message
-      print('Authentication failed with status code: ${response.statusCode}');
-    }
-  } catch (error) {
-    print('Error during Google authentication request: $error');
-  }
-}
-
-
   @override
   Widget build(BuildContext context) {
     double baseWidth = 414;
@@ -328,7 +215,7 @@ Future<void> _sendGoogleAuthRequest(String email) async {
                 padding: EdgeInsets.fromLTRB(
                     29 * fem, 39.77 * fem, 40.14 * fem, 5 * fem),
                 width: double.infinity,
-                height: 400 * fem,
+                height: 380 * fem,
                 decoration: BoxDecoration(
                   color: Color(0xfffffff),
                 ),
@@ -433,11 +320,14 @@ Future<void> _sendGoogleAuthRequest(String email) async {
                         },
                       ),
 
+                      SizedBox(height: 20 * fem),
+
                       Container(
-                        margin: EdgeInsets.only(left: 2 * fem, top: 10 * fem),
+                        margin: EdgeInsets.only(left: 35 * fem, top: 312 * fem),
                         width: 339.5 * fem,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        height: 20 * fem,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Row(
                               children: [
@@ -448,8 +338,8 @@ Future<void> _sendGoogleAuthRequest(String email) async {
                                     });
                                   },
                                   child: Container(
-                                    width: 20.0,
-                                    height: 20.0,
+                                    width: 24.0,
+                                    height: 24.0,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       border: Border.all(
@@ -481,34 +371,86 @@ Future<void> _sendGoogleAuthRequest(String email) async {
                                     color: Color(0xff57cc99),
                                   ),
                                 ),
-                                Spacer(), // Add Spacer to push the next widget to the right
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ForgotScreen(),
-                                      ),
-                                    );
-                                  },
-                                  child: Text(
-                                    'Forgot Password?',
-                                    style: TextStyle(
-                                      fontSize: 14 * ffem,
-                                      fontWeight: FontWeight.w500,
-                                      color: Color(0xff57cc99),
+                              ],
+                            ),
+                            Spacer(),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ForgotScreen(),
                                     ),
+                                  );
+                                },
+                                child: Text(
+                                  'Forgot Password?',
+                                  textAlign: TextAlign.right,
+                                  style: TextStyle(
+                                    fontSize: 14 * ffem,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color(0xff57cc99),
                                   ),
                                 ),
-                              ],
+                              ),
                             ),
                           ],
                         ),
                       ),
-
                       Container(
-                        margin: EdgeInsets.only(
-                            top: 20 * fem), // Adjusted top margin
+                        margin: EdgeInsets.only(left: 69 * fem),
+                        child: Container(
+                          padding: EdgeInsets.fromLTRB(
+                              21 * fem, 12 * fem, 63 * fem, 13 * fem),
+                          width: 295 * fem,
+                          height: 50 * fem,
+                          decoration: BoxDecoration(
+                            color: Color(0xff4285f4),
+                            borderRadius: BorderRadius.circular(70 * fem),
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                margin: EdgeInsets.fromLTRB(
+                                    0 * fem, 0 * fem, 25 * fem, 0 * fem),
+                                width: 25 * fem,
+                                height: 25 * fem,
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.circular(12.5 * fem),
+                                  image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: AssetImage(
+                                      'assets/design/images/ellipse-3-bg.png',
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                margin: EdgeInsets.fromLTRB(
+                                    0 * fem, 3 * fem, 0 * fem, 0 * fem),
+                                child: Text(
+                                  'Login with Facebook',
+                                  textAlign: TextAlign.center,
+                                  style: SafeGoogleFont(
+                                    'Inter',
+                                    fontSize: 16 * ffem,
+                                    fontWeight: FontWeight.w600,
+                                    height: 1.2125 * ffem / fem,
+                                    color: Color(0xffffffff),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(height: 20 * fem),
+                      Container(
                         child: Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -527,8 +469,9 @@ Future<void> _sendGoogleAuthRequest(String email) async {
                                   child: ElevatedButton(
                                     onPressed: _submit,
                                     style: ElevatedButton.styleFrom(
-                                      primary: Colors.transparent,
-                                      elevation: 0,
+                                      primary: Colors
+                                          .transparent, // Make the button transparent
+                                      elevation: 0, // Remove button elevation
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(70),
                                       ),
@@ -545,11 +488,11 @@ Future<void> _sendGoogleAuthRequest(String email) async {
                                     ),
                                   ),
                                 ),
-
                               // if (!_isAuthenticating)
                               //   TextButton(
                               //     onPressed: () {
-                              //       seColor.fromARGB(255, 204, 87, 194)                          //         _isLogin = !_isLogin;
+                              //       setState(() {
+                              //         _isLogin = !_isLogin;
                               //       });
                               //     },
                               //     child: Text(
@@ -567,114 +510,166 @@ Future<void> _sendGoogleAuthRequest(String email) async {
                 ),
               ),
               Container(
-                margin: EdgeInsets.symmetric(
-                    horizontal: 20 * fem, vertical: 20 * fem),
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10 * fem),
-                  width: double.infinity,
-                  height: 50 * fem,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Container(
-                          height: 2 * fem,
-                          decoration: BoxDecoration(
-                            color: Color(0x7c000000),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.symmetric(horizontal: 10 * fem),
-                        child: Text(
-                          'OR',
-                          style: SafeGoogleFont(
-                            'Inter',
-                            fontSize: 17 * ffem,
-                            fontWeight: FontWeight.w400,
-                            height: 1.2125 * ffem / fem,
-                            color: Color(0x7c000000),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          height: 2 * fem,
-                          decoration: BoxDecoration(
-                            color: Color(0x7c000000),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-        
-              Container(
-                margin: EdgeInsets.only(left: 0 * fem, top: 0 * fem),
-                child: ElevatedButton(
-                  onPressed: _handleGoogleSignIn,
-                  style: ElevatedButton.styleFrom(
-                    primary: Color(0x7fffffff),
-                    onPrimary: Color(0xff000000),
-                    elevation: 0.0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(70 * fem),
-                      side: BorderSide(color: Color(0xff000000)),
-                    ),
-                  ),
-                  child: Container(
-                    padding: EdgeInsets.fromLTRB(
-                        21 * fem, 12 * fem, 63 * fem, 13 * fem),
-                    width: 295 * fem,
-                    height: 50 * fem,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.fromLTRB(
-                              0 * fem, 0 * fem, 25 * fem, 0 * fem),
-                          width: 25 * fem,
-                          height: 25 * fem,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12.5 * fem),
-                            image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image:
-                                  AssetImage('assets/design/images/group.png'),
+                padding: EdgeInsets.all(20 * fem),
+                width: double.infinity,
+                height: 250 * fem, // Use the same height as the green container
+                color: Colors.white, // Set the background color to blue
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 444 * fem,
+                      height: 19 * fem,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment
+                            .center, // Center the row horizontally
+                        crossAxisAlignment: CrossAxisAlignment
+                            .center, // Center the row vertically
+                        children: [
+                          Container(
+                            margin: EdgeInsets.fromLTRB(
+                                0 * fem, 7 * fem, 29 * fem, 0 * fem),
+                            width: 102 * fem,
+                            height: 2 * fem,
+                            decoration: BoxDecoration(
+                              color: Color(0x7c000000),
                             ),
                           ),
-                        ),
-                        Text(
-                          'Login with Google',
-                          style: SafeGoogleFont(
-                            'Inter',
-                            fontSize: 16 * ffem,
-                            fontWeight: FontWeight.w600,
-                            height: 1.2125 * ffem / fem,
-                            color: Color(0xff000000),
+                          Container(
+                            margin: EdgeInsets.fromLTRB(
+                                0 * fem, 0 * fem, 30 * fem, 0 * fem),
+                            child: Text(
+                              'OR',
+                              style: SafeGoogleFont(
+                                'Inter',
+                                fontSize: 17 * ffem,
+                                fontWeight: FontWeight.w400,
+                                height: 1.2125 * ffem / fem,
+                                color: Color(0x7c000000),
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
+                          Container(
+                            margin: EdgeInsets.fromLTRB(
+                                0 * fem, 7 * fem, 0 * fem, 0 * fem),
+                            width: 102 * fem,
+                            height: 2 * fem,
+                            decoration: BoxDecoration(
+                              color: Color(0x7c000000),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                    Container(
+                      margin: EdgeInsets.only(left: 70 * fem, top: 602 * fem),
+                      child: Container(
+                        margin: EdgeInsets.fromLTRB(
+                            0 * fem, 25 * fem, 0 * fem, 0 * fem),
+                        padding: EdgeInsets.fromLTRB(
+                            23 * fem, 16 * fem, 75 * fem, 13 * fem),
+                        width: 295 * fem,
+                        height: 50 * fem,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Color(0xff000000)),
+                          color: Color(0x7fffffff),
+                          borderRadius: BorderRadius.circular(70 * fem),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.fromLTRB(
+                                  0 * fem, 0 * fem, 39.36 * fem, 3 * fem),
+                              width: 17.64 * fem,
+                              height: 18 * fem,
+                              child: Image.asset(
+                                'assets/design/images/group.png',
+                                width: 17.64 * fem,
+                                height: 18 * fem,
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.fromLTRB(
+                                  0 * fem, 1 * fem, 0 * fem, 0 * fem),
+                              child: Text(
+                                'Login with Google',
+                                textAlign: TextAlign.center,
+                                style: SafeGoogleFont(
+                                  'Inter',
+                                  fontSize: 16 * ffem,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.2125 * ffem / fem,
+                                  color: Color(0xff000000),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10 * fem),
+                    Container(
+                      margin: EdgeInsets.only(left: 69 * fem, top: 532 * fem),
+                      child: Container(
+                        padding: EdgeInsets.fromLTRB(
+                            21 * fem, 12 * fem, 63 * fem, 13 * fem),
+                        width: 295 * fem,
+                        height: 50 * fem,
+                        decoration: BoxDecoration(
+                          color: Color(0xff4285f4),
+                          borderRadius: BorderRadius.circular(70 * fem),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.fromLTRB(
+                                  0 * fem, 0 * fem, 25 * fem, 0 * fem),
+                              width: 25 * fem,
+                              height: 25 * fem,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12.5 * fem),
+                                image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: AssetImage(
+                                    'assets/design/images/ellipse-3-bg.png',
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.fromLTRB(
+                                  0 * fem, 3 * fem, 0 * fem, 0 * fem),
+                              child: Text(
+                                'Login with Facebook',
+                                textAlign: TextAlign.center,
+                                style: SafeGoogleFont(
+                                  'Inter',
+                                  fontSize: 16 * ffem,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.2125 * ffem / fem,
+                                  color: Color(0xffffffff),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-
-              SizedBox(height: 10 * fem),
-
-        
-
               Container(
                 padding: EdgeInsets.all(20 * fem),
                 width: double.infinity,
-                height: 100 * fem,
+                height: 150 * fem,
                 color: Colors.white,
                 child: Align(
                   alignment: Alignment.bottomCenter,
                   child: Container(
                     width: 231 * fem,
-                    height: 50 * fem,
+                    height: 19 * fem,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [

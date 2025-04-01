@@ -4,40 +4,36 @@ import 'package:suellas/utils.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:flutter/gestures.dart';
 import 'dart:ui';
-import 'package:suellas/customer/qr_screen.dart';
-import 'package:suellas/customer/profile.dart';
-import 'package:suellas/customer/location.dart';
-import 'package:suellas/customer/inbox.dart';
-import 'package:suellas/customer/inboxread.dart';
-import 'package:suellas/customer/security.dart';
+import 'package:suellas/branch/scan.dart';
+import 'package:suellas/branch/profile.dart';
+import 'package:suellas/branch/location.dart';
+import 'package:suellas/branch/inbox.dart';
+import 'package:suellas/branch/inboxread.dart';
+import 'package:suellas/branch/security.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:suellas/design/start.dart';
-import 'package:suellas/customer/services.dart';
-import 'package:suellas/customer/contact.dart';
-import 'package:suellas/customer/privacy.dart';
-import 'package:suellas/customer/terms.dart';
+import 'package:suellas/branch/services.dart';
+import 'package:suellas/branch/contact.dart';
+import 'package:suellas/branch/privacy.dart';
+import 'package:suellas/branch/terms.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_app_badger/flutter_app_badger.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-class CustomerHomeScreen extends StatefulWidget {
-  const CustomerHomeScreen({Key? key}) : super(key: key);
+class BranchHomeScreen extends StatefulWidget {
+  const BranchHomeScreen({Key? key}) : super(key: key);
 
   @override
-  _CustomerHomeScreenState createState() => _CustomerHomeScreenState();
+  _BranchHomeScreenState createState() => _BranchHomeScreenState();
 }
 
-class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
+class _BranchHomeScreenState extends State<BranchHomeScreen> {
   String? rewardPoints; // Change this to nullable
   String? _firstName;
   String? _lastName;
-  int _notificationCount = 0;
-  List<Map<String, dynamic>> messages = []; // List to store promotions
   String _userEmail = ''; // Default value is an empty string
   List<Map<String, dynamic>> promotions = []; // List to store promotions
-  GoogleSignIn _googleSignIn = GoogleSignIn();
+GoogleSignIn _googleSignIn = GoogleSignIn();
   bool isDrawerOpen = false;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -60,11 +56,9 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
           rewardPoints = data['reward_points'] ?? '';
         });
       });
-
       _getPromotions().then((_) {
-        _getPromotions();
+        // Once promotions are fetched, the widget tree will be rebuilt
       });
-      _getUserMessages();
     });
   }
 
@@ -147,51 +141,6 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
     }
   }
 
-  Future<void> _getUserMessages() async {
-    final headers = {
-      'Content-Type': 'application/json',
-      'X-CSRF-Token': 'd7c436fff9e0910158379791ad0aeba8',
-    };
-    final apiUrl = '/admin/auth/getMessages';
-    final email = _userEmail;
-    final response = await http.post(
-      Uri.parse('https://app.suellastheshoelaundry.com' + apiUrl),
-      body: {'email': email, 'isRead': 'No'},
-    );
-
-    if (response.statusCode == 200) {
-      final dynamic responseBody = json.decode(response.body);
-
-      if (responseBody is List) {
-        final List<Map<String, dynamic>> userMessages =
-            responseBody.cast<Map<String, dynamic>>();
-
-        // Debugging: Print the fetched promotions to the console
-        print('Fetched Messages: $userMessages');
-        setState(() {
-          _notificationCount = userMessages.length;
-        });
-
-    FlutterAppBadger.updateBadgeCount(_notificationCount);
-
-      // Update the badge count using the flutter_local_notifications plugin (iOS)
-      // final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      //     FlutterLocalNotificationsPlugin();
-      // await flutterLocalNotificationsPlugin
-      //     .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
-      //     ?.setBadge(_notificationCount);
-      //   // Update the state with the fetched promotions data
-        setState(() {
-          messages = userMessages;
-        });
-      } else {
-        throw Exception('Invalid response format');
-      }
-    } else {
-      throw Exception('Failed to load user data');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     double baseWidth = 414;
@@ -210,9 +159,9 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
             children: [
               Container(
                 padding: EdgeInsets.fromLTRB(
-                    29 * fem, 39.77 * fem, 29 * fem, 29 * fem),
+                    29 * fem, 39.77 * fem, 29 * fem, 5 * fem),
                 width: double.infinity,
-                height: 410 * fem,
+                height: 110 * fem,
                 decoration: BoxDecoration(
                   color: Color(0xff2f6e53),
                 ),
@@ -225,54 +174,17 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          GestureDetector(
-                            onTap: () {
-                              if (_notificationCount > 0) {
-                                Navigator.pop(context);
-                              } else {
-                                // Do nothing or show a snackbar indicating that there are no new messages
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('No New Notification'),
-                                  ),
-                                );
-                              }
-                            },
-                            child: Stack(
-                              children: [
-                                Container(
-                                  // btnbackfGd (202:999)
-                                  width: 50 * fem,
-                                  height: 50 * fem,
-                                  child: Image.asset(
-                                    'assets/icons/images/notification-white.png',
-                                    width: 50 * fem,
-                                    height: 50 * fem,
-                                  ),
-                                ),
-                                if (_notificationCount > 0)
-                                  Positioned(
-                                    right: 5,
-                                    top: 5,
-                                    child: Container(
-                                      padding: EdgeInsets.all(4),
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.red,
-                                      ),
-                                      child: Text(
-                                        '$_notificationCount',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                              ],
+                          Container(
+                            // btnbackfGd (202:999)
+                            width: 30 * fem,
+                            height: 30 * fem,
+                            child: Image.asset(
+                              'assets/icons/images/notification.png',
+                              width: 30 * fem,
+                              height: 30 * fem,
                             ),
                           ),
-
+                          
                           Expanded(
                             child: Center(
                               child: Container(
@@ -288,9 +200,9 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                           ),
                           IconButton(
                             icon: Image.asset(
-                              'assets/icons/images/filter-white.png',
-                              width: 50 * fem,
-                              height: 50 * fem,
+                              'assets/icons/images/edit.png',
+                           width: 30 * fem,
+                            height: 30 * fem,
                             ),
                             onPressed: () {
                               scaffoldKey.currentState?.openEndDrawer();
@@ -310,25 +222,25 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                       ),
                     ),
                     // Other child widgets in the green box
-                    Container(
-                      // rewardsZmK (202:1016)
-                      margin: EdgeInsets.fromLTRB(
-                          17.14 * fem, 30 * fem, 0 * fem, 17.23 * fem),
-                      child: Text(
-                        'Rewards',
-                        textAlign: TextAlign.center,
-                        style: SafeGoogleFont(
-                          'Inter',
-                          fontSize: 16 * ffem,
-                          fontWeight: FontWeight.w700,
-                          height: 1.25 * ffem / fem,
-                          letterSpacing: 1 * fem,
-                          color: Color(0xffffffff),
-                        ),
-                      ),
-                    ),
-                    RewardsPointsWidget(
-                        fem: fem, ffem: ffem, rewardPoints: rewardPoints),
+                    // Container(
+                    //   // rewardsZmK (202:1016)
+                    //   margin: EdgeInsets.fromLTRB(
+                    //       17.14 * fem, 30 * fem, 0 * fem, 17.23 * fem),
+                    //   child: Text(
+                    //     'Rewards',
+                    //     textAlign: TextAlign.center,
+                    //     style: SafeGoogleFont(
+                    //       'Inter',
+                    //       fontSize: 16 * ffem,
+                    //       fontWeight: FontWeight.w700,
+                    //       height: 1.25 * ffem / fem,
+                    //       letterSpacing: 1 * fem,
+                    //       color: Color(0xffffffff),
+                    //     ),
+                    //   ),
+                    // ),
+                    // RewardsPointsWidget(
+                    //     fem: fem, ffem: ffem, rewardPoints: rewardPoints),
                   ],
                 ),
               ),
@@ -377,6 +289,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
         widthFactor: 0.6, // Set the width to 60% of the screen's width
         child: Drawer(
           child: ListView(
+          
             padding: EdgeInsets.only(top: 50.0),
             children: <Widget>[
               // Your right-side drawer items
@@ -411,35 +324,29 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
               ListTile(
                 title: Text('Services'), // Customize with your text
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ServicesScreen()),
-                  );
-                  // Handle settServicesScreenings action
+                  // Handle settings action
                 },
               ),
-              // ListTile(
-              //   title: Text('Terms & Conditions'), // Customize with your text
-              //   onTap: () {
-              //     // Handle settings action
-              //   },
-              // ),
+              ListTile(
+                title: Text('Terms & Conditions'), // Customize with your text
+                onTap: () {
+                  // Handle settings action
+                },
+              ),
               ListTile(
                 title: Text('Privacy Policy'), // Customize with your text
-                onTap: () {
-                  Navigator.push(
+                   onTap: () {
+               Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => PrivacyScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => PrivacyScreen()),
                   );
-                },
+                  }, 
               ),
               ListTile(
                 title: Text('Contact Us'), // Customize with your text
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => LocationScreen()),
-                  );
+                  // Handle settings action
                 },
               ),
               ListTile(
@@ -517,7 +424,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        CustomerHomeScreen()), // Navigate to inbox screen
+                        BranchHomeScreen()), // Navigate to inbox screen
               );
             },
             child: Padding(
@@ -552,13 +459,13 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => QRScreen()), // Navigate to QR screen
+                    builder: (context) => ScanScreen()), // Navigate to QR screen
               );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/qr.png',
+                'assets/icons/images/iconly-regular-outline-scan-q2q.png',
                 width: 50,
                 height: 50,
               ),
@@ -685,13 +592,6 @@ class RewardsPointsWidget extends StatelessWidget {
       // Display a loading indicator or placeholder when rewardPoints is not available yet.
       return CircularProgressIndicator(); // You can use any other widget as a placeholder.
     } else {
-      int remainPoints = 0;
-
-      int? rewardPointsValue = int.tryParse(rewardPoints!.split('.')[0]);
-
-      if (rewardPointsValue != null) {
-        remainPoints = (150 - rewardPointsValue).round();
-      }
       return Container(
         margin: EdgeInsets.fromLTRB(53 * fem, 0 * fem, 34.86 * fem, 0 * fem),
         width: double.infinity,
@@ -810,10 +710,10 @@ class RewardsPointsWidget extends StatelessWidget {
               top: 120.7749023438 * fem,
               child: Align(
                 child: SizedBox(
-                  width: 150 * fem,
+                  width: 111 * fem,
                   height: 20 * fem,
                   child: Text(
-                    '$remainPoints Stars to Next Rewards',
+                    '65 Stars to Next Rewards',
                     textAlign: TextAlign.center,
                     style: SafeGoogleFont(
                       'Inter',
@@ -842,7 +742,7 @@ class RewardsPointsWidget extends StatelessWidget {
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
                         child: Text(
-                          '$rewardPointsValue ',
+                          '$rewardPoints',
                           textAlign: TextAlign.center,
                           style: SafeGoogleFont(
                             'Inter',

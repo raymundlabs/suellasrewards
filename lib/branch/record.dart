@@ -9,8 +9,8 @@ import 'package:suellas/customer/profile.dart';
 import 'package:suellas/customer/editprofile.dart';
 import 'package:suellas/customer/location.dart';
 import 'package:suellas/customer/inbox.dart';
-import 'package:suellas/customer/home.dart';
-import 'package:suellas/branch/history.dart';
+import 'package:suellas/branch/home.dart';
+import 'package:suellas/branch/historyscan.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:suellas/branch/pay.dart';
@@ -34,50 +34,79 @@ class _RecordScreenState extends State<RecordScreen> {
   double fem = 1.0;
   double ffem = 1.0;
   late String email;
+  late String _userEmail;
   var _firstName = '';
   var _lastName = '';
   var _enteredAmount = '';
+  var _numberShoes = '';
+  var _stubNumber = '';
   final _formKey = GlobalKey<FormState>();
+  var _serviceType = 'Select'; // Set to the first value in the dropdown menu
 
   @override
   void initState() {
     super.initState();
-    // Access 'email' from widget.userData
-    email = widget.userData['email'];
+    // Call the API request method to get reward points and set the state
+    _getUserEmail().then((_) {
+        setState(() {
+         email = widget.userData['email'];
+        });
+    });
+  }
+  
+ Future<void> _getUserEmail() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _userEmail = prefs.getString('userEmail') ?? '';
+    });
   }
 
-  Future<void> _recordAmount(double? amount) async {
-    print(amount);
-    if (amount != null) {
-      final apiUrl =
-          'https://app.suellastheshoelaundry.com/admin/auth/scanrewards';
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        body: {'amount': amount.toString(), 'email': email},
+
+Future<void> _recordAmount(double? amount) async {
+  print(amount);
+  if (amount != null) {
+    final apiUrl = 'https://app.suellastheshoelaundry.com/admin/auth/scanrewards';
+
+    // Prepare the request body
+    final requestBody = {
+      'amount': amount.toString(),
+      'email': email,
+      'serviceType': _serviceType,
+      'numberShoes': _numberShoes,
+      'stubNumber': _stubNumber, // Added stubNumber
+      'userEmail': _userEmail,
+    };
+
+    // Print the request body
+    print('Request Body: $requestBody');
+
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      body: requestBody,
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      print('Amount recorded successfully.');
+      print('Response Data: $responseData');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Amount recorded successfully'),
+        ),
       );
 
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-        print('Amount recorded successfully.');
-        print('Response Data: $responseData');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Amount recorded successfully'),
-          ),
-        );
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => HistoryScreen(),
-          ),
-        );
-      } else {
-        print(
-            'Failed to record the amount. Error code: ${response.statusCode}');
-      }
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HistoryScan(),
+        ),
+      );
+    } else {
+      print('Failed to record the amount. Error code: ${response.statusCode}');
     }
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -203,16 +232,23 @@ class _RecordScreenState extends State<RecordScreen> {
                       constraints: BoxConstraints(
                         maxWidth: 287 * fem,
                       ),
-                      child: Text(
-                        'Enter the Amount.',
-                        textAlign: TextAlign.center,
-                        style: SafeGoogleFont(
-                          'Inter',
-                          fontSize: 15 * ffem,
-                          fontWeight: FontWeight.w400,
-                          height: 1.3333333333 * ffem / fem,
-                          color: Color(0xff000000),
+                      child: TextFormField(
+                        onChanged: (value) {
+                          setState(() {
+                            _enteredAmount = value;
+                          });
+                        },
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: 'Enter the Amount',
                         ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please enter a valid amount.';
+                          }
+                          // You can add additional validation logic here if needed.
+                          return null;
+                        },
                       ),
                     ),
                     Container(
@@ -221,36 +257,102 @@ class _RecordScreenState extends State<RecordScreen> {
                       constraints: BoxConstraints(
                         maxWidth: 287 * fem,
                       ),
-                      child: TextField(
-                        // Use a TextField to enter the amount
+                      child: DropdownButtonFormField<String>(
+                        value: _serviceType,
                         onChanged: (value) {
-                          // Save the entered value as a string
                           setState(() {
-                            _enteredAmount = value;
+                            _serviceType = value!;
                           });
                         },
-
-                        keyboardType:
-                            TextInputType.number, // Allow only numeric input
+                        items: [
+                          DropdownMenuItem(
+                            value: 'Select',
+                            child: Text('Select Service '),
+                          ),
+                          DropdownMenuItem(
+                            value: 'BasicClean',
+                            child: Text('Basic Clean'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'DeepClean',
+                            child: Text('Deep Clean'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'WipeOff',
+                            child: Text('Wipe Off'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'Restoration',
+                            child: Text('Restoration'),
+                          ),
+                        ],
                         decoration: InputDecoration(
-                          hintText: 'Enter the Amount',
+                          hintText: 'Select Service Type',
                         ),
+                        validator: (value) {
+                          if (value == null || value == 'Select') {
+                            return 'Please select a valid service type.';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.fromLTRB(
+                          0 * fem, 0 * fem, 5.86 * fem, 33 * fem),
+                      constraints: BoxConstraints(
+                        maxWidth: 287 * fem,
+                      ),
+                      child: TextFormField(
+                        onChanged: (value) {
+                          setState(() {
+                            _numberShoes = value;
+                          });
+                        },
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: 'Enter Number of Shoes',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please enter the number of shoes.';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.fromLTRB(
+                          0 * fem, 0 * fem, 5.86 * fem, 33 * fem),
+                      constraints: BoxConstraints(
+                        maxWidth: 287 * fem,
+                      ),
+                      child: TextFormField(
+                        onChanged: (value) {
+                          setState(() {
+                            _stubNumber = value;
+                          });
+                        },
+                        keyboardType: TextInputType.text,
+                        decoration: InputDecoration(
+                          hintText: 'Enter Claim Stub Number',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please enter the Claim Stub Number.';
+                          }
+                          return null;
+                        },
                       ),
                     ),
                     GestureDetector(
-                      // Add onTap property to handle button click
                       onTap: () {
-                        // Call the _recordAmount method when the button is tapped
                         double? amount = double.tryParse(_enteredAmount ?? '');
                         _recordAmount(amount);
                       },
                       child: Container(
                         margin: EdgeInsets.fromLTRB(
-                          26 * fem,
-                          0 * fem,
-                          23.86 * fem,
-                          89 * fem,
-                        ),
+                            26 * fem, 0 * fem, 23.86 * fem, 89 * fem),
                         width: double.infinity,
                         height: 50 * fem,
                         decoration: BoxDecoration(
@@ -259,7 +361,7 @@ class _RecordScreenState extends State<RecordScreen> {
                         ),
                         child: Center(
                           child: Text(
-                            'Save Amount',
+                            'Submit',
                             textAlign: TextAlign.center,
                             style: SafeGoogleFont(
                               'Inter',
@@ -284,10 +386,7 @@ class _RecordScreenState extends State<RecordScreen> {
   }
 
   Widget _buildBottomNavigationBar(
-    double fem,
-    double ffem,
-    BuildContext context,
-  ) {
+      double fem, double ffem, BuildContext context) {
     return Container(
       width: 333 * fem,
       height: 50 * fem,
@@ -319,7 +418,7 @@ class _RecordScreenState extends State<RecordScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => CustomerHomeScreen(),
+                  builder: (context) => BranchHomeScreen(),
                 ),
               );
             },

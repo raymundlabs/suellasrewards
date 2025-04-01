@@ -67,7 +67,7 @@ class _QRScreenState extends State<QRScreen> {
             child: Container(
               // rewardsRcd (4:30440)
               padding: EdgeInsets.fromLTRB(
-                  29 * fem, 39.77 * fem, 40.14 * fem, 27 * fem),
+                  29 * fem, 50.77 * fem, 29 * fem, 27 * fem),
               width: double.infinity,
               height: double.infinity,
               decoration: BoxDecoration(
@@ -95,7 +95,7 @@ class _QRScreenState extends State<QRScreen> {
                                   context); // Navigate back to the previous screen
                             },
                             child: Image.asset(
-                              'assets/design/images/btn-back.png',
+                              'assets/icons/images/back.png',
                               width: 30 * fem,
                               height: 30 * fem,
                             ),
@@ -129,12 +129,12 @@ class _QRScreenState extends State<QRScreen> {
                             // iconlycurvedoutlineeditsquareN (4:30441)
                             margin: EdgeInsets.fromLTRB(
                                 0 * fem, 0 * fem, 0 * fem, 4 * fem),
-                            width: 20 * fem,
-                            height: 20 * fem,
+                                 width: 30 * fem,
+                              height: 30 * fem,
                             child: Image.asset(
-                              'assets/design/images/iconly-curved-outline-edit-square.png',
-                              width: 20 * fem,
-                              height: 20 * fem,
+                              'assets/icons/images/edit.png',
+                             width: 30 * fem,
+                              height: 30 * fem,
                             ),
                           ),
                         )
@@ -291,9 +291,9 @@ class _QRScreenState extends State<QRScreen> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/iconly-regular-outline-ticket-star.png',
-                width: 18,
-                height: 18,
+                'assets/icons/images/rewards.png',
+              width: 50,
+                height: 50,
               ),
             ),
           ),
@@ -309,9 +309,9 @@ class _QRScreenState extends State<QRScreen> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/iconly-regular-outline-message-8Pb.png',
-                width: 18,
-                height: 18,
+                'assets/icons/images/inbox.png',
+           width: 50,
+                height: 50,
               ),
             ),
           ),
@@ -325,9 +325,9 @@ class _QRScreenState extends State<QRScreen> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/iconly-regular-outline-scan-q2q.png',
-                width: 28,
-                height: 28,
+                'assets/icons/images/qr-selected.png',
+                width: 50,
+                height: 50,
               ),
             ),
           ),
@@ -343,9 +343,9 @@ class _QRScreenState extends State<QRScreen> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/iconly-regular-outline-location.png',
-                width: 18,
-                height: 18,
+                'assets/icons/images/location.png',
+               width: 50,
+                height: 50,
               ),
             ),
           ),
@@ -361,9 +361,9 @@ class _QRScreenState extends State<QRScreen> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/iconly-regular-light-profile.png',
-                width: 18,
-                height: 18,
+                'assets/icons/images/profile.png',
+                width: 50,
+                height: 50,
               ),
             ),
           ),

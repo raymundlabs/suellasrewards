@@ -8,7 +8,6 @@ import 'package:suellas/design/blank.dart';
 import 'package:suellas/design/register.dart';
 import 'package:suellas/design/forgot.dart';
 import 'package:suellas/design/done.dart';
-import 'package:suellas/design/login.dart';
 
 // import 'package:suellas/customer/customer_home.dart'; // Import the customer home screen // Import the branch home screen
 
@@ -71,28 +70,19 @@ class _ForgotScreen extends State<ForgotScreen> {
         _isAuthenticating = true;
       });
 
-      // final response = await _sendAuthRequest();
-
-      final headers = {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': 'd7c436fff9e0910158379791ad0aeba8',
-      };
-      final apiUrl =
-          _isLogin ? '/admin/auth/loginv2' : '/admin/auth/registerv2';
-
-      final response = await http.post(
-        Uri.parse('https://app.suellastheshoelaundry.com/admin/auth/forgot'),
-        body: {
-          'email': _enteredEmail,
-        },
-      );
+      final response = await _sendAuthRequest();
 
       if (response.statusCode == 200) {
         final responseBody = response.body;
 
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('userEmail', _enteredEmail);
+
+        await prefs.setString('userDetails', responseBody);
+
         print(responseBody);
 
-        if (responseBody.contains('Password changed successfully')) {
+        if (responseBody.contains('Registration successful')) {
           // Show a "Thank You" SnackBar
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -107,7 +97,7 @@ class _ForgotScreen extends State<ForgotScreen> {
               context,
               MaterialPageRoute(
                 builder: (context) =>
-                    AuthScreen(), // Replace with your sign-in page
+                    ForgotScreen(), // Replace with your sign-in page
               ),
             );
           });
@@ -141,24 +131,28 @@ class _ForgotScreen extends State<ForgotScreen> {
       }
     } catch (error) {
       print('Authentication error: $error');
+    } finally {
+      setState(() {
+        _isAuthenticating = false;
+      });
     }
   }
 
-  // Future<http.Response> _sendAuthRequest() async {
-  //   final headers = {
-  //     'Content-Type': 'application/json',
-  //     'X-CSRF-Token': 'd7c436fff9e0910158379791ad0aeba8',
-  //   };
-  //   final apiUrl = _isLogin ? '/admin/auth/loginv2' : '/admin/auth/registerv2';
+  Future<http.Response> _sendAuthRequest() async {
+    final headers = {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': 'd7c436fff9e0910158379791ad0aeba8',
+    };
+    final apiUrl = _isLogin ? '/admin/auth/loginv2' : '/admin/auth/registerv2';
 
-  //   final response = await http.post(
-  //     Uri.parse('https://app.suellastheshoelaundry.com/admin/auth/forgot'),
-  //     body: {
-  //       'email': _enteredEmail,
-  //     },
-  //   );
-  //   return response;
-  // }
+    final response = await http.post(
+      Uri.parse('https://app.suellastheshoelaundry.com/admin/auth/forgot'),
+      body: {
+        'email': _enteredEmail,
+      },
+    );
+    return response;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -176,9 +170,8 @@ class _ForgotScreen extends State<ForgotScreen> {
           child: Column(
             children: [
               Container(
-                // suellaslogoblack1oj7 (4:16599)
-                margin: EdgeInsets.fromLTRB(
-                    0 * fem, 20 * fem, 20.86 * fem, 20 * fem),
+                padding: EdgeInsets.fromLTRB(
+                    29 * fem, 39.77 * fem, 40.14 * fem, 5 * fem),
                 width: 128 * fem,
                 height: 50 * fem,
                 child: Image.asset(
@@ -186,35 +179,28 @@ class _ForgotScreen extends State<ForgotScreen> {
                   fit: BoxFit.cover,
                 ),
               ),
-              // Container(
-              //   alignment: Alignment.centerLeft, // Align to the left
-              //   child: Padding(
-              //     padding: EdgeInsets.only(left: 30.0),
-              //     child: GestureDetector(
-              //       onTap: () {
-              //         // Handle the back navigation here, e.g., using Navigator
-              //         Navigator.of(context)
-              //             .pop(); // This will pop the current screen and go back
-              //       },
-              //       child: SizedBox(
-              //         width: 30 * fem,
-              //         height: 30 * fem,
-              //         child: Image.asset(
-              //           'assets/design/images/btn-back.png',
-              //           width: 30 * fem,
-              //           height: 30 * fem,
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
+              Align(
+                alignment: Alignment.centerLeft, // Align to the left
+                child: GestureDetector(
+                  onTap: () {
+                    // Handle the back navigation here, e.g., using Navigator
+                    Navigator.of(context)
+                        .pop(); // This will pop the current screen and go back
+                  },
+                  child: SizedBox(
+                    width: 30 * fem,
+                    height: 30 * fem,
+                    child: Image.asset(
+                      'assets/design/images/btn-back.png',
+                      width: 30 * fem,
+                      height: 30 * fem,
+                    ),
+                  ),
+                ),
+              ),
               Container(
                 padding: EdgeInsets.fromLTRB(
-                  29 * fem,
-                  39.77 * fem,
-                  40.14 * fem,
-                  5 * fem,
-                ),
+                    29 * fem, 39.77 * fem, 40.14 * fem, 5 * fem),
                 width: double.infinity,
                 height: 400 * fem,
                 decoration: BoxDecoration(
@@ -223,14 +209,17 @@ class _ForgotScreen extends State<ForgotScreen> {
                 child: Form(
                   key: _form,
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: 20 * fem),
-                      Center(
-                        child: Container(
-                          width: 286 * fem,
-                          height: 20 * fem,
-                          child: Center(
+                      Positioned(
+                        // forgotpasswordFfX (151:608)
+                        left: 117 * fem,
+                        top: 209 * fem,
+                        child: Align(
+                          child: SizedBox(
+                            width: 174 * fem,
+                            height: 20 * fem,
                             child: Text(
                               'Forgot Password?',
                               textAlign: TextAlign.center,
@@ -245,26 +234,29 @@ class _ForgotScreen extends State<ForgotScreen> {
                           ),
                         ),
                       ),
-
                       SizedBox(height: 20 * fem),
-                      Container(
-                        width: 286 * fem,
-                        height: 40 * fem,
-                        child: Center(
-                          child: Text(
-                            'Don’t worry! Enter your registered email below to receive password instructions',
-                            textAlign: TextAlign.center,
-                            style: SafeGoogleFont(
-                              'Inter',
-                              fontSize: 15 * ffem,
-                              fontWeight: FontWeight.w400,
-                              height: 1.3333333333 * ffem / fem,
-                              color: Color(0xff000000),
+                      Positioned(
+                        // dontworryenteryourregisteredem (152:609)
+                        left: 55.5 * fem,
+                        top: 266 * fem,
+                        child: Align(
+                          child: SizedBox(
+                            width: 286 * fem,
+                            height: 40 * fem,
+                            child: Text(
+                              'Don’t worry! Enter your registered email below to receive password instructions',
+                              textAlign: TextAlign.center,
+                              style: SafeGoogleFont(
+                                'Inter',
+                                fontSize: 15 * ffem,
+                                fontWeight: FontWeight.w400,
+                                height: 1.3333333333 * ffem / fem,
+                                color: Color(0xff000000),
+                              ),
                             ),
                           ),
                         ),
                       ),
-
                       SizedBox(height: 20 * fem),
                       TextFormField(
                         decoration: InputDecoration(
@@ -293,67 +285,70 @@ class _ForgotScreen extends State<ForgotScreen> {
                           _enteredEmail = value!;
                         },
                       ),
+
                       SizedBox(height: 20 * fem),
+
                       Container(
                         padding: EdgeInsets.all(20 * fem),
                         width: double.infinity,
-                        height: 70 * fem,
-                        color: Colors.white,
+                        height: 70 *
+                            fem, // Use the same height as the green container
+                        color: Colors.white, // Set the background color to blue
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Container(
-                              width: 231 * fem,
-                              height: 19 * fem,
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.fromLTRB(
-                                      0 * fem,
-                                      0 * fem,
-                                      6 * fem,
-                                      0 * fem,
-                                    ),
-                                    child: Text(
-                                      'Remember Password?',
-                                      textAlign: TextAlign.center,
-                                      style: SafeGoogleFont(
-                                        'Inter',
-                                        fontSize: 15 * ffem,
-                                        fontWeight: FontWeight.w500,
-                                        height: 1.2125 * ffem / fem,
-                                        color: Color(0xff333333),
-                                      ),
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => AuthScreen(),
+                            Positioned(
+                              left: 100 * fem,
+                              top: 696 * fem,
+                              child: Container(
+                                width: 231 * fem,
+                                height: 19 * fem,
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.fromLTRB(
+                                          0 * fem, 0 * fem, 6 * fem, 0 * fem),
+                                      child: Text(
+                                        'Remember Password?',
+                                        textAlign: TextAlign.center,
+                                        style: SafeGoogleFont(
+                                          'Inter',
+                                          fontSize: 15 * ffem,
+                                          fontWeight: FontWeight.w500,
+                                          height: 1.2125 * ffem / fem,
+                                          color: Color(0xff333333),
                                         ),
-                                      );
-                                    },
-                                    child: Text(
-                                      'Log In',
-                                      textAlign: TextAlign.center,
-                                      style: SafeGoogleFont(
-                                        'Inter',
-                                        fontSize: 15 * ffem,
-                                        fontWeight: FontWeight.w600,
-                                        height: 1.2125 * ffem / fem,
-                                        color: Color(0xff57cc99),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => Done()),
+                                        );
+                                      },
+                                      child: Text(
+                                        'Log In',
+                                        textAlign: TextAlign.center,
+                                        style: SafeGoogleFont(
+                                          'Inter',
+                                          fontSize: 15 * ffem,
+                                          fontWeight: FontWeight.w600,
+                                          height: 1.2125 * ffem / fem,
+                                          color: Color(0xff57cc99),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
+
                       Container(
                         child: Center(
                           child: Column(
@@ -371,12 +366,7 @@ class _ForgotScreen extends State<ForgotScreen> {
                                     borderRadius: BorderRadius.circular(70),
                                   ),
                                   child: ElevatedButton(
-                                    onPressed: () {
-                                      if (_form.currentState!.validate()) {
-                                        // Only submit if the form is valid
-                                        _submit();
-                                      }
-                                    },
+                                    onPressed: _submit,
                                     style: ElevatedButton.styleFrom(
                                       primary: Colors
                                           .transparent, // Make the button transparent
@@ -410,17 +400,7 @@ class _ForgotScreen extends State<ForgotScreen> {
                           ),
                         ),
                       ),
-                      Container(
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              // ... (unchanged)
-                            ],
-                          ),
-                        ),
-                      ),
+
                       // ... (green container's child widgets)
                     ],
                   ),
@@ -429,55 +409,60 @@ class _ForgotScreen extends State<ForgotScreen> {
               Container(
                 padding: EdgeInsets.all(20 * fem),
                 width: double.infinity,
-                height: 100 * fem,
-                color: Colors.white,
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    width: 231 * fem,
-                    height: 50 * fem,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.fromLTRB(
-                              0 * fem, 0 * fem, 6 * fem, 0 * fem),
-                          child: Text(
-                            'Don’t have an account?',
-                            textAlign: TextAlign.center,
-                            style: SafeGoogleFont(
-                              'Inter',
-                              fontSize: 15 * ffem,
-                              fontWeight: FontWeight.w500,
-                              height: 1.2125 * ffem / fem,
-                              color: Color(0xff333333),
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => RegisterScreen(),
+                height: 150 * fem, // Use the same height as the green container
+                color: Colors.white, // Set the background color to blue
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Positioned(
+                      left: 100 * fem,
+                      top: 696 * fem,
+                      child: Container(
+                        width: 231 * fem,
+                        height: 19 * fem,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.fromLTRB(
+                                  0 * fem, 0 * fem, 6 * fem, 0 * fem),
+                              child: Text(
+                                'Don’t have an account?',
+                                textAlign: TextAlign.center,
+                                style: SafeGoogleFont(
+                                  'Inter',
+                                  fontSize: 15 * ffem,
+                                  fontWeight: FontWeight.w500,
+                                  height: 1.2125 * ffem / fem,
+                                  color: Color(0xff333333),
+                                ),
                               ),
-                            );
-                          },
-                          child: Text(
-                            'Sign Up',
-                            textAlign: TextAlign.center,
-                            style: SafeGoogleFont(
-                              'Inter',
-                              fontSize: 15 * ffem,
-                              fontWeight: FontWeight.w600,
-                              height: 1.2125 * ffem / fem,
-                              color: Color(0xff57cc99),
                             ),
-                          ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Done()),
+                                );
+                              },
+                              child: Text(
+                                'Sign Up',
+                                textAlign: TextAlign.center,
+                                style: SafeGoogleFont(
+                                  'Inter',
+                                  fontSize: 15 * ffem,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.2125 * ffem / fem,
+                                  color: Color(0xff57cc99),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ],

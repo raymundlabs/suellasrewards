@@ -49,35 +49,39 @@ class DefaultFirebaseOptions {
     messagingSenderId: '851718991062',
     projectId: 'suellas-867dd',
     authDomain: 'suellas-867dd.firebaseapp.com',
+    databaseURL: 'https://suellas-867dd-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'suellas-867dd.appspot.com',
     measurementId: 'G-KX4CRW1PCG',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyC6Hdi0chkSgDQJDsoWmOLo3Ikj64UP8_0',
-    appId: '1:851718991062:android:719665a09160a0718e6d77',
+    appId: '1:851718991062:android:e2e10fdbd2a8771a8e6d77',
     messagingSenderId: '851718991062',
     projectId: 'suellas-867dd',
+    databaseURL: 'https://suellas-867dd-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'suellas-867dd.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCcsVFZLimhfH21AKu4Jk4wLSDU8QLjLRs',
-    appId: '1:851718991062:ios:4429a5bec613446b8e6d77',
+    appId: '1:851718991062:ios:6fca9a5a74e308af8e6d77',
     messagingSenderId: '851718991062',
     projectId: 'suellas-867dd',
+    databaseURL: 'https://suellas-867dd-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'suellas-867dd.appspot.com',
-    iosClientId: '851718991062-57d4hso6ua2tavafe8daovtssjud7lt0.apps.googleusercontent.com',
-    iosBundleId: 'com.example.suellas',
+    iosClientId: '851718991062-q7vbipk408rfgtse6l2rjnh8ifajh6ea.apps.googleusercontent.com',
+    iosBundleId: 'app.suellastheshoelaunry.suellas',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyCcsVFZLimhfH21AKu4Jk4wLSDU8QLjLRs',
-    appId: '1:851718991062:ios:4429a5bec613446b8e6d77',
+    appId: '1:851718991062:ios:6fca9a5a74e308af8e6d77',
     messagingSenderId: '851718991062',
     projectId: 'suellas-867dd',
+    databaseURL: 'https://suellas-867dd-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'suellas-867dd.appspot.com',
-    iosClientId: '851718991062-57d4hso6ua2tavafe8daovtssjud7lt0.apps.googleusercontent.com',
-    iosBundleId: 'com.example.suellas',
+    iosClientId: '851718991062-q7vbipk408rfgtse6l2rjnh8ifajh6ea.apps.googleusercontent.com',
+    iosBundleId: 'app.suellastheshoelaunry.suellas',
   );
 }

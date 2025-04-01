@@ -9,10 +9,13 @@ import 'package:suellas/customer/profile.dart';
 import 'package:suellas/customer/qr_screen.dart';
 import 'package:suellas/customer/profile.dart';
 import 'package:suellas/customer/location.dart';
+import 'package:suellas/customer/services.dart';
+import 'package:suellas/customer/contact.dart';
+import 'package:suellas/customer/privacy.dart';
+import 'package:suellas/customer/terms.dart';
 import 'package:suellas/customer/inbox.dart';
 import 'package:suellas/customer/home.dart';
-
-class LocationScreen extends StatelessWidget {
+class ContactScreen extends StatelessWidget {
   @override
 Widget build(BuildContext context) {
     double baseWidth = 414;
@@ -33,7 +36,7 @@ Widget build(BuildContext context) {
             height: 896 * fem,
             child: Container(
               // rewardsRcd (4:30440)
-              padding: EdgeInsets.fromLTRB(29 * fem, 50.77 * fem, 29 * fem, 27 * fem),
+              padding: EdgeInsets.fromLTRB(29 * fem, 39.77 * fem, 29 * fem, 27 * fem),
               width: double.infinity,
               height: double.infinity,
               decoration: BoxDecoration(
@@ -52,7 +55,7 @@ Widget build(BuildContext context) {
                               width: 30 * fem,
                               height: 30 * fem,
                               child: Image.asset(
-                                'assets/icons/images/back.png',
+                                'assets/design/images/btn-back.png',
                                 width: 30 * fem,
                                 height: 30 * fem,
                               ),
@@ -81,7 +84,7 @@ Widget build(BuildContext context) {
                                  width: 30 * fem,
                               height: 30 * fem,
                               child: Image.asset(
-                                'assets/icons/images/edit.png',
+                                'assets/design/images/iconly-curved-outline-edit-square.png',
                                  width: 30 * fem,
                               height: 30 * fem,
                               ),
@@ -471,9 +474,9 @@ Container(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/rewards.png',
-                width: 50,
-                height: 50,
+                'assets/icons/images/iconly-regular-outline-ticket-star.png',
+                width: 18,
+                height: 18,
               ),
             ),
           ),
@@ -489,9 +492,9 @@ Container(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/inbox.png',
-             width: 50,
-                height: 50,
+                'assets/icons/images/iconly-regular-outline-message-8Pb.png',
+                width: 18,
+                height: 18,
               ),
             ),
           ),
@@ -506,9 +509,9 @@ Container(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/qr.png',
-              width: 50,
-                height: 50,
+                'assets/icons/images/iconly-regular-outline-scan-q2q.png',
+                width: 28,
+                height: 28,
               ),
             ),
           ),
@@ -524,9 +527,9 @@ Container(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/location-selected.png',
-            width: 50,
-                height: 50,
+                'assets/icons/images/iconly-regular-outline-location.png',
+                width: 18,
+                height: 18,
               ),
             ),
           ),
@@ -542,9 +545,9 @@ Container(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/profile.png',
-             width: 50,
-                height: 50,
+                'assets/icons/images/iconly-regular-light-profile.png',
+                width: 18,
+                height: 18,
               ),
             ),
           ),

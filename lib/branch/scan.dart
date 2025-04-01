@@ -4,22 +4,24 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'dart:ui';
+import 'package:suellas/branch/editprofile.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:suellas/utils.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:suellas/customer/qr_screen.dart';
 import 'package:suellas/customer/profile.dart';
 import 'package:suellas/customer/qr_screen.dart';
-import 'package:suellas/customer/profile.dart';
-import 'package:suellas/customer/location.dart';
+import 'package:suellas/branch/profile.dart';
+import 'package:suellas/branch/location.dart';
 import 'package:suellas/branch/history.dart';
-import 'package:suellas/customer/inboxread.dart';
-import 'package:suellas/customer/inbox.dart';
-import 'package:suellas/customer/home.dart';
+import 'package:suellas/branch/inboxread.dart';
+import 'package:suellas/branch/inbox.dart';
+import 'package:suellas/branch/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:suellas/branch/record.dart';
+import 'package:suellas/branch/historyscan.dart';
 import 'package:suellas/branch/pay.dart';
 
 class ScanScreen extends StatefulWidget {
@@ -96,7 +98,7 @@ class _ScanScreenState extends State<ScanScreen> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('User Data'),
+            title: Text('Customer Details'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
@@ -107,7 +109,6 @@ class _ScanScreenState extends State<ScanScreen> {
               ],
             ),
             actions: <Widget>[
-         
               TextButton(
                 onPressed: () {
                   // Navigate to Pay with Rewards screen
@@ -120,14 +121,14 @@ class _ScanScreenState extends State<ScanScreen> {
                 },
                 child: Text('Pay with Rewards'),
               ),
-
               TextButton(
                 onPressed: () {
                   // Navigate to Save Rewards screen
                   // Replace 'SaveRewardsScreen' with the actual screen you want to navigate to
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => RecordScreen(userData: userData)),
+                    MaterialPageRoute(
+                        builder: (context) => RecordScreen(userData: userData)),
                   );
                 },
                 child: Text('Save Rewards'),
@@ -215,7 +216,7 @@ class _ScanScreenState extends State<ScanScreen> {
             child: Container(
               // rewardsRcd (4:30440)
               padding: EdgeInsets.fromLTRB(
-                  29 * fem, 39.77 * fem, 29 * fem, 27 * fem),
+                  29 * fem, 50.77 * fem, 29 * fem, 27 * fem),
               width: double.infinity,
               height: double.infinity,
               decoration: BoxDecoration(
@@ -234,7 +235,7 @@ class _ScanScreenState extends State<ScanScreen> {
                           width: 30 * fem,
                           height: 30 * fem,
                           child: Image.asset(
-                            'assets/design/images/btn-back.png',
+                            'assets/icons/images/back.png',
                             width: 30 * fem,
                             height: 30 * fem,
                           ),
@@ -263,7 +264,7 @@ class _ScanScreenState extends State<ScanScreen> {
                           width: 30 * fem,
                           height: 30 * fem,
                           child: Image.asset(
-                            'assets/design/images/iconly-curved-outline-edit-square.png',
+                            'assets/icons/images/filter.png',
                             width: 30 * fem,
                             height: 30 * fem,
                           ),
@@ -324,7 +325,7 @@ class _ScanScreenState extends State<ScanScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => HistoryScreen()),
+                                    builder: (context) => HistoryScan()),
                               );
                             },
                             child: Container(
@@ -335,7 +336,7 @@ class _ScanScreenState extends State<ScanScreen> {
                                 children: [
                                   Align(
                                     child: SizedBox(
-                                      width: 40 * fem,
+                                      width: 80 * fem,
                                       height: 20 * fem,
                                       child: Text(
                                         'History',
@@ -433,15 +434,15 @@ class _ScanScreenState extends State<ScanScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        CustomerHomeScreen()), // Navigate to inbox screen
+                        BranchHomeScreen()), // Navigate to inbox screen
               );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/iconly-regular-outline-ticket-star.png',
-                width: 18,
-                height: 18,
+                'assets/icons/images/rewards.png',
+                width: 50,
+                height: 50,
               ),
             ),
           ),
@@ -451,15 +452,15 @@ class _ScanScreenState extends State<ScanScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        InboxScreen()), // Navigate to location screen
+                        BranchInboxScreen()), // Navigate to location screen
               );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/iconly-regular-outline-message-8Pb.png',
-                width: 18,
-                height: 18,
+                'assets/icons/images/inbox.png',
+            width: 50,
+                height: 50,
               ),
             ),
           ),
@@ -468,15 +469,16 @@ class _ScanScreenState extends State<ScanScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => QRScreen()), // Navigate to QR screen
+                    builder: (context) =>
+                        ScanScreen()), // Navigate to QR screen
               );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
                 'assets/icons/images/iconly-regular-outline-scan-q2q.png',
-                width: 28,
-                height: 28,
+              width: 50,
+                height: 50,
               ),
             ),
           ),
@@ -486,32 +488,203 @@ class _ScanScreenState extends State<ScanScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        LocationScreen()), // Navigate to QR screen
+                        BranchLocationScreen()), // Navigate to QR screen
               );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/iconly-regular-outline-location.png',
-                width: 18,
-                height: 18,
+                'assets/icons/images/location.png',
+             width: 50,
+                height: 50,
               ),
             ),
           ),
           GestureDetector(
-            onTap: () {
-              // Implement the behavior to reset or return to the current screen
-              // For example, you can scroll to the top of the current screen
-              // or refresh the content.
-              // _scrollToTopOrRefresh(); // Call a method to scroll to the top or refresh the content
+          onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        BranchProfileScreen()), // Navigate to QR screen
+              );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/iconly-regular-light-profile.png',
-                width: 18,
-                height: 18,
+                'assets/icons/images/profile.png',
+             width: 50,
+                height: 50,
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CustomAppBar extends StatelessWidget {
+  final double fem;
+  final double ffem;
+
+  CustomAppBar({
+    required this.fem,
+    required this.ffem,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 0.0),
+      child: Column(
+        children: [
+          Align(
+            alignment: Alignment.center,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    // btnbackfGd (202:999)
+                    width: 30 * fem,
+                    height: 30 * fem,
+                    child: Image.asset(
+                      'assets/icons/images/back.png',
+                      width: 30 * fem,
+                      height: 30 * fem,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Center(
+                    child: Container(
+                      margin: EdgeInsets.fromLTRB(
+                          0 * fem, 4 * fem, 0 * fem, 0 * fem),
+                      child: Text(
+                        'Inbox',
+                        style: TextStyle(
+                          color: Color(0xff000000),
+                          fontSize: 18 * ffem,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  width: 30 * fem,
+                  height: 30 * fem,
+                  child: GestureDetector(
+                    onTap: () {
+                      // Navigate to the edit screen when tapped
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              BranchEditProfileScreen(), // Replace EditProfileScreen with your edit screen widget
+                        ),
+                      );
+                    },
+                    child: Image.asset(
+                      'assets/icons/images/edit.png',
+                      width: 30 * fem,
+                      height: 30 * fem,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10.0),
+          Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ScanScreen(),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      margin: EdgeInsets.fromLTRB(
+                          10.14 * fem, 0 * fem, 0 * fem, 16 * fem),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Align(
+                            child: SizedBox(
+                              width: 60 * fem,
+                              height: 20 * fem,
+                              child: Text(
+                                'Scan',
+                                style: TextStyle(
+                                  fontSize: 14 * ffem,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xff000000),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: double.infinity,
+                            height: 1,
+                            color: Color(0xff000000),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HistoryScan(),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      margin: EdgeInsets.fromLTRB(
+                          10.14 * fem, 0 * fem, 0 * fem, 16 * fem),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Align(
+                            child: SizedBox(
+                              width: 60 * fem,
+                              height: 20 * fem,
+                              child: Text(
+                                'History',
+                                style: TextStyle(
+                                  fontSize: 14 * ffem,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xff000000),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: double.infinity,
+                            height: 1,
+                            color: Color.fromRGBO(17, 0, 0, 0.20),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

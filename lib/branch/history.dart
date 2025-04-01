@@ -18,7 +18,6 @@ import 'package:suellas/customer/inbox.dart';
 import 'package:suellas/customer/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -99,24 +98,24 @@ class _HistoryScreenState extends State<HistoryScreen> {
     }
   }
 
- @override
-Widget build(BuildContext context) {
-  double baseWidth = 414;
-  double fem = MediaQuery.of(context).size.width / baseWidth;
-  double ffem = fem * 0.97;
+  @override
+  Widget build(BuildContext context) {
+    double baseWidth = 414;
+    double fem = MediaQuery.of(context).size.width / baseWidth;
+    double ffem = fem * 0.97;
 
-  return Scaffold(
-    backgroundColor: Colors.white,
-    body: SingleChildScrollView(
-      child: Column(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Column(
         children: [
           Container(
             width: double.infinity,
             child: Container(
               width: double.infinity,
-              height: 896 * fem,
+              height: 5000 * fem,
               child: Container(
-                padding: EdgeInsets.fromLTRB(29 * fem, 39.77 * fem, 29 * fem, 27 * fem),
+                padding: EdgeInsets.fromLTRB(
+                    29 * fem, 39.77 * fem, 29 * fem, 27 * fem),
                 width: double.infinity,
                 height: double.infinity,
                 decoration: BoxDecoration(
@@ -142,7 +141,8 @@ Widget build(BuildContext context) {
                           Expanded(
                             child: Center(
                               child: Container(
-                                margin: EdgeInsets.fromLTRB(0 * fem, 4 * fem, 0 * fem, 0 * fem),
+                                margin: EdgeInsets.fromLTRB(
+                                    0 * fem, 4 * fem, 0 * fem, 0 * fem),
                                 child: Text(
                                   'Inbox',
                                   style: TextStyle(
@@ -182,7 +182,8 @@ Widget build(BuildContext context) {
                                 );
                               },
                               child: Container(
-                                margin: EdgeInsets.fromLTRB(10.14 * fem, 0 * fem, 0 * fem, 16 * fem),
+                                margin: EdgeInsets.fromLTRB(
+                                    10.14 * fem, 0 * fem, 0 * fem, 16 * fem),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
@@ -221,7 +222,8 @@ Widget build(BuildContext context) {
                                 );
                               },
                               child: Container(
-                                margin: EdgeInsets.fromLTRB(10.14 * fem, 0 * fem, 0 * fem, 16 * fem),
+                                margin: EdgeInsets.fromLTRB(
+                                    10.14 * fem, 0 * fem, 0 * fem, 16 * fem),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
@@ -252,6 +254,7 @@ Widget build(BuildContext context) {
                         ],
                       ),
                     ),
+                    
                     rewardsHistory(fem: fem, ffem: ffem),
                     Group48095458(fem: fem, ffem: ffem, rewards: rewards),
                   ],
@@ -261,11 +264,9 @@ Widget build(BuildContext context) {
           ),
         ],
       ),
-    ),
-    bottomNavigationBar: _buildBottomNavigationBar(fem, ffem, context),
-  );
-}
-
+      bottomNavigationBar: _buildBottomNavigationBar(fem, ffem, context),
+    );
+  }
 
   Widget _buildBottomNavigationBar(
       double fem, double ffem, BuildContext context) {
@@ -299,8 +300,7 @@ Widget build(BuildContext context) {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => CustomerHomeScreen()),
+                MaterialPageRoute(builder: (context) => CustomerHomeScreen()),
               );
             },
             child: Padding(
@@ -316,8 +316,7 @@ Widget build(BuildContext context) {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => InboxScreen()),
+                MaterialPageRoute(builder: (context) => InboxScreen()),
               );
             },
             child: Padding(
@@ -333,8 +332,7 @@ Widget build(BuildContext context) {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => ScanScreen()),
+                MaterialPageRoute(builder: (context) => ScanScreen()),
               );
             },
             child: Padding(
@@ -350,8 +348,7 @@ Widget build(BuildContext context) {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => LocationScreen()),
+                MaterialPageRoute(builder: (context) => LocationScreen()),
               );
             },
             child: Padding(
@@ -498,6 +495,77 @@ class rewardsHistory extends StatelessWidget {
   }
 }
 
+// class Group48095458 extends StatelessWidget {
+//   final double fem;
+//   final double ffem;
+//   final List<Map<String, dynamic>> rewards;
+
+//   const Group48095458({
+//     required this.fem,
+//     required this.ffem,
+//     required this.rewards,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return SingleChildScrollView(
+//       child: Column(
+//         children: rewards.map((rewards) {
+//           return Container(
+//             width: 320 * fem,
+//             height: 82 * fem,
+//             child: Row(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   children: [
+//                     SizedBox(
+//                       width: 261 * fem,
+//                       child: Text(
+//                         '${rewards['first_name'] ?? ''} ${rewards['last_name'] ?? ''}',
+//                         style: TextStyle(
+//                           color: Colors.black.withOpacity(0.99),
+//                           fontSize: 14 * ffem,
+//                           fontWeight: FontWeight.w600,
+//                         ),
+//                       ),
+//                     ),
+//                     SizedBox(
+//                       width: 261 * fem,
+//                       child: Text(
+//                         rewards['rewardPoints'] ?? '',
+//                         style: TextStyle(
+//                           color: Colors.black.withOpacity(0.99),
+//                           fontSize: 14 * ffem,
+//                           fontWeight: FontWeight.w600,
+//                         ),
+//                       ),
+//                     ),
+//                     SizedBox(
+//                       width: 261 * fem,
+//                       child: Text(
+//                         rewards['email'] ?? '',
+//                         style: TextStyle(
+//                           color: Colors.black.withOpacity(0.5699999928474426),
+//                           fontSize: 12 * ffem,
+//                           fontWeight: FontWeight.w400,
+//                         ),
+//                       ),
+//                     ),
+//                     SizedBox(height: 4 * fem),
+//                   ],
+//                 ),
+//               ],
+//             ),
+//           );
+//         }).toList(),
+//       ),
+//     );
+//   }
+// }
+
 class Group48095458 extends StatelessWidget {
   final double fem;
   final double ffem;
@@ -511,58 +579,76 @@ class Group48095458 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: rewards.map((rewards) {
-        return Container(
-          width: 320 * fem,
-          height: 82 * fem,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                margin: EdgeInsets.fromLTRB(5 * fem, 5.67 * fem, 10.99 * fem, 0 * fem),
-                width: 42.01 * fem,
-                height: 50.34 * fem,
-                child: Image.asset(
-                  'assets/design/images/auto-group-fz6h.png',
-                  width: 30.01 * fem,
-                  height: 30.34 * fem,
-                  fit: BoxFit.contain,
+    return Expanded(
+      child: ListView.builder(
+        itemCount: rewards.length,
+        itemBuilder: (context, index) {
+          final reward = rewards[index];
+
+          return Container(
+            width: 320 * fem,
+            height: 82 * fem,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '${reward['first_name'] ?? ''} ${reward['last_name'] ?? ''}',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 14 * fem,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w600,
+                          height: 1.0,
+                        ),
+                      ),
+                      Text(
+                        'Service: Basic Clean, Shoes: 1, Points: 1',
+                        style: TextStyle(
+                          color: Colors.black.withOpacity(0.57),
+                          fontSize: 12 * fem,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w400,
+                          height: 1.17,
+                        ),
+                      ),
+                      Text(
+                        'Read more',
+                        style: TextStyle(
+                          color: Color(0xFF57CC99),
+                          fontSize: 12 * fem,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w600,
+                          height: 1.17,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 261 * fem,
-                    child: Text(
-                      rewards['rewardPoints'] ?? '',
-                      style: TextStyle(
-                        color: Colors.black.withOpacity(0.99),
-                        fontSize: 14 * ffem,
-                        fontWeight: FontWeight.w600,
-                      ),
+                Container(
+                  width: 78,
+                  padding: EdgeInsets.only(left: 20, top: 30, right: 10),
+                  child: Text(
+                    'Nov 06',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      color: Colors.black.withOpacity(0.5699999928474426),
+                      fontSize: 12,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w400,
+                      height: 0.14,
                     ),
                   ),
-                  SizedBox(
-                    width: 261 * fem,
-                    child: Text(
-                      rewards['email'] ?? '',
-                      style: TextStyle(
-                        color: Colors.black.withOpacity(0.5699999928474426),
-                        fontSize: 12 * ffem,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 4 * fem),
-                ],
-              ),
-            ],
-          ),
-        );
-      }).toList(),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }
