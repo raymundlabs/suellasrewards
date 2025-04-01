@@ -11,13 +11,10 @@ import 'package:suellas/branch/scan.dart';
 import 'package:suellas/design/forgot.dart';
 import 'package:suellas/design/done.dart';
 import 'package:suellas/customer/home.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-// import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_core/firebase_core.dart';
+
+//import 'package:suellas/customer/customer_home.dart'; // Import the customer home screen
+// import 'package:suellas/branch/branch_home_screen.dart'; // Import the branch home screen
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({Key? key}) : super(key: key);
@@ -45,34 +42,6 @@ class _AuthScreenState extends State<AuthScreen> {
   var _acceptedTerms = false;
   var _isObscure = true;
   bool _rememberMe = false;
-  GoogleSignIn _googleSignIn = GoogleSignIn();
-  @override
-  void initState() {
-    super.initState();
-    _loadSavedCredentials();
-    // Check if "Remember Me" is checked and the credentials are not empty
-  }
-
-  void _loadSavedCredentials() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final savedEmail = prefs.getString('userEmail');
-    final savedPassword = prefs.getString('userPassword');
-
-    if (savedEmail != null && savedPassword != null) {
-      setState(() {
-        _enteredEmail = savedEmail;
-        _enteredPassword = savedPassword;
-        _rememberMe = true;
-      });
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => CustomerHomeScreen(),
-        ),
-      );
-    }
-  }
 
   void _submit() async {
     final isValid = _form.currentState!.validate();
@@ -204,109 +173,6 @@ class _AuthScreenState extends State<AuthScreen> {
     return response;
   }
 
-  Future<void> _handleGoogleSignIn() async {
-    try {
-      FirebaseAuth auth = FirebaseAuth.instance;
-      final GoogleSignIn googleSignIn = GoogleSignIn();
-
-      // Trigger the authentication flow
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-
-      // Obtain the auth details from the request
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser!.authentication;
-
-      // Create a new credentials
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      // Sign in the user with the credentials
-      final UserCredential userCredential =
-          await auth.signInWithCredential(credential);
-
-      // Check if the user is signed in
-      if (userCredential.user != null) {
-        // Access the user's email
-        String userEmail = userCredential.user!.email ?? 'Email not available';
-
-        // Print the email
-        print('User email: $userEmail');
-        await _sendGoogleAuthRequest(userEmail);
-      }
-    } catch (error) {
-      print('Google Sign-In Error: $error');
-    }
-  }
-
-  Future<void> _sendGoogleAuthRequest(String email) async {
-    try {
-      final headers = {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': 'd7c436fff9e0910158379791ad0aeba8',
-      };
-      final apiUrl = '/admin/auth/loginWithGoogle';
-
-      final response = await http.post(
-        Uri.parse('https://app.suellastheshoelaundry.com' + apiUrl),
-        body: {
-          'email': email,
-        },
-      );
-
-      if (response.statusCode == 200) {
-        // Handle the response as needed
-        final responseBody = response.body;
-        print(responseBody);
-
-        // Save email and response to shared preferences
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('userEmail', email);
-        await prefs.setString('userDetails', responseBody);
-
-        if (responseBody.contains('Login successful')) {
-          if (email.endsWith('@suellas.com')) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ScanScreen(),
-                settings: RouteSettings(
-                  arguments: responseBody,
-                ),
-              ),
-            );
-          } else {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CustomerHomeScreen(),
-                settings: RouteSettings(
-                  arguments: responseBody,
-                ),
-              ),
-            );
-          }
-        }
-      } else if (response.statusCode == 401) {
-        // Handle 401 Unauthorized status code
-        // Sign out of Google to allow selecting another email
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('User does not exist'),
-            duration: Duration(seconds: 3),
-          ),
-        );
-        await _googleSignIn.signOut();
-      } else {
-        // Handle other cases or show an error message
-        print('Authentication failed with status code: ${response.statusCode}');
-      }
-    } catch (error) {
-      print('Error during Google authentication request: $error');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     double baseWidth = 414;
@@ -315,6 +181,9 @@ class _AuthScreenState extends State<AuthScreen> {
     final String qrData = "ABC123";
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text(''),
+      ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Container(
@@ -325,7 +194,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 padding: EdgeInsets.fromLTRB(
                     29 * fem, 39.77 * fem, 40.14 * fem, 5 * fem),
                 width: double.infinity,
-                height: 400 * fem,
+                height: 380 * fem,
                 decoration: BoxDecoration(
                   color: Color(0xfffffff),
                 ),
@@ -430,56 +299,66 @@ class _AuthScreenState extends State<AuthScreen> {
                         },
                       ),
 
-                      Container(
-                        margin: EdgeInsets.only(left: 2 * fem, top: 10 * fem),
-                        width: 339.5 * fem,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      _rememberMe = !_rememberMe;
-                                    });
-                                  },
-                                  child: Container(
-                                    width: 20.0,
-                                    height: 20.0,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: Colors.grey,
-                                        width: 2.0,
+                      SizedBox(height: 20 * fem),
+
+                      Positioned(
+                        left: 35 * fem,
+                        top: 312 * fem,
+                        child: Container(
+                          width: 339.5 * fem,
+                          height: 20 * fem,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Row(
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        _rememberMe = !_rememberMe;
+                                      });
+                                    },
+                                    child: Container(
+                                      width: 24.0,
+                                      height: 24.0,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: Colors.grey,
+                                          width: 2.0,
+                                        ),
                                       ),
+                                      child: _rememberMe
+                                          ? Center(
+                                              child: Icon(
+                                                Icons.check,
+                                                size:
+                                                    11.0, // Adjust the size to match the circle
+                                                color: Colors.green,
+                                              ),
+                                            )
+                                          : Container(),
                                     ),
-                                    child: _rememberMe
-                                        ? Center(
-                                            child: Icon(
-                                              Icons.check,
-                                              size: 11.0,
-                                              color: Colors.green,
-                                            ),
-                                          )
-                                        : Container(),
                                   ),
-                                ),
-                                SizedBox(
-                                  width: 8.0,
-                                ),
-                                Text(
-                                  'Remember Me',
-                                  style: SafeGoogleFont(
-                                    'Inter',
-                                    fontSize: 14 * ffem,
-                                    fontWeight: FontWeight.w500,
-                                    height: 1.4285714286 * ffem / fem,
-                                    color: Color(0xff57cc99),
+                                  SizedBox(
+                                    width: 8.0,
                                   ),
-                                ),
-                                Spacer(), // Add Spacer to push the next widget to the right
-                                GestureDetector(
+                                  Text(
+                                    'Remember Me',
+                                    style: SafeGoogleFont(
+                                      'Inter',
+                                      fontSize: 14 * ffem,
+                                      fontWeight: FontWeight.w500,
+                                      height: 1.4285714286 * ffem / fem,
+                                      color: Color(0xff57cc99),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Spacer(), // Add a spacer to push the following text to the right
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: GestureDetector(
                                   onTap: () {
                                     Navigator.push(
                                       context,
@@ -490,6 +369,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                   },
                                   child: Text(
                                     'Forgot Password?',
+                                    textAlign: TextAlign.right,
                                     style: TextStyle(
                                       fontSize: 14 * ffem,
                                       fontWeight: FontWeight.w500,
@@ -497,15 +377,14 @@ class _AuthScreenState extends State<AuthScreen> {
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
-                          ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
 
+                      SizedBox(height: 20 * fem),
                       Container(
-                        margin: EdgeInsets.only(
-                            top: 20 * fem), // Adjusted top margin
                         child: Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -524,30 +403,30 @@ class _AuthScreenState extends State<AuthScreen> {
                                   child: ElevatedButton(
                                     onPressed: _submit,
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors
-                                          .transparent, // ✅ Updated from `primary`
-                                      elevation: 0,
+                                      primary: Colors
+                                          .transparent, // Make the button transparent
+                                      elevation: 0, // Remove button elevation
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(70),
                                       ),
                                     ),
                                     child: Text(
                                       _isLogin ? 'Login' : 'Signup',
-                                      style: TextStyle(
-                                        // ✅ Changed from `SafeGoogleFont`
-                                        fontSize: 16,
+                                      style: SafeGoogleFont(
+                                        'Inter',
+                                        fontSize: 16 * ffem,
                                         fontWeight: FontWeight.w600,
-                                        height: 1.2,
-                                        color: Colors.white,
+                                        height: 1.2125 * ffem / fem,
+                                        color: Color(0xffffffff),
                                       ),
                                     ),
                                   ),
-                                )
-
+                                ),
                               // if (!_isAuthenticating)
                               //   TextButton(
                               //     onPressed: () {
-                              //       seColor.fromARGB(255, 204, 87, 194)                          //         _isLogin = !_isLogin;
+                              //       setState(() {
+                              //         _isLogin = !_isLogin;
                               //       });
                               //     },
                               //     child: Text(
@@ -565,148 +444,215 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
               ),
               Container(
-                margin: EdgeInsets.symmetric(
-                    horizontal: 20 * fem, vertical: 20 * fem),
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10 * fem),
-                  width: double.infinity,
-                  height: 50 * fem,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Container(
-                          height: 2 * fem,
-                          decoration: BoxDecoration(
-                            color: Color(0x7c000000),
+                padding: EdgeInsets.all(20 * fem),
+                width: double.infinity,
+                height: 250 * fem, // Use the same height as the green container
+                color: Colors.white, // Set the background color to blue
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 444 * fem,
+                      height: 19 * fem,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment
+                            .center, // Center the row horizontally
+                        crossAxisAlignment: CrossAxisAlignment
+                            .center, // Center the row vertically
+                        children: [
+                          Container(
+                            margin: EdgeInsets.fromLTRB(
+                                0 * fem, 7 * fem, 29 * fem, 0 * fem),
+                            width: 102 * fem,
+                            height: 2 * fem,
+                            decoration: BoxDecoration(
+                              color: Color(0x7c000000),
+                            ),
                           ),
+                          Container(
+                            margin: EdgeInsets.fromLTRB(
+                                0 * fem, 0 * fem, 30 * fem, 0 * fem),
+                            child: Text(
+                              'OR',
+                              style: SafeGoogleFont(
+                                'Inter',
+                                fontSize: 17 * ffem,
+                                fontWeight: FontWeight.w400,
+                                height: 1.2125 * ffem / fem,
+                                color: Color(0x7c000000),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.fromLTRB(
+                                0 * fem, 7 * fem, 0 * fem, 0 * fem),
+                            width: 102 * fem,
+                            height: 2 * fem,
+                            decoration: BoxDecoration(
+                              color: Color(0x7c000000),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Positioned(
+                      left: 70 * fem,
+                      top: 602 * fem,
+                      child: Container(
+                        margin: EdgeInsets.fromLTRB(
+                            0 * fem, 25 * fem, 0 * fem, 0 * fem),
+                        padding: EdgeInsets.fromLTRB(
+                            23 * fem, 16 * fem, 75 * fem, 13 * fem),
+                        width: 295 * fem,
+                        height: 50 * fem,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Color(0xff000000)),
+                          color: Color(0x7fffffff),
+                          borderRadius: BorderRadius.circular(70 * fem),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.fromLTRB(
+                                  0 * fem, 0 * fem, 39.36 * fem, 3 * fem),
+                              width: 17.64 * fem,
+                              height: 18 * fem,
+                              child: Image.asset(
+                                'assets/design/images/group.png',
+                                width: 17.64 * fem,
+                                height: 18 * fem,
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.fromLTRB(
+                                  0 * fem, 1 * fem, 0 * fem, 0 * fem),
+                              child: Text(
+                                'Login with Google',
+                                textAlign: TextAlign.center,
+                                style: SafeGoogleFont(
+                                  'Inter',
+                                  fontSize: 16 * ffem,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.2125 * ffem / fem,
+                                  color: Color(0xff000000),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Container(
-                        margin: EdgeInsets.symmetric(horizontal: 10 * fem),
-                        child: Text(
-                          'OR',
-                          style: SafeGoogleFont(
-                            'Inter',
-                            fontSize: 17 * ffem,
-                            fontWeight: FontWeight.w400,
-                            height: 1.2125 * ffem / fem,
-                            color: Color(0x7c000000),
-                          ),
+                    ),
+                    SizedBox(height: 10 * fem),
+                    Positioned(
+                      left: 69 * fem,
+                      top: 532 * fem,
+                      child: Container(
+                        padding: EdgeInsets.fromLTRB(
+                            21 * fem, 12 * fem, 63 * fem, 13 * fem),
+                        width: 295 * fem,
+                        height: 50 * fem,
+                        decoration: BoxDecoration(
+                          color: Color(0xff4285f4),
+                          borderRadius: BorderRadius.circular(70 * fem),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.fromLTRB(
+                                  0 * fem, 0 * fem, 25 * fem, 0 * fem),
+                              width: 25 * fem,
+                              height: 25 * fem,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12.5 * fem),
+                                image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: AssetImage(
+                                    'assets/design/images/ellipse-3-bg.png',
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.fromLTRB(
+                                  0 * fem, 3 * fem, 0 * fem, 0 * fem),
+                              child: Text(
+                                'Login with Facebook',
+                                textAlign: TextAlign.center,
+                                style: SafeGoogleFont(
+                                  'Inter',
+                                  fontSize: 16 * ffem,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.2125 * ffem / fem,
+                                  color: Color(0xffffffff),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Expanded(
-                        child: Container(
-                          height: 2 * fem,
-                          decoration: BoxDecoration(
-                            color: Color(0x7c000000),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-           Container(
-  margin: EdgeInsets.only(left: 0 * fem, top: 0 * fem),
-  child: ElevatedButton(
-    onPressed: _handleGoogleSignIn,
-    style: ElevatedButton.styleFrom(
-      backgroundColor: Color(0x7fffffff), // ✅ Updated from `primary`
-      foregroundColor: Color(0xff000000), // ✅ Updated from `onPrimary`
-      elevation: 0.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(70 * fem),
-        side: BorderSide(color: Color(0xff000000)),
-      ),
-    ),
-    child: Container(
-      padding: EdgeInsets.fromLTRB(21 * fem, 12 * fem, 63 * fem, 13 * fem),
-      width: 295 * fem,
-      height: 50 * fem,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 25 * fem, 0 * fem),
-            width: 25 * fem,
-            height: 25 * fem,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12.5 * fem),
-              image: DecorationImage(
-                fit: BoxFit.cover,
-                image: AssetImage('assets/design/images/group.png'),
-              ),
-            ),
-          ),
-          Text(
-            'Login with Google',
-            style: TextStyle( // ✅ Changed from `SafeGoogleFont`
-              fontSize: 16 * ffem,
-              fontWeight: FontWeight.w600,
-              height: 1.2125,
-              color: Color(0xff000000),
-            ),
-          ),
-        ],
-      ),
-    ),
-  ),
-)
-,
-              SizedBox(height: 10 * fem),
               Container(
                 padding: EdgeInsets.all(20 * fem),
                 width: double.infinity,
-                height: 100 * fem,
-                color: Colors.white,
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    width: 231 * fem,
-                    height: 50 * fem,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.fromLTRB(
-                              0 * fem, 0 * fem, 6 * fem, 0 * fem),
-                          child: Text(
-                            'Don’t have an account?',
-                            textAlign: TextAlign.center,
-                            style: SafeGoogleFont(
-                              'Inter',
-                              fontSize: 15 * ffem,
-                              fontWeight: FontWeight.w500,
-                              height: 1.2125 * ffem / fem,
-                              color: Color(0xff333333),
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => RegisterScreen(),
+                height: 150 * fem, // Use the same height as the green container
+                color: Colors.white, // Set the background color to blue
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Positioned(
+                      left: 100 * fem,
+                      top: 696 * fem,
+                      child: Container(
+                        width: 231 * fem,
+                        height: 19 * fem,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.fromLTRB(
+                                  0 * fem, 0 * fem, 6 * fem, 0 * fem),
+                              child: Text(
+                                'Don’t have an account?',
+                                textAlign: TextAlign.center,
+                                style: SafeGoogleFont(
+                                  'Inter',
+                                  fontSize: 15 * ffem,
+                                  fontWeight: FontWeight.w500,
+                                  height: 1.2125 * ffem / fem,
+                                  color: Color(0xff333333),
+                                ),
                               ),
-                            );
-                          },
-                          child: Text(
-                            'Sign Up',
-                            textAlign: TextAlign.center,
-                            style: SafeGoogleFont(
-                              'Inter',
-                              fontSize: 15 * ffem,
-                              fontWeight: FontWeight.w600,
-                              height: 1.2125 * ffem / fem,
-                              color: Color(0xff57cc99),
                             ),
-                          ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Done()),
+                                );
+                              },
+                              child: Text(
+                                'Sign Up',
+                                textAlign: TextAlign.center,
+                                style: SafeGoogleFont(
+                                  'Inter',
+                                  fontSize: 15 * ffem,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.2125 * ffem / fem,
+                                  color: Color(0xff57cc99),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ],

@@ -869,7 +869,7 @@ class _BranchEditProfileScreenState extends State<BranchEditProfileScreen> {
                                       child: ElevatedButton(
                                         onPressed: _submitForm,
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: Color(
+                                          primary: Color(
                                               0xff57cc99), // Background color
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(

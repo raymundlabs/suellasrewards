@@ -2,27 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:suellas/branch/scan.dart';
 import 'package:suellas/utils.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-
-import 'package:suellas/branch/profile.dart';
-import 'package:suellas/branch/security.dart';
+import 'package:suellas/customer/qr_screen.dart';
+import 'package:suellas/customer/profile.dart';
+import 'package:suellas/customer/qr_screen.dart';
+import 'package:suellas/customer/security.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:suellas/branch/location.dart';
-import 'package:suellas/branch/inbox.dart';
-import 'package:suellas/branch/home.dart';
+import 'package:suellas/customer/location.dart';
+import 'package:suellas/customer/inbox.dart';
+import 'package:suellas/customer/home.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
-class BranchEditProfileScreen extends StatefulWidget {
+class EditProfileScreen extends StatefulWidget {
   @override
-  _BranchEditProfileScreenState createState() => _BranchEditProfileScreenState();
+  _EditProfileScreenState createState() => _EditProfileScreenState();
 }
 
-class _BranchEditProfileScreenState extends State<BranchEditProfileScreen> {
+class _EditProfileScreenState extends State<EditProfileScreen> {
   String _userEmail = ''; // Default value is an empty string
   String _firstName = '';
   String _lastName = '';
@@ -300,7 +300,7 @@ class _BranchEditProfileScreenState extends State<BranchEditProfileScreen> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        BranchEditProfileScreen(), // Replace EditProfileScreen with your edit screen widget
+                                        EditProfileScreen(), // Replace EditProfileScreen with your edit screen widget
                                   ),
                                 );
                               },
@@ -326,7 +326,7 @@ class _BranchEditProfileScreenState extends State<BranchEditProfileScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => BranchProfileScreen(),
+                                    builder: (context) => ProfileScreen(),
                                   ),
                                 );
                               },
@@ -372,7 +372,7 @@ class _BranchEditProfileScreenState extends State<BranchEditProfileScreen> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        BranchChangePasswordScreen(),
+                                        ChangePasswordScreen(),
                                   ),
                                 );
                               },
@@ -869,7 +869,7 @@ class _BranchEditProfileScreenState extends State<BranchEditProfileScreen> {
                                       child: ElevatedButton(
                                         onPressed: _submitForm,
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: Color(
+                                          primary: Color(
                                               0xff57cc99), // Background color
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(
@@ -948,15 +948,15 @@ class _BranchEditProfileScreenState extends State<BranchEditProfileScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        BranchHomeScreen()), // Navigate to inbox screen
+                        CustomerHomeScreen()), // Navigate to inbox screen
               );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/rewards.png',
-                width: 50,
-                height: 50,
+                'assets/icons/images/iconly-regular-outline-ticket-star.png',
+                width: 18,
+                height: 18,
               ),
             ),
           ),
@@ -966,15 +966,15 @@ class _BranchEditProfileScreenState extends State<BranchEditProfileScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        BranchInboxScreen()), // Navigate to inbox screen
+                        InboxScreen()), // Navigate to inbox screen
               );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/inbox.png',
-                width: 50,
-                height: 50,
+                'assets/icons/images/iconly-regular-outline-message-8Pb.png',
+                width: 18,
+                height: 18,
               ),
             ),
           ),
@@ -983,15 +983,15 @@ class _BranchEditProfileScreenState extends State<BranchEditProfileScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => ScanScreen()), // Navigate to QR screen
+                    builder: (context) => QRScreen()), // Navigate to QR screen
               );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
                 'assets/icons/images/iconly-regular-outline-scan-q2q.png',
-                 width: 50,
-                height: 50,
+                width: 28,
+                height: 28,
               ),
             ),
           ),
@@ -1001,15 +1001,15 @@ class _BranchEditProfileScreenState extends State<BranchEditProfileScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        BranchLocationScreen()), // Navigate to location screen
+                        LocationScreen()), // Navigate to location screen
               );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/location.png',
-                  width: 50,
-                height: 50,
+                'assets/icons/images/iconly-regular-outline-location.png',
+                width: 18,
+                height: 18,
               ),
             ),
           ),
@@ -1019,15 +1019,15 @@ class _BranchEditProfileScreenState extends State<BranchEditProfileScreen> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        BranchProfileScreen()), // Navigate to profile screen
+                        ProfileScreen()), // Navigate to profile screen
               );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/profile.png',
-               width: 50,
-                height: 50,
+                'assets/icons/images/iconly-regular-light-profile.png',
+                width: 18,
+                height: 18,
               ),
             ),
           ),

@@ -45,7 +45,7 @@ class _AuthScreenState extends State<AuthScreen> {
   var _acceptedTerms = false;
   var _isObscure = true;
   bool _rememberMe = false;
-  GoogleSignIn _googleSignIn = GoogleSignIn();
+GoogleSignIn _googleSignIn = GoogleSignIn();
   @override
   void initState() {
     super.initState();
@@ -64,7 +64,7 @@ class _AuthScreenState extends State<AuthScreen> {
         _enteredPassword = savedPassword;
         _rememberMe = true;
       });
-
+      
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -234,78 +234,81 @@ class _AuthScreenState extends State<AuthScreen> {
         // Print the email
         print('User email: $userEmail');
         await _sendGoogleAuthRequest(userEmail);
+
+ 
       }
     } catch (error) {
       print('Google Sign-In Error: $error');
     }
   }
 
-  Future<void> _sendGoogleAuthRequest(String email) async {
-    try {
-      final headers = {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': 'd7c436fff9e0910158379791ad0aeba8',
-      };
-      final apiUrl = '/admin/auth/loginWithGoogle';
+Future<void> _sendGoogleAuthRequest(String email) async {
+  try {
+    final headers = {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': 'd7c436fff9e0910158379791ad0aeba8',
+    };
+    final apiUrl = '/admin/auth/loginWithGoogle';
 
-      final response = await http.post(
-        Uri.parse('https://app.suellastheshoelaundry.com' + apiUrl),
-        body: {
-          'email': email,
-        },
-      );
+    final response = await http.post(
+      Uri.parse('https://app.suellastheshoelaundry.com' + apiUrl),
+      body: {
+        'email': email,
+      },
+    );
 
-      if (response.statusCode == 200) {
-        // Handle the response as needed
-        final responseBody = response.body;
-        print(responseBody);
+    if (response.statusCode == 200) {
+      // Handle the response as needed
+      final responseBody = response.body;
+      print(responseBody);
 
-        // Save email and response to shared preferences
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('userEmail', email);
-        await prefs.setString('userDetails', responseBody);
+      // Save email and response to shared preferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('userEmail', email);
+      await prefs.setString('userDetails', responseBody);
 
-        if (responseBody.contains('Login successful')) {
-          if (email.endsWith('@suellas.com')) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ScanScreen(),
-                settings: RouteSettings(
-                  arguments: responseBody,
-                ),
+      if (responseBody.contains('Login successful')) {
+        if (email.endsWith('@suellas.com')) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ScanScreen(),
+              settings: RouteSettings(
+                arguments: responseBody,
               ),
-            );
-          } else {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CustomerHomeScreen(),
-                settings: RouteSettings(
-                  arguments: responseBody,
-                ),
+            ),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CustomerHomeScreen(),
+              settings: RouteSettings(
+                arguments: responseBody,
               ),
-            );
-          }
+            ),
+          );
         }
-      } else if (response.statusCode == 401) {
-        // Handle 401 Unauthorized status code
-        // Sign out of Google to allow selecting another email
-        ScaffoldMessenger.of(context).showSnackBar(
+      }
+    } else if (response.statusCode == 401) {
+      // Handle 401 Unauthorized status code
+      // Sign out of Google to allow selecting another email
+      ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('User does not exist'),
             duration: Duration(seconds: 3),
           ),
         );
-        await _googleSignIn.signOut();
-      } else {
-        // Handle other cases or show an error message
-        print('Authentication failed with status code: ${response.statusCode}');
-      }
-    } catch (error) {
-      print('Error during Google authentication request: $error');
+      await _googleSignIn.signOut();
+    } else {
+      // Handle other cases or show an error message
+      print('Authentication failed with status code: ${response.statusCode}');
     }
+  } catch (error) {
+    print('Error during Google authentication request: $error');
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -524,8 +527,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                   child: ElevatedButton(
                                     onPressed: _submit,
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors
-                                          .transparent, // ✅ Updated from `primary`
+                                      primary: Colors.transparent,
                                       elevation: 0,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(70),
@@ -533,16 +535,16 @@ class _AuthScreenState extends State<AuthScreen> {
                                     ),
                                     child: Text(
                                       _isLogin ? 'Login' : 'Signup',
-                                      style: TextStyle(
-                                        // ✅ Changed from `SafeGoogleFont`
-                                        fontSize: 16,
+                                      style: SafeGoogleFont(
+                                        'Inter',
+                                        fontSize: 16 * ffem,
                                         fontWeight: FontWeight.w600,
-                                        height: 1.2,
-                                        color: Colors.white,
+                                        height: 1.2125 * ffem / fem,
+                                        color: Color(0xffffffff),
                                       ),
                                     ),
                                   ),
-                                )
+                                ),
 
                               // if (!_isAuthenticating)
                               //   TextButton(
@@ -607,54 +609,62 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                 ),
               ),
-           Container(
-  margin: EdgeInsets.only(left: 0 * fem, top: 0 * fem),
-  child: ElevatedButton(
-    onPressed: _handleGoogleSignIn,
-    style: ElevatedButton.styleFrom(
-      backgroundColor: Color(0x7fffffff), // ✅ Updated from `primary`
-      foregroundColor: Color(0xff000000), // ✅ Updated from `onPrimary`
-      elevation: 0.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(70 * fem),
-        side: BorderSide(color: Color(0xff000000)),
-      ),
-    ),
-    child: Container(
-      padding: EdgeInsets.fromLTRB(21 * fem, 12 * fem, 63 * fem, 13 * fem),
-      width: 295 * fem,
-      height: 50 * fem,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 25 * fem, 0 * fem),
-            width: 25 * fem,
-            height: 25 * fem,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12.5 * fem),
-              image: DecorationImage(
-                fit: BoxFit.cover,
-                image: AssetImage('assets/design/images/group.png'),
+        
+              Container(
+                margin: EdgeInsets.only(left: 0 * fem, top: 0 * fem),
+                child: ElevatedButton(
+                  onPressed: _handleGoogleSignIn,
+                  style: ElevatedButton.styleFrom(
+                    primary: Color(0x7fffffff),
+                    onPrimary: Color(0xff000000),
+                    elevation: 0.0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(70 * fem),
+                      side: BorderSide(color: Color(0xff000000)),
+                    ),
+                  ),
+                  child: Container(
+                    padding: EdgeInsets.fromLTRB(
+                        21 * fem, 12 * fem, 63 * fem, 13 * fem),
+                    width: 295 * fem,
+                    height: 50 * fem,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.fromLTRB(
+                              0 * fem, 0 * fem, 25 * fem, 0 * fem),
+                          width: 25 * fem,
+                          height: 25 * fem,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12.5 * fem),
+                            image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image:
+                                  AssetImage('assets/design/images/group.png'),
+                            ),
+                          ),
+                        ),
+                        Text(
+                          'Login with Google',
+                          style: SafeGoogleFont(
+                            'Inter',
+                            fontSize: 16 * ffem,
+                            fontWeight: FontWeight.w600,
+                            height: 1.2125 * ffem / fem,
+                            color: Color(0xff000000),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
-          Text(
-            'Login with Google',
-            style: TextStyle( // ✅ Changed from `SafeGoogleFont`
-              fontSize: 16 * ffem,
-              fontWeight: FontWeight.w600,
-              height: 1.2125,
-              color: Color(0xff000000),
-            ),
-          ),
-        ],
-      ),
-    ),
-  ),
-)
-,
+
               SizedBox(height: 10 * fem),
+
+        
+
               Container(
                 padding: EdgeInsets.all(20 * fem),
                 width: double.infinity,

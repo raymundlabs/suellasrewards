@@ -378,7 +378,7 @@ class _ForgotScreen extends State<ForgotScreen> {
                                       }
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors
+                                      primary: Colors
                                           .transparent, // Make the button transparent
                                       elevation: 0, // Remove button elevation
                                       shape: RoundedRectangleBorder(

@@ -869,7 +869,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       child: ElevatedButton(
                                         onPressed: _submitForm,
                                         style: ElevatedButton.styleFrom(
-                                          primary: Color(
+                                          backgroundColor: Color(
                                               0xff57cc99), // Background color
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(
