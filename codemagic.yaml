@@ -8,7 +8,7 @@ workflows:
     environment:
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: com.suellas.reward
+        bundle_identifier: com.suellas.rewardstesting
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -28,11 +28,11 @@ workflows:
           cd ..
       - name: Flutter build ipa and automatic versioning
         script: |
-          LATEST_BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "com.suellas.reward")
+          LATEST_BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "com.suellas.rewardstesting")
           NEW_BUILD_NUMBER=$((LATEST_BUILD_NUMBER + 1))
 
           flutter build ipa --release \
-            --build-name=1.1.0 \
+            --build-name=1.1.1 \
             --build-number=$NEW_BUILD_NUMBER \
             --export-options-plist=/Users/builder/export_options.plist
     artifacts:
