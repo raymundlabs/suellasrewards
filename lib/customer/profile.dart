@@ -38,6 +38,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool isEditingName = false;
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController(); // Password text controller
+
 
   @override
   void initState() {
@@ -66,6 +68,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _userEmail = prefs.getString('userEmail') ?? '';
     });
   }
+
+  
 
   Future<http.Response> _updateNotificationSettings() async {
     final headers = {
@@ -112,6 +116,78 @@ class _ProfileScreenState extends State<ProfileScreen> {
       throw Exception('Failed to load user data');
     }
   }
+void _showDeleteConfirmationDialog() {
+  showDialog(
+    context: context,
+    barrierDismissible: false, // Prevent dismissing the dialog by tapping outside
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(
+          'Delete Account',
+          style: TextStyle(color: Colors.red),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'This action is destructive. Type your password to confirm delete.',
+              style: TextStyle(color: Colors.red),
+            ),
+            SizedBox(height: 20),
+            TextField(
+              obscureText: true, // Hide the password text
+              controller: passwordController, // Connect the password controller
+              decoration: InputDecoration(
+                labelText: 'Enter your password',
+                border: OutlineInputBorder(),
+                hintText: 'Password',
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Cancel the delete action
+            },
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              // Instead of actual deletion logic, just confirm the action
+              Navigator.of(context).pop();
+              _showDemoMessage(); // Show a confirmation that it's just a demo
+            },
+            child: Text('Confirm'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+// Show a confirmation demo message (no actual deletion)
+void _showDemoMessage() {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Demo'),
+        content: Text('Account deletion is only a demo. No action was taken.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the demo message
+            },
+            child: Text('OK'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -527,7 +603,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ],
                                   ),
                                 ),
-                                 Container(
+                                Container(
                                   margin: EdgeInsets.only(
                                       left: 0 * fem, top: 5 * fem),
                                   width: 500 * fem,
@@ -651,8 +727,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                         ),
-
-
                         Divider(),
                         Container(
                           margin: EdgeInsets.only(left: 0 * fem, top: 10 * fem),
@@ -662,7 +736,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(
-                                  width: 86 * fem,
+                                  width: 120 * fem,
                                   height: 20 * fem,
                                   child: Text(
                                     'Notification',
@@ -780,6 +854,65 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ],
                                   ),
                                 ),
+                                Container(
+                                  margin: EdgeInsets.only(
+                                      left: 0 * fem, top: 5 * fem),
+                                  width: 500 * fem,
+                                  height: 27 * fem,
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: Container(
+                                          margin: EdgeInsets.fromLTRB(0 * fem,
+                                              0 * fem, 10 * fem, 1 * fem),
+                                          child: Text(
+                                            'Delete Account',
+                                            style: TextStyle(
+                                              fontSize: 13 * ffem,
+                                              fontWeight: FontWeight.w500,
+                                              color: Color(0x66000000),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        padding: EdgeInsets.fromLTRB(
+                                            10.63 * fem,
+                                            6.51 * fem,
+                                            11.37 * fem,
+                                            5.49 * fem),
+                                        width: 50 * fem,
+                                        height: 25 * fem,
+                                        decoration: BoxDecoration(
+                                          color: Color(0xffffffff),
+                                          borderRadius:
+                                              BorderRadius.circular(30 * fem),
+                                        ),
+                                        child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              // Show the delete confirmation dialog
+                                              _showDeleteConfirmationDialog();
+                                            },
+                                            child: Icon(
+                                              Icons.delete, // The delete icon
+                                              color: const Color.fromARGB(
+                                                  255,
+                                                  8,
+                                                  1,
+                                                  0), // Color for the delete icon
+                                              size: 20 *
+                                                  fem, // Size of the icon, adjust as needed
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -793,13 +926,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ),
-        bottomNavigationBar: _buildBottomNavigationBar(fem, ffem, context),
+      bottomNavigationBar: _buildBottomNavigationBar(fem, ffem, context),
     );
   }
 
-
-
-Widget _buildBottomNavigationBar(double fem, double ffem, BuildContext context) {
+  Widget _buildBottomNavigationBar(
+      double fem, double ffem, BuildContext context) {
     return Container(
       width: 333 * fem,
       height: 50 * fem,
@@ -826,87 +958,89 @@ Widget _buildBottomNavigationBar(double fem, double ffem, BuildContext context) 
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-                GestureDetector(
-               onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CustomerHomeScreen()), // Navigate to inbox screen
-              );
-            },
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 1.0),
-                child: Image.asset(
-                  'assets/icons/images/rewards.png',
-       width: 50,
-                height: 50,
-                ),
-              ),
-              ),
-     
           GestureDetector(
-               onTap: () {
+            onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => InboxScreen()), // Navigate to location screen
+                MaterialPageRoute(
+                    builder: (context) =>
+                        CustomerHomeScreen()), // Navigate to inbox screen
               );
             },
-     
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/inbox.png',
-     width: 50,
+                'assets/icons/images/rewards.png',
+                width: 50,
                 height: 50,
               ),
             ),
           ),
-               GestureDetector(
-
+          GestureDetector(
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => QRScreen()), // Navigate to QR screen
+                MaterialPageRoute(
+                    builder: (context) =>
+                        InboxScreen()), // Navigate to location screen
+              );
+            },
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 1.0),
+              child: Image.asset(
+                'assets/icons/images/inbox.png',
+                width: 50,
+                height: 50,
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => QRScreen()), // Navigate to QR screen
               );
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
                 'assets/icons/images/qr.png',
-             width: 50,
+                width: 50,
                 height: 50,
               ),
             ),
           ),
           GestureDetector(
-
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LocationScreen()), // Navigate to QR screen
+                MaterialPageRoute(
+                    builder: (context) =>
+                        LocationScreen()), // Navigate to QR screen
               );
             },
-    
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
                 'assets/icons/images/location.png',
-                 width: 50,
+                width: 50,
                 height: 50,
               ),
             ),
           ),
           GestureDetector(
             onTap: () {
-                // Implement the behavior to reset or return to the current screen
-                // For example, you can scroll to the top of the current screen
-                // or refresh the content.
-                // _scrollToTopOrRefresh(); // Call a method to scroll to the top or refresh the content
-              },
+              // Implement the behavior to reset or return to the current screen
+              // For example, you can scroll to the top of the current screen
+              // or refresh the content.
+              // _scrollToTopOrRefresh(); // Call a method to scroll to the top or refresh the content
+            },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
                 'assets/icons/images/profile-selected.png',
-              width: 50,
+                width: 50,
                 height: 50,
               ),
             ),
@@ -916,9 +1050,3 @@ Widget _buildBottomNavigationBar(double fem, double ffem, BuildContext context) 
     );
   }
 }
-
-
-
-
-
-
