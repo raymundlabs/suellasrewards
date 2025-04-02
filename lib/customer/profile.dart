@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'dart:ui';
+import 'dart:async'; 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:suellas/utils.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -14,6 +15,8 @@ import 'package:suellas/customer/inbox.dart';
 import 'package:suellas/customer/home.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:suellas/design/start.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:suellas/customer/editprofile.dart';
 
 import 'package:flutter/material.dart';
@@ -31,6 +34,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String _phoneNumber = '';
   String _streetName = '';
   String _barangayName = '';
+  GoogleSignIn _googleSignIn = GoogleSignIn();
   String _cityName = '';
 
   bool isSmsNotificationEnabled = false; // Default value is false
@@ -116,6 +120,107 @@ class _ProfileScreenState extends State<ProfileScreen> {
       throw Exception('Failed to load user data');
     }
   }
+
+Future<http.Response> _deleteAccount(String email, String password) async {
+  print('Delete account function called with email: $email and password: $password');
+
+  final headers = {
+    'Content-Type': 'application/json',
+    'X-CSRF-Token': 'd7c436fff9e0910158379791ad0aeba8',
+  };
+
+  final apiUrl = '/admin/auth/deleteuser';
+
+  try {
+    final response = await http
+        .post(
+          Uri.parse('https://app.suellastheshoelaundry.com' + apiUrl),
+
+          body: json.encode({
+            'email': email,
+            'password': password,
+          }),
+        )
+        .timeout(const Duration(seconds: 10)); // Timeout set to 10 seconds
+
+    if (response.statusCode == 200) {
+      print('Account deletion request successful. Response: ${response.body}');
+      _logOut();
+      _showDeletionSuccessMessage();
+      // Navigator.pushReplacementNamed(context, '/login');
+      return response; // Return the response for success
+    } else {
+      print('Failed to delete account. Response: ${response.body}');
+      _showDeletionErrorMessage();
+      return response; // Return the response for failure
+    }
+  } on TimeoutException catch (_) {
+    print('Request timed out');
+    _showDeletionErrorMessage();
+    return http.Response('Request timed out', 408); // Return HTTP 408 Timeout response
+  } catch (e) {
+    print('Error while calling delete API: $e');
+    _showDeletionErrorMessage();
+    return http.Response('An error occurred', 500); // Return HTTP 500 Internal Server Error
+  }
+}
+
+
+
+  Future<void> _logOut() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Clear user data from SharedPreferences
+    await prefs.remove('userEmail');
+    await prefs.remove('authToken');
+    await _googleSignIn.signOut();
+    // Navigate to the login screen
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => StartScreen()),
+    );
+  }
+
+void _showDeletionSuccessMessage() {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Success'),
+        content: Text('Your account has been successfully deleted.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the success message
+            },
+            child: Text('OK'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+void _showDeletionErrorMessage() {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Error'),
+        content: Text('There was an issue deleting your account. Please try again later.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the error message
+            },
+            child: Text('OK'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 void _showDeleteConfirmationDialog() {
   showDialog(
     context: context,
@@ -154,9 +259,18 @@ void _showDeleteConfirmationDialog() {
           ),
           TextButton(
             onPressed: () {
-              // Instead of actual deletion logic, just confirm the action
-              Navigator.of(context).pop();
-              _showDemoMessage(); // Show a confirmation that it's just a demo
+              // Get the email from the stored preferences and password from the controller
+              String email = _userEmail; // Assuming userEmail is set in initState
+              String password = passwordController.text;
+
+              if (password.isNotEmpty) {
+                // Call the _deleteAccount method to delete the account
+                _deleteAccount(email, password);
+                Navigator.of(context).pop(); // Close the delete dialog
+              } else {
+                // If no password is entered, show an error
+                _showPasswordErrorMessage();
+              }
             },
             child: Text('Confirm'),
           ),
@@ -166,18 +280,17 @@ void _showDeleteConfirmationDialog() {
   );
 }
 
-// Show a confirmation demo message (no actual deletion)
-void _showDemoMessage() {
+void _showPasswordErrorMessage() {
   showDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Demo'),
-        content: Text('Account deletion is only a demo. No action was taken.'),
+        title: Text('Error'),
+        content: Text('Please enter your password to confirm the deletion.'),
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop(); // Close the demo message
+              Navigator.of(context).pop(); // Close the error message
             },
             child: Text('OK'),
           ),
