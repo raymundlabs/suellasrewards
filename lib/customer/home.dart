@@ -484,129 +484,61 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   }
 
   
-  Widget _buildBottomNavigationBar(
-      double fem, double ffem, BuildContext context) {
-    return Container(
-      width: 333 * fem,
-      height: 50 * fem,
-      padding: EdgeInsets.fromLTRB(20, 8, 20, 8),
-      margin: EdgeInsets.fromLTRB(44 * fem, 20.14 * fem, 44 * fem, 20.14 * fem),
-      decoration: BoxDecoration(
-        color: Color(0xFFF0F0F3),
-        borderRadius: BorderRadius.circular(50),
-        boxShadow: [
-          BoxShadow(
-            color: Color(0xFFFFFFFF),
-            blurRadius: 20,
-            offset: Offset(5, 5),
-            spreadRadius: 0,
-          ),
-          BoxShadow(
-            color: Color(0xFFFFFFFF),
-            blurRadius: 20,
-            offset: Offset(-5, -5),
-            spreadRadius: 0,
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        CustomerHomeScreen()), // Navigate to inbox screen
-              );
-            },
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 1.0),
-              child: Image.asset(
-                'assets/icons/images/rewards.png',
-                width: 50,
-                height: 50,
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        InboxScreen()), // Navigate to inbox screen
-              );
-            },
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 1.0),
-              child: Image.asset(
-                'assets/icons/images/inbox.png',
-             width: 50,
-                height: 50,
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => QRScreen()), // Navigate to QR screen
-              );
-            },
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 1.0),
-              child: Image.asset(
-                'assets/icons/images/qr.png',
-              width: 50,
-                height: 50,
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        LocationScreen()), // Navigate to location screen
-              );
-            },
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 1.0),
-              child: Image.asset(
-                'assets/icons/images/location-selected.png',
-            width: 50,
-                height: 50,
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        ProfileScreen()), // Navigate to profile screen
-              );
-            },
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 1.0),
-              child: Image.asset(
-                'assets/icons/images/profile.png',
-             width: 50,
-                height: 50,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+Widget _buildBottomNavigationBar(double fem, double ffem, BuildContext context) {
+  return Container(
+    width: double.infinity, // Take full width
+    padding: EdgeInsets.symmetric(vertical: 8 * fem),
+    decoration: BoxDecoration(
+      color: Color(0xFFF0F0F3),
+      boxShadow: [
+        BoxShadow(
+          color: Color(0xFFFFFFFF),
+          blurRadius: 20,
+          offset: Offset(5, 5),
+        BoxShadow(
+          color: Color(0xFFFFFFFF),
+          blurRadius: 20,
+          offset: Offset(-5, -5),
+        ),
+      ],
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        _buildNavItem('rewards.png', () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => CustomerHomeScreen()));
+        }, fem),
+        _buildNavItem('inbox.png', () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => InboxScreen()));
+        }, fem),
+        _buildNavItem('qr.png', () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => QRScreen()));
+        }, fem),
+        _buildNavItem('location.png', () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => LocationScreen()));
+        }, fem),
+        _buildNavItem('profile.png', () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => ProfileScreen()));
+        }, fem),
+      ],
+    ),
+  );
 }
 
+Widget _buildNavItem(String iconName, VoidCallback onTap, double fem) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
+      padding: EdgeInsets.all(8 * fem),
+      child: Image.asset(
+        'assets/icons/$iconName',
+        width: 24 * fem,
+        height: 24 * fem,
+        fit: BoxFit.contain,
+      ),
+    ),
+  );
+}
 
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
