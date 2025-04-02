@@ -523,7 +523,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/rewards-selected.png',
+                'icons/images/rewards-selected.png',
                 width: 50,
                 height: 50,
               ),
@@ -541,7 +541,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/inbox.png',
+                'icons/images/inbox.png',
                 width: 50,
                 height: 50,
               ),
@@ -558,7 +558,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/qr.png',
+                'icons/images/qr.png',
                 width: 50,
                 height: 50,
               ),
@@ -576,7 +576,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/location.png',
+                'icons/images/location.png',
                 width: 50,
                 height: 50,
               ),
@@ -594,7 +594,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'assets/icons/images/profile.png',
+                'icons/images/profile.png',
                 width: 50,
                 height: 50,
               ),

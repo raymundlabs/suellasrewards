@@ -63,7 +63,7 @@ class StartScreen extends StatelessWidget {
                                 'We handle each',
                                 style: TextStyle(
                                   fontFamily: 'Manrope',
-                                  fontSize: 20 * ffem,
+                                  fontSize:   28 * ffem,
                                   fontWeight: FontWeight.w800,
                                   height: 1.365 * ffem / fem,
                                   letterSpacing: -1.08 * fem,
@@ -74,7 +74,7 @@ class StartScreen extends StatelessWidget {
                                 'pair with care',
                                 style: TextStyle(
                                   fontFamily: 'Manrope',
-                                  fontSize: 20 * ffem,
+                                  fontSize: 28 * ffem,
                                   fontWeight: FontWeight.w800,
                                   height: 1.365 * ffem / fem,
                                   letterSpacing: -1.08 * fem,
