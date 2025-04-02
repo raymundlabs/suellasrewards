@@ -483,6 +483,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
     );
   }
 
+  
   Widget _buildBottomNavigationBar(
       double fem, double ffem, BuildContext context) {
     return Container(
@@ -523,7 +524,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'icons/images/rewards-selected.png',
+                'assets/icons/images/rewards.png',
                 width: 50,
                 height: 50,
               ),
@@ -541,8 +542,8 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'icons/images/inbox.png',
-                width: 50,
+                'assets/icons/images/inbox.png',
+             width: 50,
                 height: 50,
               ),
             ),
@@ -558,8 +559,8 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'icons/images/qr.png',
-                width: 50,
+                'assets/icons/images/qr.png',
+              width: 50,
                 height: 50,
               ),
             ),
@@ -576,8 +577,8 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'icons/images/location.png',
-                width: 50,
+                'assets/icons/images/location-selected.png',
+            width: 50,
                 height: 50,
               ),
             ),
@@ -594,8 +595,8 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 1.0),
               child: Image.asset(
-                'icons/images/profile.png',
-                width: 50,
+                'assets/icons/images/profile.png',
+             width: 50,
                 height: 50,
               ),
             ),
@@ -605,6 +606,8 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
     );
   }
 }
+
+
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final double fem;
