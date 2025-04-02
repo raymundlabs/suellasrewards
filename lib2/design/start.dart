@@ -91,7 +91,7 @@ class _StartScreenState extends State<StartScreen> {
                           'We handle each',
                           style: TextStyle(
                             fontFamily: 'Manrope',
-                            fontSize: 36 * ffem,
+                            fontSize: 20 * ffem,
                             fontWeight: FontWeight.w800,
                             height: 1.365 * ffem / fem,
                             letterSpacing: -1.08 * fem,
@@ -102,7 +102,7 @@ class _StartScreenState extends State<StartScreen> {
                           'pair with care',
                           style: TextStyle(
                             fontFamily: 'Manrope',
-                            fontSize: 36 * ffem,
+                            fontSize: 20 * ffem,
                             fontWeight: FontWeight.w800,
                             height: 1.365 * ffem / fem,
                             letterSpacing: -1.08 * fem,
