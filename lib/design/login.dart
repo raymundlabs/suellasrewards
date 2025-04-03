@@ -564,96 +564,100 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                 ),
               ),
-              Container(
-                margin: EdgeInsets.symmetric(
-                    horizontal: 20 * fem, vertical: 20 * fem),
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10 * fem),
-                  width: double.infinity,
-                  height: 50 * fem,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Container(
-                          height: 2 * fem,
-                          decoration: BoxDecoration(
-                            color: Color(0x7c000000),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.symmetric(horizontal: 10 * fem),
-                        child: Text(
-                          'OR',
-                          style: SafeGoogleFont(
-                            'Inter',
-                            fontSize: 17 * ffem,
-                            fontWeight: FontWeight.w400,
-                            height: 1.2125 * ffem / fem,
-                            color: Color(0x7c000000),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          height: 2 * fem,
-                          decoration: BoxDecoration(
-                            color: Color(0x7c000000),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-           Container(
-  margin: EdgeInsets.only(left: 0 * fem, top: 0 * fem),
-  child: ElevatedButton(
-    onPressed: _handleGoogleSignIn,
-    style: ElevatedButton.styleFrom(
-      backgroundColor: Color(0x7fffffff), // ✅ Updated from `primary`
-      foregroundColor: Color(0xff000000), // ✅ Updated from `onPrimary`
-      elevation: 0.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(70 * fem),
-        side: BorderSide(color: Color(0xff000000)),
-      ),
-    ),
-    child: Container(
-      padding: EdgeInsets.fromLTRB(21 * fem, 12 * fem, 63 * fem, 13 * fem),
-      width: 295 * fem,
-      height: 50 * fem,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 25 * fem, 0 * fem),
-            width: 25 * fem,
-            height: 25 * fem,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12.5 * fem),
-              image: DecorationImage(
-                fit: BoxFit.cover,
-                image: AssetImage('assets/design/images/group.png'),
-              ),
-            ),
-          ),
-          // Text(
-          //   'Login with Google',
-          //   style: TextStyle( // ✅ Changed from `SafeGoogleFont`
-          //     fontSize: 16 * ffem,
-          //     fontWeight: FontWeight.w600,
-          //     height: 1.2125,
-          //     color: Color(0xff000000),
-          //   ),
-          // ),
-        ],
-      ),
-    ),
-  ),
-)
-,
+              // Container(
+              //   margin: EdgeInsets.symmetric(
+              //       horizontal: 20 * fem, vertical: 20 * fem),
+              //   child: Container(
+              //     padding: EdgeInsets.symmetric(horizontal: 10 * fem),
+              //     width: double.infinity,
+              //     height: 50 * fem,
+              //     child: Row(
+              //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //       children: [
+              //         Expanded(
+              //           child: Container(
+              //             height: 2 * fem,
+              //             decoration: BoxDecoration(
+              //               color: Color(0x7c000000),
+              //             ),
+              //           ),
+              //         ),
+              //         Container(
+              //           margin: EdgeInsets.symmetric(horizontal: 10 * fem),
+              //           child: Text(
+              //             'OR',
+              //             style: SafeGoogleFont(
+              //               'Inter',
+              //               fontSize: 17 * ffem,
+              //               fontWeight: FontWeight.w400,
+              //               height: 1.2125 * ffem / fem,
+              //               color: Color(0x7c000000),
+              //             ),
+              //           ),
+              //         ),
+              //         Expanded(
+              //           child: Container(
+              //             height: 2 * fem,
+              //             decoration: BoxDecoration(
+              //               color: Color(0x7c000000),
+              //             ),
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
+              // Container(
+              //   margin: EdgeInsets.only(left: 0 * fem, top: 0 * fem),
+              //   child: ElevatedButton(
+              //     onPressed: _handleGoogleSignIn,
+              //     style: ElevatedButton.styleFrom(
+              //       backgroundColor:
+              //           Color(0x7fffffff), // ✅ Updated from `primary`
+              //       foregroundColor:
+              //           Color(0xff000000), // ✅ Updated from `onPrimary`
+              //       elevation: 0.0,
+              //       shape: RoundedRectangleBorder(
+              //         borderRadius: BorderRadius.circular(70 * fem),
+              //         side: BorderSide(color: Color(0xff000000)),
+              //       ),
+              //     ),
+              //     child: Container(
+              //       padding: EdgeInsets.fromLTRB(
+              //           21 * fem, 12 * fem, 63 * fem, 13 * fem),
+              //       width: 295 * fem,
+              //       height: 50 * fem,
+              //       child: Row(
+              //         crossAxisAlignment: CrossAxisAlignment.center,
+              //         children: [
+              //           Container(
+              //             margin: EdgeInsets.fromLTRB(
+              //                 0 * fem, 0 * fem, 25 * fem, 0 * fem),
+              //             width: 25 * fem,
+              //             height: 25 * fem,
+              //             decoration: BoxDecoration(
+              //               borderRadius: BorderRadius.circular(12.5 * fem),
+              //               image: DecorationImage(
+              //                 fit: BoxFit.cover,
+              //                 image:
+              //                     AssetImage('assets/design/images/group.png'),
+              //               ),
+              //             ),
+              //           ),
+              //           // Text(
+              //           //   'Login with Google',
+              //           //   style: TextStyle( // ✅ Changed from `SafeGoogleFont`
+              //           //     fontSize: 16 * ffem,
+              //           //     fontWeight: FontWeight.w600,
+              //           //     height: 1.2125,
+              //           //     color: Color(0xff000000),
+              //           //   ),
+              //           // ),
+              //         ],
+              //       ),
+              //     ),
+              //   ),
+              // ),
               SizedBox(height: 10 * fem),
               Container(
                 padding: EdgeInsets.all(20 * fem),
