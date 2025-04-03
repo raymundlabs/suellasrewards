@@ -639,15 +639,15 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
             ),
           ),
-          Text(
-            'Login with Google',
-            style: TextStyle( // ✅ Changed from `SafeGoogleFont`
-              fontSize: 16 * ffem,
-              fontWeight: FontWeight.w600,
-              height: 1.2125,
-              color: Color(0xff000000),
-            ),
-          ),
+          // Text(
+          //   'Login with Google',
+          //   style: TextStyle( // ✅ Changed from `SafeGoogleFont`
+          //     fontSize: 16 * ffem,
+          //     fontWeight: FontWeight.w600,
+          //     height: 1.2125,
+          //     color: Color(0xff000000),
+          //   ),
+          // ),
         ],
       ),
     ),
